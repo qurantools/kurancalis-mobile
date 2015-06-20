@@ -1,0 +1,82 @@
+<!doctype html>
+<html ng-app="ionicApp" ng-controller="MainCtrl" id="MainCtrl" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+    <link rel="stylesheet" href="assets/css/font-awesome.min.css">
+    <link rel="stylesheet" href="assets/css/annotator.min.css">
+
+    <link rel="stylesheet" href="assets/css/select.min.css">
+
+    <link rel="stylesheet" href="assets/css/panel.css">
+
+    <link rel="stylesheet" href="assets/css/common_style.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/annotator.touch.css">
+
+    <link rel="stylesheet" href="assets/css/ng-tags-input.css">
+
+    <script id="angularScript" src="assets/js/angular.min.js"></script>
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/angular-route.min.js"></script>
+    <script src="assets/js/underscore-min.js"></script>
+    <script src="assets/js/restangular.min.js"></script>
+    <script src="assets/js/angular-resource.js"></script>
+    <script src="assets/js/angular-facebook.js"></script>
+    <script src="assets/js/angular-local-storage.js"></script>
+    <script src="assets/js/auth.js"></script>
+
+    <!-- jQuery (necessary for Flat UI's JavaScript plugins) -->
+    <script src="http://kurancalis.com/include/flat_ui/dist/js/vendor/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="http://kurancalis.com/include/flat_ui/dist/js/flat-ui-pro.js"></script>
+
+    <script src="assets/js/ng-tags-input.js"></script>
+
+    <script src="assets/js/annotator.js"></script>
+    <script src="assets/js/annotator.tags.js" ></script>
+    <script src="assets/js/annotator.store.js"></script>
+    <script src="assets/js/annotator.touch.min.js"></script>
+
+    <script src="assets/js/select.min.js"></script>
+
+    <script src="assets/js/angular-scroll.min.js"></script>
+
+    <!-- Loading Bootstrap -->
+    <link href="http://kurancalis.com/include/flat_ui/dist/css/vendor/bootstrap.min.css" rel="stylesheet">
+    <!-- Loading Flat UI Pro -->
+    <link href="http://kurancalis.com/include/flat_ui/dist/css/flat-ui-pro.css" rel="stylesheet">
+
+
+    <script src="assets/js/directives/showVerse.js"></script>
+    <script src="m/www/lib/ionic/js/ionic.bundle.js"></script>
+
+    <script src="index.js"></script>
+    <!-- controller -->
+    <script src="assets/js/home_controller.js"></script>
+    <script src="assets/js/annotations_controller.js"></script>
+    <script src="app/components/people/people_circles_controller.js"></script>
+    <script src="app/components/people/people_explore_controller.js"></script>
+    <script src="app/components/people/people_find_controller.js"></script>
+    <script src="app/components/people/people_have_you_controller.js"></script>
+
+
+
+</head>
+<body>
+<div id="fb-root"></div>
+<div id="theView" ng-view>
+
+</div>
+<script type="text/javascript">
+    var _urq = _urq || [];
+    _urq.push(['initSite', '0ef96258-84d3-4162-ad33-4e2b55465a50']);
+    (function() {
+        var ur = document.createElement('script'); ur.type = 'text/javascript'; ur.async = true;
+        ur.src = ('https:' == document.location.protocol ? 'https://cdn.userreport.com/userreport.js' : 'http://cdn.userreport.com/userreport.js');
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ur, s);
+    })();
+</script>
+<script src="assets/js/default.js"></script>
+</body>
+
+</html>

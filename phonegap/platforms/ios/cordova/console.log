@@ -1,0 +1,30 @@
+2015-06-21 02:12:58.984 Quran Tools[6010:136148] DiskCookieStorage changing policy from 2 to 0, cookie file: file:///Users/kurtulus/Library/Developer/CoreSimulator/Devices/5C2B4B67-E277-4D89-AF1E-BD00949B519D/data/Containers/Data/Application/36B517C9-EF37-4B09-8FB8-1418D01CF93C/Library/Cookies/Cookies.binarycookies
+2015-06-21 02:12:59.130 Quran Tools[6010:136148] Apache Cordova native platform version 3.8.0 is starting.
+2015-06-21 02:12:59.130 Quran Tools[6010:136148] Multi-tasking -> Device: YES, App: YES
+2015-06-21 02:12:59.135 Quran Tools[6010:136148] Unlimited access to network resources
+2015-06-21 02:12:59.140 Quran Tools[6010:136148] 
+
+Started backup to iCloud! Please be careful.
+Your application might be rejected by Apple if you store too much data.
+For more information please read "iOS Data Storage Guidelines" at:
+https://developer.apple.com/icloud/documentation/data-storage/
+To disable web storage backup to iCloud, set the BackupWebStorage preference to "local" in the Cordova config.xml file
+
+2015-06-21 02:12:59.889 Quran Tools[6010:136148] Resetting plugins due to page load.
+2015-06-21 02:13:00.788 Quran Tools[6010:136148] Finished load of: file:///Users/kurtulus/Library/Developer/CoreSimulator/Devices/5C2B4B67-E277-4D89-AF1E-BD00949B519D/data/Containers/Bundle/Application/D7559BDC-87DD-4C00-8033-9336CA47EA5B/Quran%20Tools.app/www//m/www/index.html#/
+2015-06-21 02:13:08.057 Quran Tools[6010:136181] Terminating since there is no system app.
+2015-06-21 02:13:29.575 Quran Tools[6373:137370] DiskCookieStorage changing policy from 2 to 0, cookie file: file:///Users/kurtulus/Library/Developer/CoreSimulator/Devices/5C2B4B67-E277-4D89-AF1E-BD00949B519D/data/Containers/Data/Application/5497468C-B4CD-4AD7-8E5C-D4CF7D1497BE/Library/Cookies/Cookies.binarycookies
+2015-06-21 02:13:29.749 Quran Tools[6373:137370] Apache Cordova native platform version 3.8.0 is starting.
+2015-06-21 02:13:29.750 Quran Tools[6373:137370] Multi-tasking -> Device: YES, App: YES
+2015-06-21 02:13:29.754 Quran Tools[6373:137370] Unlimited access to network resources
+2015-06-21 02:13:29.759 Quran Tools[6373:137370] 
+
+Started backup to iCloud! Please be careful.
+Your application might be rejected by Apple if you store too much data.
+For more information please read "iOS Data Storage Guidelines" at:
+https://developer.apple.com/icloud/documentation/data-storage/
+To disable web storage backup to iCloud, set the BackupWebStorage preference to "local" in the Cordova config.xml file
+
+2015-06-21 02:13:30.012 Quran Tools[6373:137370] Resetting plugins due to page load.
+2015-06-21 02:13:31.430 Quran Tools[6373:137370] Finished load of: file:///Users/kurtulus/Library/Developer/CoreSimulator/Devices/5C2B4B67-E277-4D89-AF1E-BD00949B519D/data/Containers/Bundle/Application/2B2F0CF2-3083-4F5B-BDDF-DD2631AE9603/Quran%20Tools.app/www//m/www/index.html#/
+2015-06-21 02:14:48.887 Quran Tools[6373:138524] Terminating since there is no system app.
