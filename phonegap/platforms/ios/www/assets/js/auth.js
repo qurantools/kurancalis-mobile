@@ -35,46 +35,71 @@ authorizationModule.factory('User', function ($resource) {
         facebookIsReady = false;
         var factory = {};
         factory.access_token="";
+        factory.faceBookResponseMethod = function(){};
 
         factory.login = function (faceBookResponseMethod) {
-            if (config_data.isMobile) {
-                var permissions = 'email';
-                var permissionUrl = "https://m.facebook.com/dialog/oauth?client_id=" + "400142910165594" + "&response_type=code&redirect_uri=" + encodeURIComponent(config_data.mobileAddress+ "/components/mobile_auth/login_callback.html") + "&scope=" + permissions;
+
+            var nativeApp = document.URL.indexOf( 'http://' ) === -1 && document.URL.indexOf( 'https://' ) === -1;
+            var permissions = 'email';
+
+            if (config_data.isMobile && !nativeApp) {
+                //different FB login for mobile web app
+                var permissionUrl = "https://m.facebook.com/dialog/oauth?client_id=" + config_data.FBAppID + "&response_type=code&redirect_uri=" + encodeURIComponent(config_data.mobileLoginCallbackAddress) + "&scope=" + permissions;
                 window.location = permissionUrl;
                 return;
             }
+            else if(config_data.isMobile && nativeApp) {
+                //different FB login for cordoba
+                // Settings
 
+                openFB.login(
+                    function(response) {
+                        if(response.status === 'connected') {
+                            var token = response.authResponse.accessToken;
+                            factory.onFBLoginResponse(token, faceBookResponseMethod);
+                        } else {
+                            alert('Facebook girişi başarısız');
+                        }
+                    }, {scope: permissions});
+
+            }
+
+
+            Facebook.login(
+                function(response){
+                    var token = response.authResponse.accessToken;
+                    factory.onFBLoginResponse(token, faceBookResponseMethod);
+                } , {scope: permissions});
+        };
+
+
+        factory.onFBLoginResponse=function (tokenFb, faceBookResponseMethod ) {
             var responseData = {loggedIn: false, token: ""};
 
-            Facebook.login(function (response) {
-                fbLoginStatus = response.status;
-                tokenFb = response.authResponse.accessToken;
-                if (tokenFb != "") {
-                    access_token = "";
-                    var user = new User();
+            if (tokenFb != "") {
+                var user = new User();
 
-                    user.fb_access_token = tokenFb;
-                    user.$save({fb_access_token: tokenFb},
-                        function (data, headers) {
-                            //get token
-                            responseData.token = data.token;
-                            responseData.loggedIn = true;
-                            faceBookResponseMethod(responseData);
-                        },
-                        function (error) {
-                            if (error.data.code == '209') {
-                                alert("Sisteme giriş yapabilmek için e-posta adresi paylaşımına izin vermeniz gerekmektedir.");
-                            }
-
-                            //factory.log_out();
-                            responseData.loggedIn = false;
-                            responseData.token = "error";
-                            faceBookResponseMethod(responseData);
+                user.fb_access_token = tokenFb;
+                user.$save({fb_access_token: tokenFb},
+                    function (data, headers) {
+                        //get token
+                        responseData.token = data.token;
+                        responseData.loggedIn = true;
+                        faceBookResponseMethod(responseData);
+                    },
+                    function (error) {
+                        if (error.data.code == '209') {
+                            alert("Sisteme giriş yapabilmek için e-posta adresi paylaşımına izin vermeniz gerekmektedir.");
                         }
-                    );
-                }
-            }, {scope: 'email'});
-        };
+
+                        //factory.log_out();
+                        responseData.loggedIn = false;
+                        responseData.token = "error";
+                        faceBookResponseMethod(responseData);
+                    }
+                );
+            }
+        }
 
 
         factory.get_user_info = function () {

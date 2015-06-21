@@ -7,14 +7,14 @@
 	<key>IDESourceControlProjectIdentifier</key>
 	<string>62ED167B-D8BC-4252-A182-741DC29EC853</string>
 	<key>IDESourceControlProjectName</key>
-	<string>Quran Tools</string>
+	<string>project</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
 		<key>031A7142DDCD7F44BB4F1918C6520126C7AB5098</key>
 		<string>https://github.com/yuzondort/kurancalis-mobile.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
-	<string>phonegap/platforms/ios/Quran Tools.xcodeproj</string>
+	<string>phonegap/platforms/ios/Quran Tools.xcodeproj/project.xcworkspace</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
 		<key>031A7142DDCD7F44BB4F1918C6520126C7AB5098</key>

@@ -157,7 +157,7 @@ if (config_data.isMobile == false) { //false
             });
 
         //facebook
-        FacebookProvider.init('400142910165594');
+        FacebookProvider.init(config_data.FBAppID);
 
     });
 
@@ -211,58 +211,8 @@ if (config_data.isMobile == false) { //false
                     redirectTo: '/'
                 });
 
-            //facebook
-            FacebookProvider.init('400142910165594');
+            openFB.init({appId: config_data.FBAppID});
 
-
-            /*
-             RestangularProvider.setBaseUrl(config_data.webServiceUrl);
-             localStorageServiceProvider.setStorageCookie(0, '/');
-
-             var locationHref = window.location.href;
-             if (locationHref.indexOf('/m/') > -1) {
-             //mobile version
-
-             $stateProvider
-             .state('app', {
-             url: "/app",
-             abstract: true,
-             templateUrl: "components/navigation/navigation.html"
-             })
-             .state('app.home', {
-             url: "/chapter/:chapterId/author/:authorMask/verse/:verseNumber/",
-             views: {
-             'appContent': {
-             templateUrl: "components/home/home.html",
-             controller: "MainCtrl"
-             }
-             }
-             })
-             .state('app.annotations', {
-             url: "/annotations",
-             views: {
-             'appContent': {
-             templateUrl: "components/annotations/all_annotations.html",
-             controller: "MainCtrl"
-             }
-             }
-             })
-
-             $urlRouterProvider.otherwise("/app/chapter/1/author/1040/verse/1/");
-             } else {
-             //mobile version is not ready
-             $routeProvider
-             .when('/', {
-             controller: 'MainCtrl',
-             templateUrl: 'app/components/home/mobile_on_development.html',
-             reloadOnSearch: false
-             })
-             .otherwise({
-             redirectTo: '/'
-             });
-             }
-             FacebookProvider.init('400142910165594');
-             */
         }
     );
 
@@ -869,18 +819,15 @@ app.factory('ChapterVerses', function ($resource) {
             $scope.annotations = orderBy($scope.annotations, predicate);
         }
 
-        $scope.scrollToElement = function (elementId) {
+        $scope.scrollToElmnt = function (elementId) {
             if (!config_data.isMobile) {
                 var destination = angular.element(document.getElementById(elementId));
                 if (destination.length > 0) {
                     $document.scrollToElement(destination, 70, 1000);
                 }
             } else {
-                //document.getElementById("home_top_navbar").style.display = 'none';
-                $location.hash(elementId);
-                var delegate = $ionicScrollDelegate.$getByHandle('content');
-                delegate.anchorScroll();
-                //document.getElementById("home_top_navbar").style.display = 'block';
+                var elem = document.getElementById(elementId);
+                $ionicScrollDelegate.scrollTo(0,elem.offsetTop,false);
             }
         }
 
@@ -1024,7 +971,7 @@ app.factory('ChapterVerses', function ($resource) {
                 var verseId = parseInt($scope.chapter_id * 1000) + parseInt($scope.verse.number);
                 var verseElement = 'v_' + verseId;
                 //  if (!config_data.isMobile) {
-                $scope.scrollToElement(verseElement);
+                $scope.scrollToElmnt(verseElement);
                 /*
                  } else {
                  $location.hash(verseElement);
