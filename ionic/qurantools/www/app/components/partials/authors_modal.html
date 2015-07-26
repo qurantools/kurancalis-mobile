@@ -1,0 +1,31 @@
+<div class="modal" id="myModal">
+    <div class="modal-dialog fixed-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+
+                <h4 class="modal-title">Yazarlar</h4>
+            </div>
+
+            <div class="modal-body">
+                <ul>
+                    <li ng-repeat="author in authors">
+                        <label>
+                            <input
+                                    type="checkbox"
+                                    name="selectedauthors[]"
+                                    value="{{author.id}}"
+                                    ng-checked="detailedSearchAuthorSelection.indexOf(author.id) > -1"
+                                    ng-click="detailedSearchAuthorToggleSelection(author.id)"
+                                    > {{author.name}}
+                        </label>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" data-dismiss="modal" aria-hidden="true" class="btn">Vazgeç</button>
+                <a href="#" class="btn btn-primary btn-wide" data-dismiss="modal" ng-click="goToChapter()">Tamam</a>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,46 @@
+<div class="modal modal-fullscreen">
+    <div class="bar bar-balanced">
+        <div style="text-align: left; width:100px;">
+            <button class="button button-icon icon-left ion-arrow-left-b" ng-click="search_all_annotations();closeModal('all_annotations_filter')"
+                    style="float: left"> Tamam
+            </button>
+        </div>
+        <div style="text-align: center; width:100px;"><h1 class="title">Filtre Seçenekleri</h1></div>
+    </div>
+    <ion-content overflow-scroll="true">
+        <div style="height:50px"></div>
+        <div>
+            <label class="item item-input" style="margin:10px;">
+        <input type="text" ng-model="allAnnotationsSearchInput" size="12"
+               placeholder="Aranacak kelime" ng-change="setAnnotationSearchKeyword(allAnnotationsSearchInput)"/>
+                </label>
+
+
+
+</div>
+
+<div>
+
+
+        <tags-input ng-model="filterTags" display-property="name" placeholder="Etiket girin" replace-spaces-with-dashes="false"
+                    min-length="2" ng-change="setAnnotationSearchTags(filterTags)">
+            <auto-complete source="loadTags($query)" min-length="2"></auto-complete>
+        </tags-input>
+</div>
+
+        <ul class="list">
+            <li class="item item-checkbox" ng-repeat="author in authors">
+                <label class="checkbox">
+                    <input
+                            type="checkbox"
+                            name="selectedauthors[]"
+                            value="{{author.id}}"
+                            ng-checked="annotationSearchAuthorSelection.indexOf(author.id) > -1"
+                            ng-click="annotationSearchAuthorToggleSelection(author.id)"
+                            >
+                </label>
+                {{author.name}}
+            </li>
+        </ul>
+    </ion-content>
+</div>
