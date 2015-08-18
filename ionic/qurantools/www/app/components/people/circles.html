@@ -9,7 +9,7 @@
         <div>
             <modal title="Yeni Çevre Ekleme" visible="showModal">
                 <div class="form-group">
-                    <label>Çevre Tanımı</label>
+
                     <input type="text" class="form-control" ng-model="cevread.text" placeholder="Çevre Tanımı"/>
                 </div>
                 <div class="modal-footer">
@@ -19,7 +19,7 @@
             </modal>
         </div>
 
-        <button style="width:135px; height:150px; margin: 10px 15px;" ng-click="toggleModal()" class="btn btn-primary">
+        <button style="width:135px; height:150px; margin: 10px 15px; background-color:#3498db" ng-click="toggleModal()" class="btn btn-primary">
             <font size="7">+</font><br/>Yeni Çevre
         </button>
 
@@ -58,7 +58,7 @@
         <div>
             <kisisilmodal title="Kişi(ler) Sil" visible="kisisil">
                 <div>
-                    <label>{{cevretanim}} </BR>  Çevresinden seçili kişi(ler) silinecektir. Onaylıyor musunuz?</label>
+                    <label>{{cevretanim}} </BR>  çevresinden seçili kişi(ler) silinecektir. Onaylıyor musunuz?</label>
                 </div>
                 <div class="modal-footer">
                     <a type="button" class="btn btn-primary btn-wide" data-dismiss="modal">İptal</a>
@@ -129,10 +129,10 @@
                 </td>
                 <td align="right" style="width:60%">
                     <button class="btn btn-primary btn-wide" ng-disabled="ackapa" ng-click="kisisilModal()">Çevreden
-                        Çıkart
+                        çıkart
                     </button>
                     <button class="btn btn-primary btn-wide" ng-disabled="ackapa" ng-click="digercevremodal()">Başka
-                        Çevreye Ekle
+                        çevreye Ekle
                     </button>
                 </td>
             </tr>
@@ -143,17 +143,10 @@
 
     <div align="left" style="width:87%">
 
-        <table style="width: 215px; margin: 10px 10px;" class="btn btn-primary btn-wide" ng-disabled="ackapakisi"
-               ng-click="kisieskleModal()">
-            <tr>
-                <td align="center" style=" font-size:32pt; font-weight:bolder; vertical-align: middle;width: 40px;">
-                    +
-                </td>
-                <td align="center" style="vertical-align: middle;width: 170px;">
-                    Yeni Kişi Ekle
-                </td>
-            </tr>
-        </table>
+        <button style="width:213px; height:80px;margin: 10px 10px; padding:0px 0px; background-color: #3498db;" class="btn btn-primary btn-wide" ng-click="kisieskleModal()" ng-disabled="ackapakisi">
+            <font size="5">+</font>&nbsp;&nbsp;Yeni Kişi Ekle
+        </button>
+
 
         <table class="btn btn-primary btn-wide" ng-repeat="item in cevrekisiler" cellpadding="0" cellspacing="0"
                style=" background-color:#1abc9c; width: 215px; margin: 10px 10px; padding:0px 0px">
@@ -199,7 +192,7 @@
             </div>
             <div class="modal-footer">
                 <a type="button" class="btn btn-primary btn-wide" data-dismiss="modal">Vazgeç</a>
-                <a class="btn btn-primary btn-wide" ng-click="kisiekcevre()" data-dismiss="modal">Çevreye Ekle</a>
+                <a class="btn btn-primary btn-wide btn-info" ng-click="kisiekcevre()" data-dismiss="modal">Çevreye Ekle</a>
             </div>
         </digercevremodal>
     </div>

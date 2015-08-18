@@ -247,8 +247,8 @@
                 var _own_annotations = queryParams.own_annotations;
 
                 data = {
-                    chapter: _chapter,
-                    verses: _verses,
+                    chapters: _chapter,
+                    verse: _verses,
                     author: _author,
                     circles: _circles,
                     users: _users,
@@ -346,9 +346,8 @@
             delete annotation.highlights;
             $.extend(annotation, this.options.annotationData);
 
-            var tidBlock = annotator.getTranslationDivMap(annotation.translationId);
-            annotation.ranges[0].start = annotation.ranges[0].start.replace(tidBlock, "");
-            annotation.ranges[0].end = annotation.ranges[0].end.replace(tidBlock, "");
+            annotation.ranges[0].start = "";
+            annotation.ranges[0].end = "";
 
             annotation.content = annotation.text;
             annotation.colour = annotation.colour;

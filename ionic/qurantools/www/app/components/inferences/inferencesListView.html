@@ -1,7 +1,7 @@
 <body>
 <div ng-include="'app/components/partials/off_canvas_menu.html'"></div>
 <div class="container">
-    <div ng-include="'app/components/partials/navigation.html'"></div>
+    <div ng-include="'app/components/inferences/inferences_navigation.html'"></div>
     <div class="nav-bottom"></div>
     <div class="dialog dialog-warning" style="padding:0 20px 10px 20px"
          ng-if="allAnnotationsOpts.keyword ||filterTags.length >0|| annotationSearchAuthorSelection.length>0 ">
@@ -31,6 +31,9 @@
 
         </div>
     </div>
+
+    Örnek: <br><a href="#/inference/display/5/">Inference ID:5</a>
+    <br><a href="#/inference/display/6/">Inference ID:6</a><br>
     <div>
         <div ng-repeat="annotation in annotations" class="box">
             <div class="s_a_header">

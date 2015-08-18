@@ -30,11 +30,16 @@
                         </td>
                         <td style="width: 440px; height: 21px; border-left: dimgray 1px solid; padding-left: 10px; vertical-align: top;">
 
+                            <div class="well">
+                                Çeviri içeriğinde kelime
+                                <input type="text" ng-model="queryVerse.keyword" size="12" class="form-control" placeholder="Kelime  girin"/>
+                            </div>
+                            <hr>
                             <div class="well" ng-init="init()">
                                 <table>
                                     <td>
-                                        <i class="fa fa-toggle-on aktif" ng-if="query_own_annotations == true" ng-click="toggleDetailedSearchOwnAnnotations();"></i>
-                                        <i class="fa fa-toggle-on fa-rotate-180 inactive" ng-if="query_own_annotations == false" ng-click="toggleDetailedSearchOwnAnnotations();"></i>
+                                        <i class="fa fa-toggle-on aktif" ng-if="query_own_annotations == true || query_own_annotations == 'true'" ng-click="toggleDetailedSearchOwnAnnotations();"></i>
+                                        <i class="fa fa-toggle-on fa-rotate-180 inactive" ng-if="query_own_annotations == false || query_own_annotations == 'false'" ng-click="toggleDetailedSearchOwnAnnotations();"></i>
                                     </td>
                                     <td align="left" style="width:100%; padding-left: 15px;">      Benim notlarımı göster</td>
                                 </table>
@@ -43,7 +48,7 @@
                             <div class="well">
                                 Çevremdeki kişilere ait olan notlar
                                 <tags-input ng-model="query_circles" placeholder="Çevre Seçiniz" display-property="name" replace-spaces-with-dashes="false" min-length="1" add-from-autocomplete-only="true"  add-on-blur="false">
-                                    <auto-complete source="cevrelisteleForSearch()" load-on-empty="true" load-on-focus="true" ></auto-complete>
+                                    <auto-complete source="cevrelisteleForSearch()" load-on-empty="true" load-on-focus="true" select-first-match="false"></auto-complete>
                                 </tags-input>
                             </div>
 
