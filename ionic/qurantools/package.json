@@ -1,6 +1,6 @@
 {
   "name": "qurantools",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "qurantools: An Ionic project",
   "dependencies": {
     "gulp": "^3.5.6",
@@ -19,11 +19,17 @@
     "cordova-plugin-console",
     "cordova-plugin-whitelist",
     "cordova-plugin-splashscreen",
-    "com.ionic.keyboard",
     "org.apache.cordova.inappbrowser",
-    "org.apache.cordova.statusbar"
+    "org.apache.cordova.statusbar",
+    "org.apache.cordova.console",
+    "ionic-plugin-keyboard",
+    {
+      "locator": "https://github.com/filfat-Studios-AB/cordova-plugin-spinnerdialog",
+      "id": "com.filfatstudios.spinnerdialog"
+    }
   ],
   "cordovaPlatforms": [
-    "ios"
+    "ios",
+    "android"
   ]
 }

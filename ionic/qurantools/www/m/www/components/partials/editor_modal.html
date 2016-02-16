@@ -1,4 +1,4 @@
-<div class="modal modal-fullscreen">
+<div class="modal modal-fullscreen" >
 
     <ion-nav-bar animation="nav-title-slide-ios7" class="bar-balanced">
         <ion-nav-title></ion-nav-title>
@@ -15,7 +15,7 @@
         </ion-nav-buttons>
     </ion-nav-bar>
 
-    <ion-content overflow-scroll="true">
+    <ion-content delegate-handle="editor" >
         <div style="height:65px"></div>
 
         <strong>{{annotationModalDataVerse}}</strong>
@@ -26,57 +26,70 @@
             <textarea id="annotationData_text" ng-model="annotationModalData.text"
                       placeholder="Yorum ekleyin" style="height:80px; font-size:16px;" ></textarea>
         </label>
-        <tags-input ng-model="annotationModalDataTagsInput" display-property="name"
-                    placeholder="Etiket girin" replace-spaces-with-dashes="false"
-                    min-length="2">
-            <auto-complete source="loadTags($query)" min-length="2" select-first-match="false"></auto-complete>
-        </tags-input>
+
+        <div class="item item-divider">
+            Etiketler
+        </div>
+
+        <ion-list show-delete=true>
+            <ion-item ng-repeat="item in annotationModalDataTagsInput">
+                <ion-delete-button class="ion-minus-circled"
+                                   ng-click="annotationModalDataTagsInput.splice($index, 1)">
+                </ion-delete-button>
+                {{item.name}}
+
+            </ion-item>
+        </ion-list>
+
+
+        <button class="button button-block button-positive" ng-click="openModal('tagsearch');">
+            Etiket Ekle
+        </button>
+
         <br/>
 
-        <div class="list">
-
-            <label class="item item-radio">
-                <input type="radio" ng-model="annotationModalData.colour" value="yellow" style="float: left;">
-
-                <div class="item-content">
-                    <div class="tag_colour a_hl_yellow">
-
-                    </div>
-                    <div>
-                        Açıklama, hatırlatıcı
-                    </div>
-                </div>
-                <i class="radio-icon ion-checkmark" ng-if="annotationModalData.colour=='yellow'"></i>
-            </label>
-
-            <label class="item item-radio">
-                <input type="radio" ng-model="annotationModalData.colour" value="red" style="float: left;">
-
-                <div class="item-content">
-                    <div class="tag_colour a_hl_red">
-
-                    </div>
-                    <div>
-                        Tam olarak anlamadım
-                    </div>
-                </div>
-                <i class="radio-icon ion-checkmark" ng-if="annotationModalData.colour=='red'"></i>
-            </label>
-
-            <label class="item item-radio">
-                <input type="radio" ng-model="annotationModalData.colour" value="green" style="float: left;">
-
-                <div class="item-content">
-                    <div class="tag_colour a_hl_green">
-
-                    </div>
-                    <div>
-                        Önemli
-                    </div>
-                </div>
-                <i class="radio-icon ion-checkmark" ng-if="annotationModalData.colour=='green'"></i>
-            </label>
+        <div class="item item-divider">
+            Kategori
         </div>
-        <div style="height:20px"></div>
+        <ion-radio ng-value="'yellow'" ng-model="annotationModalData.colour" >
+            <div class="tag_colour a_hl_yellow"></div>Açıklama, hatırlatıcı
+        </ion-radio>
+        <ion-radio  ng-value="'red'" ng-model="annotationModalData.colour" >
+            <div class="tag_colour a_hl_red"></div>Tam olarak anlamadım
+        </ion-radio>
+        <ion-radio ng-value="'green'" ng-model="annotationModalData.colour" >
+            <div class="tag_colour a_hl_green"></div>Önemli
+        </ion-radio>
+        <div class="item item-divider">
+            Paylaşılan Çevreler
+        </div>
+
+        <div class="list">
+            <ion-checkbox  ng-repeat="item in mobileAnnotationEditorCircleListForSelection"
+                           ng-model="mobileAnnotationEditorCircleListForSelection[$index].selected"
+                           ng-checked="mobileAnnotationEditorCircleListForSelection[$index].selected"
+                    >
+                {{item.name}}
+            </ion-checkbox>
+        </div>
+
+        <div class="item item-divider">
+            Paylaşılan Kişiler
+        </div>
+
+        <ion-list show-delete=true>
+            <ion-item ng-repeat="item in ViewUsers">
+                <ion-delete-button class="ion-minus-circled"
+                                   ng-click="ViewUsers.splice($index, 1)">
+                </ion-delete-button>
+                {{item.name}}
+
+            </ion-item>
+        </ion-list>
+
+
+        <button class="button button-block button-positive" ng-click="openModal('viewusersearch');">
+            Kişi Ekle
+        </button>
     </ion-content>
 </div>

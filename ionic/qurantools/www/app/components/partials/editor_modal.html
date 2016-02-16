@@ -46,14 +46,14 @@
                     </td>
                     <td style="width: 300px; vertical-align: top; padding-left: 20px; margin-left: 20px;">
                         Hangi Çevreler Görebilir
-                        <tags-input ng-model="cevres" placeholder="Çevre Seçiniz" display-property="name"
+                        <tags-input ng-model="ViewCircles" placeholder="Çevre Seçiniz" display-property="name"
                                     replace-spaces-with-dashes="false"
                                     min-length="2" add-from-autocomplete-only="true"  add-on-blur="false">
                             <auto-complete source="cevrelistele()"  load-on-empty="true" load-on-focus="true" select-first-match="false"></auto-complete>
                         </tags-input>
 
                         Ayrıca Kimler Görebilir
-                        <tags-input ng-model="kisis" placeholder="Kişi Seçiniz" display-property="name"
+                        <tags-input ng-model="ViewUsers" placeholder="Kişi Seçiniz" display-property="name"
                                     replace-spaces-with-dashes="false"
                                     min-length="2" add-from-autocomplete-only="true">
                             <auto-complete source="kisilistele($query)" min-length="2" ></auto-complete>
@@ -81,8 +81,7 @@
                 <button type="button" data-dismiss="modal" aria-hidden="true" class="btn">
                     Vazgeç
                 </button>
-                <a href="#" class="btn btn-primary btn-wide" data-dismiss="modal"
-                   ng-click="submitEditor()">Tamam</a>
+                <button class="btn btn-primary btn-wide" ng-click="submitEditor()">Tamam</button>
             </div>
         </div>
     </div>

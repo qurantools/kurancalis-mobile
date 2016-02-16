@@ -10,7 +10,6 @@
                 <input type="hidden" ng-model="author_mask"/>
 
             </ion-nav-buttons>
-
             <ion-nav-buttons side="right">
                 <button class="button button-icon icon ion-search"
                         ng-click="openModal('all_annotations_filter')"></button>
@@ -91,7 +90,7 @@
                         <div class="item item-divider">
                             <div style="float: left">{{annotation.updated | date: 'dd/MM/yyyy HH:mm:ss'}}</div>
                             <div style="float: right">
-                                <button type="button" class="button button-balanced button-small" ng-click="showEditor(annotation)">
+                                <button type="button" class="button button-balanced button-small" ng-click="editAnnotation(annotation)">
                                     <i
                                             class="fa fa-pencil-square-o "></i>
                                 </button>
