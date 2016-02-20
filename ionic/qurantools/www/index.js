@@ -1,4 +1,4 @@
-var requiredModules = ['ionic', 'ngResource', 'ngRoute', 'facebook', 'restangular', 'LocalStorageModule', 'ngTagsInput', 'duScroll', 'directives.showVerse', 'directives.repeatCompleted', 'ui.select', 'myConfig', 'authorizationModule','ui.tinymce','djds4rce.angular-socialshare'];
+var requiredModules = ['ionic', 'ngResource', 'ngRoute', 'facebook', 'restangular', 'LocalStorageModule', 'ngTagsInput', 'duScroll', 'directives.showVerse', 'directives.repeatCompleted', 'ui.select', 'myConfig', 'authorizationModule','ui.tinymce','djds4rce.angular-socialshare', 'ngSanitize', 'com.2fdevs.videogular','com.2fdevs.videogular.plugins.controls','com.2fdevs.videogular.plugins.overlayplay','com.2fdevs.videogular.plugins.poster'];
 
 if (config_data.isMobile) {
     var mobileModules = [];//'ionic'
@@ -111,6 +111,7 @@ var app = angular.module('ionicApp', requiredModules)
                 }
             };
         }])
+
     .run(['$route', '$rootScope', '$location', '$ionicPlatform', function ($route, $rootScope, $location, $ionicPlatform) {
 
         $ionicPlatform.ready(function () {
@@ -230,6 +231,7 @@ if (config_data.isMobile == false) { //false
                 templateUrl: 'app/components/inferences/inferenceDisplayView.html',
                 reloadOnSearch: false
             })
+            
             .when('/', {
                 redirectTo: '/translations/'
             })
@@ -298,9 +300,29 @@ if (config_data.isMobile == false) { //false
                     .when('/chapter/:chapter/author/:author/', {
                         redirectTo: '/translations/?chapter=:chapter&verse=1&author=:author'
                     })
+                    .when('/m_inference/', {
+                        controller: 'InferenceListController',
+                        templateUrl: 'components/inferences/inferenceListMobileView.html',
+                        reloadOnSearch: false
+                    })
+                    .when('/m_inference/display/:inferenceId/', {
+                        controller: 'InferenceDisplayController',
+                        templateUrl: 'components/inferences/inferenceDisplayMobileView.html',
+                        reloadOnSearch: false
+                    })
+                    .when('/m_inference/new/', {
+                        controller: 'InferenceEditController',
+                        templateUrl: 'components/inferences/inferenceEditMobileView.html',
+                        reloadOnSearch: false
+                    })
+                    .when('/m_inference/edit/:inferenceId/', {
+                        controller: 'InferenceEditController',
+                        templateUrl: 'components/inferences/inferenceEditMobileView.html',
+                        reloadOnSearch: false
+					})
 					.when('/help/',{
                         controller:'HelpController',
-                        templateUrl:'app/components/help/index.html'
+                        templateUrl:'components/help/index.html'
                     })
                     .otherwise({
                         redirectTo: '/translations/'
@@ -474,6 +496,7 @@ app.factory('ChapterVerses', function ($resource) {
         $scope.showTutorial = 0;
         $scope.tutorialCarouselActive = 0;
 
+
         /* side panel */
         $scope.sidebarActive = 0;
         $scope.tagSearchResult = [];
@@ -525,7 +548,6 @@ app.factory('ChapterVerses', function ($resource) {
                 $('#tutorialCarousel').carousel('prev');
                 $scope.tutorialCarouselActive--;
             }
-
         }
 
         $scope.setPageTitle= function(title){
