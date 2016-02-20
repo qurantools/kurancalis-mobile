@@ -1,0 +1,17 @@
+{
+    "prepare_queue": {
+        "installed": [],
+        "uninstalled": []
+    },
+    "config_munge": {
+        "files": {}
+    },
+    "installed_plugins": {
+        "phonegap-facebook-plugin": {
+            "APP_ID": "400142910165594",
+            "APP_NAME": "Kuran Çalış",
+            "PACKAGE_NAME": "org.quran.qurantools"
+        }
+    },
+    "dependent_plugins": {}
+}
