@@ -9,8 +9,10 @@ fi
 
 deployment=$1
 release=$2
-SOURCE_DIR="/c/qurantools/web"
-TARGET_DIR="/c/qurantools/mobile/ionic/qurantools/www"
+SOURCE_DIR="/users/oksuztepe/Documents/work/dev/trunk/kurancalis.com/kurancalis-web"
+TARGET_DIR="/users/oksuztepe/Documents/work/dev/trunk/kurancalis.com/kurancalis-mobile/ionic/qurantools/www"
+#SOURCE_DIR="/c/qurantools/web"
+#TARGET_DIR="/c/qurantools/mobile/ionic/qurantools/www"
 
 #copy files
 cp -r ${SOURCE_DIR}/app ${SOURCE_DIR}/assets ${SOURCE_DIR}/index.js ${SOURCE_DIR}/m  ${TARGET_DIR}/
@@ -36,7 +38,7 @@ fi
 cd ${TARGET_DIR}/..
 ionic prepare ios
 ionic prepare android
-#sed -i ".bak" 's/android:label=\".*\"/android:label="Kuran �alı�"/' platforms/android/AndroidManifest.xml
+#sed -i ".bak" 's/android:label=\".*\"/android:label="Kuran ÃalÄ±Å"/' platforms/android/AndroidManifest.xml
 #sed -i ".bak" 's/<activity/<activity android:name="org.quran.qurantools.MainActivity"/' platforms/android/AndroidManifest.xml
 if [ $1 == "production" ] ; then
     #prepare android jar for store
