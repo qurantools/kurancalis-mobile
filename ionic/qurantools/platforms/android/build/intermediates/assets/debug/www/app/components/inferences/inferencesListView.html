@@ -1,0 +1,70 @@
+<body>
+<div ng-include="'app/components/partials/off_canvas_menu.html'"></div>
+<div class="container">
+    <div ng-include="'app/components/inferences/inferences_navigation.html'"></div>
+    <div class="nav-bottom"></div>
+    <div class="dialog dialog-warning" style="padding:0 20px 10px 20px"
+         ng-if="allInferencesOpts.keyword ||filterTags.length >0 ">
+        <div class="container" style="text-align: left;">
+            <div ng-if="allInferencesOpts.keyword"><strong>Kelime:</strong> {{allInferencesOpts.keyword}}</div>
+            <div ng-if="filterTags.length>0"><strong>Etiket:</strong>
+
+                <div ng-repeat="filterTag in filterTags" class="tag label label-info s_a_tag">{{filterTag.name}}</div>
+            </div>
+
+            <div ng-if="usersForSearch.length>0"><strong>Kişiler:</strong>
+
+                <div ng-repeat="kisi in usersForSearch" class="tag label label-info s_a_tag">{{kisi.name}}</div>
+            </div>
+
+            <div ng-if="circlesForSearch.length>0"><strong>Çevreler:</strong>
+
+                <div ng-repeat="cevre in circlesForSearch" class="tag label label-info s_a_tag">{{cevre.name}}</div>
+            </div>
+
+        </div>
+    </div>
+
+    <div>
+        <div ng-repeat="inference in inferences" class="box">
+            <div class="s_a_header">
+                <div style="float:right;">{{inference.userName | limitTo: 25}}</div>
+            </div>
+            <div class="small_space">&nbsp;</div>
+            <div>
+                <div style="float: left; width:200px; height:150px">
+                    <a  href="#/inference/display/{{inference.id}}/"><img style="max-width: 200px; max-height: 150px" src="{{inference.image}}"></a>
+                </div>
+                <div style="float: left" class="mycol2">
+                    <div style="text-align: center;" ><a href="#/inference/display/{{inference.id}}/"><h4 style="margin-top:0;">
+                        {{inference.title}}</h4>
+                    </a></div>
+                    <div style="padding-left:10px;">
+                        <span ng-bind-html="inference.brief | to_trusted"></span>
+                    </div>
+                </div>
+            </div>
+            <div style="clear: both"></div>
+            <div class="has-footer small_space">&nbsp;</div>
+            <div ng-repeat="inferenceTag in inference.tags" class="tag label label-info s_a_tag">
+                {{inferenceTag}}
+            </div>
+            <div class="small_space">&nbsp;</div>
+            <div class="row" style="padding:0 15px">
+                <div style="float: left">{{inference.updated | date: 'dd/MM/yyyy HH:mm:ss'}}</div>
+            </div>
+
+        </div>
+
+    </div>
+    <div style="text-align: center; padding-top:10px;" ng-if="allInferencesOpts.hasMore==true">
+        <button ng-click="get_all_inferences()" class="btn btn-info btn-hg">Daha fazla</button>
+    </div>
+
+    <br><br>
+
+    <div class="modal" id="inferencesFilterModal" ng-include="'app/components/inferences/inferences_search.html'"></div>
+
+
+</div>
+</body>

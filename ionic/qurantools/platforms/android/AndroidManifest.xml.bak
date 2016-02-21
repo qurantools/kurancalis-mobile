@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='utf-8'?>
+<manifest android:hardwareAccelerated="true" android:versionCode="10001" android:versionName="1.0.1" package="org.quran.qurantools" xmlns:android="http://schemas.android.com/apk/res/android">
+    <supports-screens android:anyDensity="true" android:largeScreens="true" android:normalScreens="true" android:resizeable="true" android:smallScreens="true" android:xlargeScreens="true" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <application android:hardwareAccelerated="true" android:icon="@drawable/icon" android:label="Kuran �alı�">
+        <activity android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale" android:label="Kuran �alı�" android:launchMode="singleTop" android:name="org.quran.qurantools.MainActivity">
+            <intent-filter android:label="Kuran �alı�">
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+    <uses-sdk android:minSdkVersion="10" android:targetSdkVersion="22" />
+</manifest>

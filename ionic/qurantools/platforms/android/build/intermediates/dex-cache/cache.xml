@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        jar="/Users/oksuztepe/Documents/work/dev/trunk/kurancalis.com/kurancalis-mobile/ionic/qurantools/platforms/android/build/intermediates/exploded-aar/android/CordovaLib/unspecified/debug/jars/classes.jar"
+        jumboMode="false"
+        revision="23.0.1"
+        sha1="28594a1a023885fedd7e55aef4d8617f2a7afe56">
+        <dex dex="/Users/oksuztepe/Documents/work/dev/trunk/kurancalis.com/kurancalis-mobile/ionic/qurantools/platforms/android/build/intermediates/pre-dexed/debug/classes-8e9af8cb1ae4e80538aa4bd390fd94ccb2e11b5b.jar" />
+    </item>
+
+</items>

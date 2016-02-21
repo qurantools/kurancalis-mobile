@@ -1,0 +1,16 @@
+<ion-side-menu side="left">
+    <ion-header-bar class="bar-assertive">
+        <h1 class="title">MENÜ</h1>
+    </ion-header-bar>
+    <ion-content>
+        <ul class="list">
+            <a href="#/app/chapter/1/author/{{author_mask}}/verse/1/" class="item" menu-close="">Sureler</a>
+            <a ng-if="user!=null"href="#/annotations/" class="item" menu-close="">Ayet Notlar</a>
+            <a ng-if="user!=null"href="#/m_inference/" class="item" menu-close="">Cikarim Notlari</a>
+            <a ng-if="user!=null"href="#/annotations/" class="item" menu-close="">Tüm Notlar</a>
+            <a href="#/help/" class="item" menu-close="">Yardım</a>
+            <a ng-if="user!=null" href ng-click="logOut()" class="item">Çıkış</a>
+            <a ng-if="user==null" href ng-click="login()" class="item" menu-close>Giriş</a>
+        </ul>
+    </ion-content>
+</ion-side-menu>

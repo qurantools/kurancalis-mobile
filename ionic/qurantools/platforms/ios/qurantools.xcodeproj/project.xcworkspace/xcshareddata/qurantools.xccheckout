@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>FC6FEF07-9426-4EE4-BC77-7FE5E22A5129</string>
+	<key>IDESourceControlProjectName</key>
+	<string>project</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>031A7142DDCD7F44BB4F1918C6520126C7AB5098</key>
+		<string>https://github.com/yuzondort/kurancalis-mobile.git</string>
+		<key>f8eae0be-c6ab-477d-aba2-97f73e75d04c</key>
+		<string>https://securewebserver.net/svn/dev</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>ionic/qurantools/platforms/ios/qurantools.xcodeproj/project.xcworkspace</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>031A7142DDCD7F44BB4F1918C6520126C7AB5098</key>
+		<string>../../../../../..</string>
+		<key>f8eae0be-c6ab-477d-aba2-97f73e75d04c</key>
+		<string>../../../../../../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/yuzondort/kurancalis-mobile.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>031A7142DDCD7F44BB4F1918C6520126C7AB5098</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.subversion</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>f8eae0be-c6ab-477d-aba2-97f73e75d04c</string>
+			<key>IDESourceControlWCCName</key>
+			<string></string>
+		</dict>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>031A7142DDCD7F44BB4F1918C6520126C7AB5098</string>
+			<key>IDESourceControlWCCName</key>
+			<string>kurancalis-mobile</string>
+		</dict>
+	</array>
+</dict>
+</plist>

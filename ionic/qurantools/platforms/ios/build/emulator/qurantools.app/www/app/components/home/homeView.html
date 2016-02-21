@@ -1,0 +1,202 @@
+<body>
+<div class="container">
+    <div ng-include="'app/components/partials/navigation.html'"></div>
+    <div ng-include="'app/components/partials/kelimeal.htm'"></div>
+    <div ng-include="'app/components/partials/bookmark.htm'"></div>
+    <div class="nav-bottom"></div>
+    <div class="row">
+        <h2 style="text-align: center">{{chapter_title}}</h2>
+        <div class="col-xs-12" id="translations">
+            <div ng-repeat="verse in verses">
+                <div class="well translations col-xs-12" id="v_{{verse.id}}">
+                    <div class="row">
+                        <div ng-repeat="translation in verse.translations">
+                            <div class="col-xs-1" ng-if="$first" style="text-align: center" ng-show="!showSingleAuthor">
+                                <div class="row">
+                                    <div class="translation_nav_col1">
+                                        <a href ng-click="scrollToVerse('{{verse.id-1}}')"><i class="fa fa-caret-up fa-2x"></i></a>
+                                    </div>
+                                    <div></div>
+                                </div>
+                                <div class="row">
+                                    <div class="translation_nav_col1" style="font-size:20px;">
+                                        {{translation.chapter}}:{{translation.verse}}
+                                    </div>
+                                    <div><img src="assets/img/sticky-note.png" width="20" height="20" ng-if="verseHasAnnotation(verse.id)" ng-click="showVerseAnnotations({{verse.id}})"></div>
+                                </div>
+                                <div class="row">
+                                    <div class="translation_nav_col1">
+                                        <a href ng-click="scrollToVerse('{{verse.id+1}}')"><i class="fa fa-caret-down fa-2x"></i></a>
+                                    </div>
+                                  <div>
+                                    <a ng-click="popoveropen()" tabindex="0" role="button" data-toggle="popover"  data-content="
+                                    <div class='form-control' style='width:220px; height:auto'>
+                                    <a href><div style='width:100%; height: 40px; padding-top:8px;' ng-click='linkcreate({{translation.chapter}},{{translation.verse}})' data-target='#openlink' data-toggle='modal'><i class='fa fa-crosshairs' style='font-size: 1.3em'></i>&nbsp;&nbsp;&nbsp;&nbsp;Kelime Meali</div></a>
+                                    <hr style='padding: 0; margin-top:0 !important; margin-bottom:0 !important; height:1px; width:100%' />
+                                    <a href><div style='width:100%; height: 40px; padding-top:8px;' data-target='#bookmark' data-toggle='modal' ng-click='openAddBookMarkModal({{translation.chapter}},{{translation.verse}},{{verse.id}})'><i class='fa fa-bookmark' style='font-size: 1.3em'></i>&nbsp;&nbsp;&nbsp;&nbsp;Burada Kaldım</div></a>
+                                    <hr style='display: none; padding: 0; margin-top:0 !important; margin-bottom:0 !important; height:1px; width:100%' />
+                                    </div>
+                                    " data-html="true"><i data-toggle="popover"  class="fa fa-ellipsis-h large_icon" ></i></a>
+                                   
+                                    </div>
+                                   
+                                </div>
+                            </div>
+                            
+                            <div class="col-xs-1" ng-if="$first" style="text-align: center" ng-show="showSingleAuthor">
+                                <div class="chapter_verse_number">{{translation.chapter}}:{{translation.verse}} <img src="assets/img/sticky-note.png" width="25" height="25" ng-if="verseHasAnnotation(verse.id)" ng-click="showVerseAnnotations({{verse.id}})"></div>
+                            </div>
+                            <div class="col-xs-11" id="t_{{translation.id}}" style="float: right">
+                                <div class="col-xs-3 authorDiv_{{authorMap[translation.authorId].color}}"
+                                     ng-show="!showSingleAuthor">
+                                    <span class="author"><a href ng-click="singleAuthorView({{translation.authorId}},{{verse.id}})">(-)</a></span>{{authorMap[translation.authorId].name}}
+                                </div>
+                                <div class="col-xs-3 authorDiv_{{authorMap[translation.authorId].color}}"
+                                     ng-show="selectedSingleAuthor==translation.authorId">
+                                    <span class="author"><a href ng-click="multipleAuthorsView({{verse.id}})">(+)</a></span>{{authorMap[translation.authorId].name}}
+                                    | 
+                                    <a ng-click="popoveropen()" tabindex="0" role="button" data-toggle="popover"  data-content="
+                                    <div class='form-control' style='width:220px; height:auto'>
+                                    <a href><div style='width:100%' ng-click='linkcreate({{translation.chapter}},{{translation.verse}})' data-target='#openlink' data-toggle='modal'>Kelime Meali</div></a>
+                                    <hr style='width:100%' />
+                                    <a href><div style='width:100%' data-target='#bookmark' data-toggle='modal' ng-click='openAddBookMarkModal({{translation.chapter}},{{translation.verse}},{{verse.id}})'>Burada Kaldım</div></a>
+                                    </div>" data-html="true"><i data-toggle="popover" class="fa fa-ellipsis-h large_icon" ></i></a>
+                                  
+                                </div>
+                                <div id="tt_{{translation.id}}" ng-show="selectedSingleAuthor==translation.authorId || !showSingleAuthor"
+                                     class="col-xs-9"
+                                     ng-class="{translation_rtl: authorMap[translation.authorId].language=='ar', translation_content: authorMap[translation.authorId].language!='ar'}"><span
+                                        ng-bind-html="translation.content | with_footnote_link:translation.id:translation.authorId | with_next_link:translation.chapter:translation.authorId:translation.id | to_trusted"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-xs-8" style="float: right" ng-if="!$last && !showSingleAuthor">
+                                <hr/>
+                            </div>
+
+                            <div class="col-xs-11" style="float: right">
+                                <show-verse data="showVerseData.data" ng-if="showVerseAtTranslation==translation.id"
+                                            class="showVerseData"></show-verse>
+                            </div>
+                        </div>
+
+
+                    </div>
+
+                    <div id="verseTags_{{verse.id}}"
+                          style="text-align: right;width:100%">
+                        <hr/>
+                        <button ng-repeat="verseTag in verseTagsJSON[verse.id].tags" class="btn btn-xs btn-info verse_tag"
+                                ng-click="goToVerseTag(verse.id,verseTag.tag)" onclick="verseTagClicked(this)">
+                            {{verseTag.tag}}</button>
+                    </div>
+                    <div ng-if="targetVerseForTagContent==verse.id" class="verse_tag_content">
+                        <h4>Etiketli Ayetler:</h4>
+                        <a style="float: right;" href ng-click="displayAnnotationsWithTag()">Etiketli Notları
+                            Göster>></a>
+                        <select class="verseTagContentAuthor"
+                                ng-options="author.id as author.name for author in authors | filter:authorFilter"
+                                ng-model="verseTagContentAuthor"
+                                ng-change="verseTagContentAuthorUpdate(verseTagContentAuthor)">
+                        </select>
+
+
+                        <div ng-repeat="verseTagContent in verseTagContents">
+                            <div ng-repeat="verseTagContentTranslation in verseTagContent.translations"
+                                 ng-if="verseTagContentTranslation.authorId==verseTagContentAuthor">
+                                <strong>{{verseTagContentTranslation.verseId / 1000 |
+                                    number:0}}:{{verseTagContentTranslation.verseId % 1000}}</strong>
+                                <span ng-class="{translation_rtl: authorMap[verseTagContentTranslation.authorId].language=='ar'}">{{verseTagContentTranslation.content}}</span>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /row-->
+
+</div>
+<!-- /container-->
+
+
+<div ng-include="'app/components/partials/authors_modal.html'"></div>
+<div ng-include="'app/components/partials/editor_modal.html'"></div>
+<div ng-include="'app/components/partials/detailed_search.html'"></div>
+<div ng-include="'app/components/partials/delete_annotation_alert.html'"></div>
+<div class="cd-panel from-right" id="cd-panel-right">
+    <!--     <a href="#0" class="cd-panel-close">Close</a>-->
+    <div class="cd-panel-container">
+
+
+        <div class="cd-panel-content">
+            <div style="height:50px"></div>
+            <div style="padding-bottom:10px;">
+                <button onclick="closePanel()" class="btn btn-default btn-xs" style="float: left; height: 30px;"><i
+                        class="fa fa-chevron-right large_icon"></i></button>
+                <button class="btn btn-warning btn-xs" ng-click="resetAnnotationFilter()"
+                        ng-show='filterSingleAnnotation || searchText!=""' style="float: right; height: 30px;">
+                    <i
+                            class="fa fa-trash-o"></i>
+                    Filtreyi kaldır</button>
+                <div style="display: block;">
+                    <!--    <input ng-model="searchText" />-->
+                    <input style="width: 150px; height: 30px;" type="text" placeholder="ara" ng-model="searchText"
+                           ng-change="resetFilteredAnnotations()">
+                    <select ng-model="filterOrderSelect" ng-init="filterOrderSelect='verseId'"
+                            ng-change="annotationFilterOrder(filterOrderSelect)" style="height: 30px;">
+                        <option value="verseId">Ayet</option>
+                        <option value="-updated">Zaman</option>
+                    </select>
+                </div>
+
+
+            </div>
+            <div ng-repeat="annotation in annotations | filter:annotationFilter | filter: annotationTextSearch"
+                 class="sidebar_annotation box"
+                 ng-click="scrollToElmnt('t_'+annotation.translationId)">
+                <!-- s_a -->
+                <div class="s_a_header">
+                    {{annotation.verseId / 1000 | number:0}}:{{annotation.verseId % 1000}}
+                    <div style="float:right;">{{annotation.userName | limitTo: 25}}</div>
+                </div>
+                <div>
+                    <blockquote>{{annotation.quote}}</blockquote>
+                </div>
+                <div class="s_a_text">
+                    <span ng-bind-html="annotation.text | newLineAllowed | to_trusted"></span>
+                </div>
+                <div ng-repeat="annotationTag in annotation.tags" class="tag label label-info s_a_tag">
+                    {{annotationTag}}
+                </div>
+                <div class="row" style="padding:0 15px">
+                    <div style="float: left">{{annotation.updated | date: 'dd/MM/yyyy HH:mm:ss'}}</div>
+                    <div style="float: right">
+                        <button type="button" class="btn btn-primary btn-xs" ng-click="editAnnotation($index)"
+                                ng-if="annotation.userId==user.id"><i
+                                class="fa fa-pencil-square-o"></i>
+                        </button>
+                        <button type="button" class="btn btn-danger btn-xs" ng-click="deleteAnnotation($index)"
+                                ng-if="annotation.userId==user.id"><i
+                                class="fa fa-trash-o"></i></button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <!-- cd-panel-content -->
+    </div>
+    <!-- cd-panel-container -->
+</div>
+<!-- cd-panel -->
+
+
+<div ng-include="'app/components/partials/off_canvas_menu.html'"></div>
+<div ng-include="'app/components/partials/tutorial_modal.html'">
+                                        
+                                    </div>
+
+       
+
+</body>

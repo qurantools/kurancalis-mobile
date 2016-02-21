@@ -1,0 +1,40 @@
+2015-08-17 22:35:00.600 qurantools[19572:74214] DiskCookieStorage changing policy from 2 to 0, cookie file: file:///Users/kurtulus/Library/Developer/CoreSimulator/Devices/471378AF-77CA-4CB2-ABE5-527B5C4A7DFB/data/Containers/Data/Application/B7735C0B-54B0-4363-8D02-C5CCD9274E29/Library/Cookies/Cookies.binarycookies
+2015-08-17 22:35:00.871 qurantools[19572:74214] Apache Cordova native platform version 3.8.0 is starting.
+2015-08-17 22:35:00.873 qurantools[19572:74214] Multi-tasking -> Device: YES, App: YES
+2015-08-17 22:35:00.878 qurantools[19572:74214] Unlimited access to network resources
+2015-08-17 22:35:01.293 qurantools[19572:74214] Resetting plugins due to page load.
+2015-08-17 22:35:02.092 qurantools[19572:74214] Finished load of: file:///Users/kurtulus/Library/Developer/CoreSimulator/Devices/471378AF-77CA-4CB2-ABE5-527B5C4A7DFB/data/Containers/Bundle/Application/63383B4C-4259-4A24-B38B-72A6A5C319F9/qurantools.app/www/m/www/index.html#/translations/?author=1040&chapter=1&verse=1&verseKeyword=&ownAnnotations&circles=W10%3D&users=W10%3D
+2015-08-17 22:52:48.130 qurantools[24439:90801] Apache Cordova native platform version 3.8.0 is starting.
+2015-08-17 22:52:48.132 qurantools[24439:90801] Multi-tasking -> Device: YES, App: YES
+2015-08-17 22:52:48.134 qurantools[24439:90801] Unlimited access to network resources
+2015-08-17 22:52:48.575 qurantools[24439:90801] Resetting plugins due to page load.
+2015-08-17 22:52:49.372 qurantools[24439:90801] Finished load of: file:///Users/kurtulus/Library/Developer/CoreSimulator/Devices/471378AF-77CA-4CB2-ABE5-527B5C4A7DFB/data/Containers/Bundle/Application/D1D4DD27-9EF2-4497-A16E-2FE9323EE8DB/qurantools.app/www/m/www/index.html#/translations/?author=1040&chapter=3&verse=0&verseKeyword=&ownAnnotations&circles=W10%3D&users=W10%3D
+2015-08-17 22:53:37.649 qurantools[24439:90841] void SendDelegateMessage(NSInvocation *): delegate (webView:runJavaScriptAlertPanelWithMessage:initiatedByFrame:) failed to return after waiting 10 seconds. main run loop mode: kCFRunLoopDefaultMode
+2015-08-17 22:57:17.741 qurantools[26128:95852] Apache Cordova native platform version 3.8.0 is starting.
+2015-08-17 22:57:17.742 qurantools[26128:95852] Multi-tasking -> Device: YES, App: YES
+2015-08-17 22:57:17.744 qurantools[26128:95852] Unlimited access to network resources
+2015-08-17 22:57:17.866 qurantools[26128:95852] [CDVTimer][keyboard] 0.081956ms
+2015-08-17 22:57:17.866 qurantools[26128:95852] [CDVTimer][TotalPluginStartup] 1.410961ms
+2015-08-17 22:57:17.995 qurantools[26128:95852] Resetting plugins due to page load.
+2015-08-17 22:57:18.901 qurantools[26128:95852] Finished load of: file:///Users/kurtulus/Library/Developer/CoreSimulator/Devices/471378AF-77CA-4CB2-ABE5-527B5C4A7DFB/data/Containers/Bundle/Application/A0AE2D38-C771-4FE6-809D-F8454B327F08/qurantools.app/www/m/www/index.html#/translations/?author=1040&chapter=3&verse=0&verseKeyword=&ownAnnotations&circles=W10%3D&users=W10%3D
+2015-08-17 22:57:51.392 qurantools[26128:95920] void SendDelegateMessage(NSInvocation *): delegate (webView:runJavaScriptAlertPanelWithMessage:initiatedByFrame:) failed to return after waiting 10 seconds. main run loop mode: kCFRunLoopDefaultMode
+2015-08-17 22:59:24.800 qurantools[26128:95852] Resetting plugins due to page load.
+2015-08-17 22:59:25.606 qurantools[26128:95852] Finished load of: https://www.facebook.com/connect/login_success.html#access_token=CAAFr7YgFEloBALEB5glFZBKnftgjRcpIsHSZAZB1XRUzO3SRay2nXfRueKExwSBZBj9YekCIf4uyo6TH0GSjtiVCpww5MxBG1TVws08LTSVGZBN4xTyYpZBVm6JDpXv6dppkt7WhnvH7iEIXuvWQXGPhIwGAJ20QnzGF1XNR3Amev94cH9KTQrp5uCQxic4As5gTCnUHY0ZAwZDZD&expires_in=5177042
+2015-08-18 00:50:41.025 qurantools[47174:173221] Apache Cordova native platform version 3.8.0 is starting.
+2015-08-18 00:50:41.027 qurantools[47174:173221] Multi-tasking -> Device: YES, App: YES
+2015-08-18 00:50:41.034 qurantools[47174:173221] Unlimited access to network resources
+2015-08-18 00:50:41.180 qurantools[47174:173221] [CDVTimer][keyboard] 0.082970ms
+2015-08-18 00:50:41.180 qurantools[47174:173221] [CDVTimer][TotalPluginStartup] 0.329971ms
+2015-08-18 00:50:41.683 qurantools[47174:173221] Resetting plugins due to page load.
+2015-08-18 00:50:42.888 qurantools[47174:173221] Finished load of: file:///Users/kurtulus/Library/Developer/CoreSimulator/Devices/471378AF-77CA-4CB2-ABE5-527B5C4A7DFB/data/Containers/Bundle/Application/3101BB9D-2B98-4821-AD56-CC238D84F110/qurantools.app/www/m/www/index.html#/translations/?author=1040&chapter=1&verse=33&verseKeyword=&ownAnnotations&circles=W10%3D&users=W10%3D
+2015-08-18 00:52:21.761 qurantools[47174:173221] Resetting plugins due to page load.
+2015-08-18 00:52:22.642 qurantools[47174:173221] Finished load of: https://www.facebook.com/connect/login_success.html#access_token=CAAFr7YgFEloBAL6b8HZBWu8CvcqycoaLpckAe0JRDiBNRIQZAA2VxD4WBJkOJEzSo2OsDHuIWSFuCsHv2zU0cQop4cH8XTZCTVZAJJ0piHDVD1U1BYIY0hFwemT41wfwEnAn74jnan0Yyrb2q1GBd6dWOD4SlzceYpuvMxQWHTvGKluWD70O2gjdQZBcxMSF5bz7zWY7fVwZDZD&expires_in=5170265
+2015-08-18 20:36:38.520 qurantools[63178:236377] Apache Cordova native platform version 3.8.0 is starting.
+2015-08-18 20:36:38.521 qurantools[63178:236377] Multi-tasking -> Device: YES, App: YES
+2015-08-18 20:36:38.524 qurantools[63178:236377] Unlimited access to network resources
+2015-08-18 20:36:38.739 qurantools[63178:236377] [CDVTimer][keyboard] 0.087023ms
+2015-08-18 20:36:38.739 qurantools[63178:236377] [CDVTimer][TotalPluginStartup] 2.901971ms
+2015-08-18 20:36:39.456 qurantools[63178:236377] Resetting plugins due to page load.
+2015-08-18 20:36:40.846 qurantools[63178:236377] Finished load of: file:///Users/kurtulus/Library/Developer/CoreSimulator/Devices/471378AF-77CA-4CB2-ABE5-527B5C4A7DFB/data/Containers/Bundle/Application/25037637-A2EA-44A0-9867-D0E20F2CAAE8/qurantools.app/www/m/www/index.html#/translations/?author=1040&chapter=1&verse=33&verseKeyword=&ownAnnotations&circles=W10%3D&users=W10%3D
+2015-08-18 20:36:54.069 qurantools[63178:236377] Setting the WebView's frame to {{0, 0}, {375, 623}}
+2015-08-18 20:36:54.100 qurantools[63178:236377] THREAD WARNING: ['InAppBrowser'] took '189.330078' ms. Plugin should use a background thread.

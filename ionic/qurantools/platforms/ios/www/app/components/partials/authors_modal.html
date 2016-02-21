@@ -1,0 +1,25 @@
+<div class="modal" id="myModal">
+    <div class="modal-dialog fixed-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+
+                <h4 class="modal-title">Yazarlar</h4>
+            </div>
+
+            <div class="modal-body">
+                <ul class="selectable_list">
+                    <li ng-repeat="author in authors"
+                        ng-click="detailedSearchAuthorToggleSelection(author.id)"
+                        ng-class="{ 'selected_list_item': detailedSearchAuthorSelection.indexOf(author.id) > -1}">
+                        {{author.name}}
+                    </li>
+                </ul>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" data-dismiss="modal" aria-hidden="true" class="btn">Vazgeç</button>
+                <a href="#" class="btn btn-primary btn-wide" data-dismiss="modal" ng-click="goToChapter()">Tamam</a>
+            </div>
+        </div>
+    </div>
+</div>
