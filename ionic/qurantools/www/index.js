@@ -229,7 +229,8 @@ if (config_data.isMobile == false) { //false
             .when('/inference/display/:inferenceId/', {
                 controller: 'InferenceDisplayController',
                 templateUrl: 'app/components/inferences/inferenceDisplayView.html',
-                reloadOnSearch: false
+                reloadOnSearch: false,
+                pageTitle: 'Kuran Çalış - Çıkarım Notu'
             })
             
             .when('/', {
@@ -287,49 +288,61 @@ if (config_data.isMobile == false) { //false
                     .when('/translations/', {
                         controller: 'HomeCtrl',
                         templateUrl: 'components/home/home.html',
-                        reloadOnSearch: false
+                        reloadOnSearch: false,
+                        pageTitle: 'Kuran Çalış - Sure'
                     })
                     .when('/annotations/', {
                         controller: 'AnnotationsCtrl',
                         templateUrl: 'components/annotations/all_annotations.html',
-                        reloadOnSearch: false
-                    })
-                    .when('/', {
-                        redirectTo: '/login/'
+                        reloadOnSearch: false,
+                        pageTitle: 'Kuran Çalış - Ayet Notları'
                     })
                     .when('/chapter/:chapter/author/:author/', {
-                        redirectTo: '/translations/?chapter=:chapter&verse=1&author=:author'
+                        redirectTo: '/translations/?chapter=:chapter&verse=1&author=:author',
+                        pageTitle: 'Kuran Çalış'
                     })
-                    .when('/m_inference/', {
+                    .when('/inferences/', {
                         controller: 'InferenceListController',
                         templateUrl: 'components/inferences/inferenceListMobileView.html',
-                        reloadOnSearch: false
+                        reloadOnSearch: false,
+                        pageTitle: 'Kuran Çalış - Çıkarım Notları'
                     })
-                    .when('/m_inference/display/:inferenceId/', {
+                    .when('/inference/display/:inferenceId/', {
                         controller: 'InferenceDisplayController',
                         templateUrl: 'components/inferences/inferenceDisplayMobileView.html',
-                        reloadOnSearch: false
+                        reloadOnSearch: false,
+                        pageTitle: 'Kuran Çalış'
                     })
-                    .when('/m_inference/new/', {
+                    .when('/inference/new/', {
                         controller: 'InferenceEditController',
                         templateUrl: 'components/inferences/inferenceEditMobileView.html',
-                        reloadOnSearch: false
+                        reloadOnSearch: false,
+                        pageTitle: 'Kuran Çalış - Yeni Çıkarım Notu'
                     })
-                    .when('/m_inference/edit/:inferenceId/', {
+                    .when('/inference/edit/:inferenceId/', {
                         controller: 'InferenceEditController',
                         templateUrl: 'components/inferences/inferenceEditMobileView.html',
-                        reloadOnSearch: false
+                        reloadOnSearch: false,
+                        pageTitle: 'Kuran Çalış'
 					})
 					.when('/help/',{
                         controller:'HelpController',
-                        templateUrl:'components/help/index.html'
+                        templateUrl:'components/help/index.html',
+                        pageTitle: 'Kuran Çalış - Yardım'
                     })
                     .when('/login/',{
                         controller:'LoginController',
-                        templateUrl:'components/login/login.html'
+                        templateUrl:'components/login/login.html',
+                        pageTitle: 'Kuran Çalış - Giriş'
+                    })
+                    .when('/', {
+                        redirectTo: '/translations/',
+                        pageTitle: 'Kuran Çalış'
                     })
                     .otherwise({
-                        redirectTo: '/login/'
+                        redirectTo: '/translations/',
+                        pageTitle: 'Kuran Çalış'
+
                     });
 
 
@@ -537,7 +550,6 @@ app.factory('ChapterVerses', function ($resource) {
                 }
             });
 
-
         }
 
         $scope.tutorial = function (parameter) {
@@ -600,7 +612,6 @@ app.factory('ChapterVerses', function ($resource) {
                 $scope.$broadcast('userInfoReady');
             }
         }
-
 
         //general logout.
         $scope.onFacebookLogOutSuccess = function (responseData) {
@@ -1043,8 +1054,6 @@ app.factory('ChapterVerses', function ($resource) {
 
         $scope.initializeCircleLists = function () {
 
-
-
             Restangular.all("circles").customGET("", {}, {'access_token': $scope.access_token}).then(function (circleList) {
 
                 $scope.extendedCircles = [];
@@ -1089,7 +1098,13 @@ app.factory('ChapterVerses', function ($resource) {
                 for (var index = 0; index < $scope.mobileAllAnnotationsSearchCircleListForSelection.length; ++index) {
                     $scope.mobileAllAnnotationsSearchCircleListForSelection[index].selected=false;
                 }
-
+                // initialize mobileAllInferencessSearchCircleListForSelection
+                $scope.mobileAllInferencesSearchCircleListForSelection = [];
+                Array.prototype.push.apply($scope.mobileAllInferencesSearchCircleListForSelection, $scope.extendedCirclesForSearch);
+                //add isSelected property for mobile.
+                for (var index = 0; index < $scope.mobileAllInferencesSearchCircleListForSelection.length; ++index) {
+                    $scope.mobileAllInferencesSearchCircleListForSelection[index].selected = false;
+                }
                 $scope.$broadcast("circleLists ready");
 
             });
@@ -1264,7 +1279,11 @@ app.factory('ChapterVerses', function ($resource) {
                     });
                 }
             });
-            
+
+            if (!$scope.checkUserLoginStatus()){
+                $location.path('login/');
+            }
+
         };//end of init controller
 
 

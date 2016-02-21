@@ -26,6 +26,14 @@
     {
       "locator": "https://github.com/filfat-Studios-AB/cordova-plugin-spinnerdialog",
       "id": "com.filfatstudios.spinnerdialog"
+    },
+    {
+      "variables": {
+        "APP_ID": "400142910165594",
+        "APP_NAME": "Kuran Calis"
+      },
+      "locator": "https://github.com/Wizcorp/phonegap-facebook-plugin.git",
+      "id": "phonegap-facebook-plugin"
     }
   ],
   "cordovaPlatforms": [

@@ -21,6 +21,7 @@
 
   <feature name="StatusBar">
     <param name="ios-package" value="CDVStatusBar" onload="true"/>
+    <param name="ios-package" value="FacebookConnectPlugin" />
   </feature>
   <platform name="ios">
     <icon src="resources/ios/icon/icon.png" width="57" height="57"/>

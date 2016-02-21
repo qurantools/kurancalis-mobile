@@ -1453,7 +1453,7 @@ angular.module('ionicApp')
             });
 
             $scope.$on('userInfoReady', function handler() {
-                $scope.initializeActionSheetButtons()
+                $scope.initializeActionSheetButtons();
             });
 
             $scope.$on('logout', function handler() {
@@ -1474,6 +1474,10 @@ angular.module('ionicApp')
             });
 
             $scope.initializeActionSheetButtons();
+
+            $timeout(function() {
+                $scope.$broadcast("displayTutorial",{id:"chapter"})
+            },2000);
 
         };
 
