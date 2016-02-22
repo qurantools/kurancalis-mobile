@@ -60,5 +60,14 @@
             "APP_ID": "400142910165594",
             "APP_NAME": "Kuran Çalış"
         }
+    },
+    "cordova-plugin-x-socialsharing": {
+        "source": {
+            "type": "git",
+            "url": "https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin.git",
+            "subdir": "."
+        },
+        "is_top_level": true,
+        "variables": {}
     }
 }

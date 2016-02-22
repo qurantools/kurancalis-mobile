@@ -108,6 +108,9 @@
             "APP_ID": "400142910165594",
             "APP_NAME": "Kuran Çalış",
             "PACKAGE_NAME": "org.quran.qurantools"
+        },
+        "cordova-plugin-x-socialsharing": {
+            "PACKAGE_NAME": "org.quran.qurantools"
         }
     },
     "dependent_plugins": {}

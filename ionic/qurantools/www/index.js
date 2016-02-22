@@ -1,4 +1,4 @@
-var requiredModules = ['ionic', 'ngResource', 'ngRoute', 'facebook', 'restangular', 'LocalStorageModule', 'ngTagsInput', 'duScroll', 'directives.showVerse', 'directives.repeatCompleted', 'ui.select', 'myConfig', 'authorizationModule','ui.tinymce','djds4rce.angular-socialshare', 'ngSanitize', 'com.2fdevs.videogular','com.2fdevs.videogular.plugins.controls','com.2fdevs.videogular.plugins.overlayplay','com.2fdevs.videogular.plugins.poster'];
+var requiredModules = ['ionic', 'ngResource', 'ngRoute', 'facebook', 'restangular', 'LocalStorageModule', 'ngTagsInput', 'duScroll', 'directives.showVerse', 'directives.repeatCompleted', 'ui.select', 'myConfig', 'authorizationModule','ui.tinymce','djds4rce.angular-socialshare', 'ngSanitize', 'com.2fdevs.videogular','com.2fdevs.videogular.plugins.controls','com.2fdevs.videogular.plugins.overlayplay','com.2fdevs.videogular.plugins.poster', 'ngCordova'];
 
 if (config_data.isMobile) {
     var mobileModules = [];//'ionic'
@@ -288,42 +288,35 @@ if (config_data.isMobile == false) { //false
                     .when('/translations/', {
                         controller: 'HomeCtrl',
                         templateUrl: 'components/home/home.html',
-                        reloadOnSearch: false,
-                        pageTitle: 'Kuran Çalış - Sure'
+                        reloadOnSearch: false
                     })
                     .when('/annotations/', {
                         controller: 'AnnotationsCtrl',
                         templateUrl: 'components/annotations/all_annotations.html',
-                        reloadOnSearch: false,
-                        pageTitle: 'Kuran Çalış - Ayet Notları'
+                        reloadOnSearch: false
                     })
                     .when('/chapter/:chapter/author/:author/', {
-                        redirectTo: '/translations/?chapter=:chapter&verse=1&author=:author',
-                        pageTitle: 'Kuran Çalış'
+                        redirectTo: '/translations/?chapter=:chapter&verse=1&author=:author'
                     })
                     .when('/inferences/', {
                         controller: 'InferenceListController',
                         templateUrl: 'components/inferences/inferenceListMobileView.html',
-                        reloadOnSearch: false,
-                        pageTitle: 'Kuran Çalış - Çıkarım Notları'
+                        reloadOnSearch: false
                     })
                     .when('/inference/display/:inferenceId/', {
                         controller: 'InferenceDisplayController',
                         templateUrl: 'components/inferences/inferenceDisplayMobileView.html',
-                        reloadOnSearch: false,
-                        pageTitle: 'Kuran Çalış'
+                        reloadOnSearch: false
                     })
                     .when('/inference/new/', {
                         controller: 'InferenceEditController',
                         templateUrl: 'components/inferences/inferenceEditMobileView.html',
-                        reloadOnSearch: false,
-                        pageTitle: 'Kuran Çalış - Yeni Çıkarım Notu'
+                        reloadOnSearch: false
                     })
                     .when('/inference/edit/:inferenceId/', {
                         controller: 'InferenceEditController',
                         templateUrl: 'components/inferences/inferenceEditMobileView.html',
-                        reloadOnSearch: false,
-                        pageTitle: 'Kuran Çalış'
+                        reloadOnSearch: false
 					})
 					.when('/help/',{
                         controller:'HelpController',
@@ -336,13 +329,10 @@ if (config_data.isMobile == false) { //false
                         pageTitle: 'Kuran Çalış - Giriş'
                     })
                     .when('/', {
-                        redirectTo: '/translations/',
-                        pageTitle: 'Kuran Çalış'
+                        redirectTo: '/translations/'
                     })
                     .otherwise({
-                        redirectTo: '/translations/',
-                        pageTitle: 'Kuran Çalış'
-
+                        redirectTo: '/translations/'
                     });
 
 
@@ -625,8 +615,7 @@ app.factory('ChapterVerses', function ($resource) {
                 localStorageService.remove('chapter_view_parameters');
                 localStorageService.remove('annotations_view_parameters');
                 $scope.$broadcast('logout', responseData);
-
-                window.location.href = '#/';
+                $location.path('/login');
             }
         }
 
