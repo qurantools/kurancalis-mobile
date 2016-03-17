@@ -12,10 +12,10 @@ release=$2
 SOURCE_DIR="/users/oksuztepe/Documents/work/dev/trunk/kurancalis.com/kurancalis-web"
 TARGET_DIR="/users/oksuztepe/Documents/work/dev/trunk/kurancalis.com/kurancalis-mobile/ionic/qurantools/www"
 #SOURCE_DIR="/c/qurantools/web"
-#TARGET_DIR="/c/qurantools/mobile/ionic/qurantools/www"
+#TARGET_DIR="/c/qurantools/mobile2/ionic/qurantools/www"
 
 #copy files
-cp -r ${SOURCE_DIR}/app ${SOURCE_DIR}/assets ${SOURCE_DIR}/index.js ${SOURCE_DIR}/m  ${TARGET_DIR}/
+cp -r ${SOURCE_DIR}/app ${SOURCE_DIR}/assets ${SOURCE_DIR}/index.js ${SOURCE_DIR}/m ${SOURCE_DIR}/kurancalis.db ${TARGET_DIR}/
 
 if [ "$1" == "production" ]; then
     #change fb app ID to test app ID
