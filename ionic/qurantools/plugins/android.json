@@ -111,6 +111,9 @@
         },
         "cordova-plugin-x-socialsharing": {
             "PACKAGE_NAME": "org.quran.qurantools"
+        },
+        "cordova-sqlite-storage": {
+            "PACKAGE_NAME": "org.quran.qurantools"
         }
     },
     "dependent_plugins": {}
