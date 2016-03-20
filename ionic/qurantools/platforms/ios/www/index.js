@@ -1,4 +1,4 @@
-var requiredModules = ['ionic', 'ngResource', 'ngRoute', 'facebook', 'restangular', 'LocalStorageModule', 'ngTagsInput', 'duScroll', 'directives.showVerse', 'directives.repeatCompleted', 'ui.select', 'myConfig', 'authorizationModule','ui.tinymce','djds4rce.angular-socialshare', 'ngSanitize', 'com.2fdevs.videogular','com.2fdevs.videogular.plugins.controls','com.2fdevs.videogular.plugins.overlayplay','com.2fdevs.videogular.plugins.poster'];
+var requiredModules = ['ionic', 'ngResource', 'ngRoute', 'facebook', 'restangular', 'LocalStorageModule', 'ngTagsInput', 'duScroll', 'directives.showVerse', 'directives.repeatCompleted', 'ui.select', 'myConfig', 'authorizationModule','djds4rce.angular-socialshare', 'ngSanitize', 'com.2fdevs.videogular','com.2fdevs.videogular.plugins.controls','com.2fdevs.videogular.plugins.overlayplay','com.2fdevs.videogular.plugins.poster', 'ngCordova','ui.tinymce', 'ui.bootstrap'];
 
 if (config_data.isMobile) {
     var mobileModules = [];//'ionic'
@@ -27,6 +27,12 @@ var app = angular.module('ionicApp', requiredModules)
         function () {
             return function (text, translation_id, author_id) {
                 return text.replace(/\*+/g, "<button style='border:0;' class='label label-dipnot btn  btn-xs' onclick='angular.element(document.getElementById(\"theView\")).scope().list_footnotes(" + translation_id + "," + author_id + ")'>dipnot</button>");
+            };
+        }])
+    .filter('with_detailed_footnote_link', [  //filter for footnotes on detailed verse page
+        function () {
+            return function (text, translation_id, author_id) {
+                return text.replace(/\*+/g, "<button style='border:0;' class='label label-dipnot btn  btn-xs' onclick='angular.element(document.getElementById(\"detailedVerseModal\")).scope().list_detailed_footnotes(" + translation_id + "," + author_id + ")'>dipnot</button>");
             };
         }])
     .filter('with_next_link', [
@@ -111,8 +117,7 @@ var app = angular.module('ionicApp', requiredModules)
                 }
             };
         }])
-
-    .run(['$route', '$rootScope', '$location', '$ionicPlatform', function ($route, $rootScope, $location, $ionicPlatform) {
+    .run(function ($rootScope, $ionicPlatform, dataProvider) {
 
         $ionicPlatform.ready(function () {
             // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
@@ -129,10 +134,15 @@ var app = angular.module('ionicApp', requiredModules)
                 // org.apache.cordova.statusbar required
                 StatusBar.styleLightContent();
             }
+            dataProvider.initDB(function(){
+                dataProvider.setReady(true);
+            });
         });
 
         $rootScope.$on('$routeChangeSuccess', function (event, current, previous) {
-            $rootScope.pageTitle = current.$$route.pageTitle;
+            if( typeof current.$$route !== "undefined"){
+                $rootScope.pageTitle = current.$$route.pageTitle;
+            }
         });
 
         /*var original = $location.path;
@@ -146,7 +156,7 @@ var app = angular.module('ionicApp', requiredModules)
             }
             return original.apply($location, [path]);
         };*/
-    }]).directive('ngEnter', function () {
+    }).directive('ngEnter', function () {
         return function (scope, element, attrs) {
             element.bind("keydown keypress", function (event) {
                 if (event.which === 13) {
@@ -159,15 +169,37 @@ var app = angular.module('ionicApp', requiredModules)
         };
     });
 
-
 if (config_data.isMobile == false) { //false
     //desktop version
-    app.config(function ($routeProvider, FacebookProvider, RestangularProvider, localStorageServiceProvider) {
+    app.config(function ($routeProvider, FacebookProvider, RestangularProvider, localStorageServiceProvider, $httpProvider) {
         RestangularProvider.setBaseUrl(config_data.webServiceUrl);
         localStorageServiceProvider.setStorageCookie(0, '/');
 
-
-
+        $httpProvider.interceptors.push(function ($q, $injector) {
+            var isConfirmPopupCalledBefore = false;
+            return {
+                'responseError': function (rejection) {
+                    var $route = $injector.get('$route');
+                    var $modal = $injector.get('$modal');
+                    if (rejection.status == 0 && !isConfirmPopupCalledBefore) {
+                        isConfirmPopupCalledBefore = true;
+                        $modal.open({
+                            templateUrl: 'app/components/templates/no_internet_connection_modal.html',
+                            controller: function($scope, $modalInstance){
+                                $scope.retry = function() {
+                                    $modalInstance.close();
+                                    $route.reload();
+                                };
+                                $scope.cancel = function() {
+                                    $modalInstance.dismiss();
+                                };
+                            }
+                        })
+                    }
+                    return $q.reject(rejection);
+                }
+            }
+        });
 
         //route
         $routeProvider
@@ -259,11 +291,9 @@ if (config_data.isMobile == false) { //false
         FacebookProvider.init(config_data.FBAppID);
 
     });
-
 } else {
-    app.config(function ($routeProvider, FacebookProvider, RestangularProvider, localStorageServiceProvider, $stateProvider, $urlRouterProvider) {
+    app.config(function ($routeProvider, FacebookProvider, RestangularProvider, localStorageServiceProvider, $stateProvider, $urlRouterProvider, $httpProvider) {
             console.log("mobile version")
-
 
             //redirect / to /m/www/
             var currentPath = window.location.pathname;
@@ -276,12 +306,38 @@ if (config_data.isMobile == false) { //false
                 var mobileURL = currentPath + 'm/www/'+ locationURL;
                 console.log("Redirectiong to mobile version:" + mobileURL);
                 window.location.href = mobileURL;
-
-            }
-            else {
+                $timeout(function(){},5000);
+                return;
+            }else {
                 RestangularProvider.setBaseUrl(config_data.webServiceUrl);
                 localStorageServiceProvider.setStorageCookie(0, '/');
                 //route
+
+                $httpProvider.interceptors.push(function ($q, $injector) {
+                    var isConfirmPopupCalledBefore = false;
+                    return {
+                        'responseError': function (rejection) {
+                            var ionicPopup = $injector.get('$ionicPopup');
+                            var route = $injector.get('$route');
+                            if (rejection.status == 0 && !isConfirmPopupCalledBefore) {
+                                isConfirmPopupCalledBefore = true;
+                                var confirmPop = ionicPopup.confirm({
+                                    title: 'Internet Bağlantı Problemi!',
+                                    template: 'İnternet bağlantınız bulunmamaktadır. Yapabileceğiniz İşlemler kısıtlanmıştır. İşlem listesi aşağıdaki şekildedir...',
+                                    cancelText: 'DEVAM',
+                                    okText: 'YENİDEN DENE'
+                                });
+
+                                confirmPop.then(function (res) {
+                                    if (res) {
+                                        route.reload();
+                                    }
+                                });
+                            }
+                            return $q.reject(rejection);
+                        }
+                    };
+                });
 
                 //route
                 $routeProvider
@@ -289,51 +345,114 @@ if (config_data.isMobile == false) { //false
                         controller: 'HomeCtrl',
                         templateUrl: 'components/home/home.html',
                         reloadOnSearch: false,
-                        pageTitle: 'Kuran Çalış - Sure'
+                        pageTitle: 'Kuran Çalış - Sure',
+                        resolve : {
+                            initializeDB : function (dataProvider){
+                                dataProvider.initDB().then(function(res){
+                                    return res;
+                                });
+                            }
+                        }
                     })
                     .when('/annotations/', {
                         controller: 'AnnotationsCtrl',
                         templateUrl: 'components/annotations/all_annotations.html',
                         reloadOnSearch: false,
-                        pageTitle: 'Kuran Çalış - Ayet Notları'
+                        pageTitle: 'Kuran Çalış - Ayet Notları',
+                        resolve : {
+                            initializeDB : function (dataProvider){
+                                dataProvider.initDB().then(function(res){
+                                    return res;
+                                });
+                            }
+                        }
                     })
                     .when('/chapter/:chapter/author/:author/', {
                         redirectTo: '/translations/?chapter=:chapter&verse=1&author=:author',
-                        pageTitle: 'Kuran Çalış'
+                        pageTitle: 'Kuran Çalış',
+                        resolve : {
+                            initializeDB : function (dataProvider){
+                                dataProvider.initDB().then(function(res){
+                                    return res;
+                                });
+                            }
+                        }
                     })
                     .when('/inferences/', {
                         controller: 'InferenceListController',
                         templateUrl: 'components/inferences/inferenceListMobileView.html',
                         reloadOnSearch: false,
-                        pageTitle: 'Kuran Çalış - Çıkarım Notları'
+                        pageTitle: 'Kuran Çalış - Çıkarım Notları',
+                        resolve : {
+                            initializeDB : function (dataProvider){
+                                dataProvider.initDB().then(function(res){
+                                    return res;
+                                });
+                            }
+                        }
                     })
                     .when('/inference/display/:inferenceId/', {
                         controller: 'InferenceDisplayController',
                         templateUrl: 'components/inferences/inferenceDisplayMobileView.html',
                         reloadOnSearch: false,
-                        pageTitle: 'Kuran Çalış'
+                        pageTitle: 'Kuran Çalış',
+                        resolve : {
+                            initializeDB : function (dataProvider){
+                                dataProvider.initDB().then(function(res){
+                                    return res;
+                                });
+                            }
+                        }
                     })
                     .when('/inference/new/', {
                         controller: 'InferenceEditController',
                         templateUrl: 'components/inferences/inferenceEditMobileView.html',
                         reloadOnSearch: false,
-                        pageTitle: 'Kuran Çalış - Yeni Çıkarım Notu'
+                        pageTitle: 'Kuran Çalış - Yeni Çıkarım Notu',
+                        resolve : {
+                            initializeDB : function (dataProvider){
+                                dataProvider.initDB().then(function(res){
+                                    return res;
+                                });
+                            }
+                        }
                     })
                     .when('/inference/edit/:inferenceId/', {
                         controller: 'InferenceEditController',
                         templateUrl: 'components/inferences/inferenceEditMobileView.html',
                         reloadOnSearch: false,
-                        pageTitle: 'Kuran Çalış'
+                        pageTitle: 'Kuran Çalış',
+                        resolve : {
+                            initializeDB : function (dataProvider){
+                                dataProvider.initDB().then(function(res){
+                                    return res;
+                                });
+                            }
+                        }
 					})
 					.when('/help/',{
                         controller:'HelpController',
                         templateUrl:'components/help/index.html',
-                        pageTitle: 'Kuran Çalış - Yardım'
+                        pageTitle: 'Kuran Çalış - Yardım',
+                        resolve : {
+                            initializeDB : function (dataProvider){
+                                dataProvider.initDB().then(function(res){
+                                    return res;
+                                });
+                            }
+                        }
                     })
                     .when('/login/',{
                         controller:'LoginController',
                         templateUrl:'components/login/login.html',
-                        pageTitle: 'Kuran Çalış - Giriş'
+                        pageTitle: 'Kuran Çalış - Giriş',
+                        resolve : {
+                            initializeDB : function (dataProvider){
+                                dataProvider.initDB().then(function(res){
+                                    return res;
+                                });
+                            }
+                        }
                     })
                     .when('/', {
                         redirectTo: '/translations/',
@@ -342,11 +461,11 @@ if (config_data.isMobile == false) { //false
                     .otherwise({
                         redirectTo: '/translations/',
                         pageTitle: 'Kuran Çalış'
-
                     });
 
-
-                openFB.init({appId: config_data.FBAppID});
+                if (config_data.isNative){
+                    openFB.init({appId: config_data.FBAppID});
+                }
             }
             /*
              $ionicAppProvider.identify({
@@ -360,9 +479,7 @@ if (config_data.isMobile == false) { //false
              */
         }
     );
-
 }
-
 app.factory('ChapterVerses', function ($resource) {
     return $resource(config_data.webServiceUrl + '/chapters/:chapter_id/authors/:author_mask', {
         chapter_id: '@chapter_id',
@@ -377,30 +494,9 @@ app.factory('ChapterVerses', function ($resource) {
             isArray: true
         }
     });
-}).factory('Footnotes', function ($resource) {
-    return $resource(config_data.webServiceUrl + '/translations/:id/footnotes', {
-        chapter_id: '@translation_id'
-    }, {
-        query: {
-            method: 'GET',
-            params: {
-                id: '@translation_id'
-            },
-            isArray: true
-        }
-    });
-}).factory('ListAuthors', function ($resource) {
-    return $resource(config_data.webServiceUrl + '/authors', {
-        query: {
-            method: 'GET',
-            isArray: true
-        }
-    });
 }).factory('User', function ($resource) {
-
     return $resource(config_data.webServiceUrl + '/users',
         {},
-
         {
             query: {
                 method: 'GET',
@@ -422,9 +518,7 @@ app.factory('ChapterVerses', function ($resource) {
             }
         }
     );
-})
-
-    .controller('MainCtrl', function ($scope, $q, $routeParams, $ionicSideMenuDelegate, $location, $timeout, ListAuthors, ChapterVerses, User, Footnotes, Facebook, Restangular, localStorageService, $document, $filter, $rootScope, $state, $stateParams, $ionicModal, $ionicScrollDelegate, $ionicPosition, $ionicLoading, authorization,$rootScope) {
+}).controller('MainCtrl', function ($scope, $q, $routeParams, $ionicSideMenuDelegate, $location, $timeout, ChapterVerses, User, Footnotes, Facebook, Restangular, localStorageService, $document, $filter, $rootScope, $state, $stateParams, $ionicModal, $ionicScrollDelegate, $ionicPosition, $ionicLoading, authorization,$rootScope, $ionicPopup, dataProvider, $ionicPlatform) {
         console.log("MainCtrl");
 
         //all root scope parameters should be defined and documented here
@@ -538,6 +632,7 @@ app.factory('ChapterVerses', function ($resource) {
         $scope.mobileDetailedSearchCircleListForSelection = [];
         //mobile: circle list for all annotations search
         $scope.mobileAllAnnotationsSearchCircleListForSelection = [];
+        $scope.query_users = [];
 
         $scope.checkAPIVersion = function(){
             var versionRestangular = Restangular.all("apiversioncompatibility");
@@ -625,8 +720,7 @@ app.factory('ChapterVerses', function ($resource) {
                 localStorageService.remove('chapter_view_parameters');
                 localStorageService.remove('annotations_view_parameters');
                 $scope.$broadcast('logout', responseData);
-
-                window.location.href = '#/';
+                $location.path('/login');
             }
         }
 
@@ -690,7 +784,16 @@ app.factory('ChapterVerses', function ($resource) {
                 },
                 function(response) {
                     console.log("Error occured while validating user login with status code", response.status);
-                    $scope.logOut();
+                    var infoPopup = $ionicPopup.alert({
+                        title: 'Var olan oturumuzun süresi dolmuştur. Çıkış yapılıyor.',
+                        template: '',
+                        buttons: []
+                    });
+
+                    $timeout(function() {
+                        infoPopup.close();
+                        $scope.logOut();
+                    }, 1700);
                 }
             );
         }
@@ -969,6 +1072,11 @@ app.factory('ChapterVerses', function ($resource) {
             });
         };
 
+        $scope.showVerseDetail = function (chapterVerse, users, circles){
+            $timeout(function(){
+                $scope.$broadcast("open_verse_detail",{chapterVerse: chapterVerse, circles:circles, users:users});
+            });
+        };
 
         $scope.showVerseFromFootnote = function (chapterVerse, author, translationId) {
 
@@ -1023,7 +1131,7 @@ app.factory('ChapterVerses', function ($resource) {
         //list authors
         $scope.list_authors = function () {
             $scope.authorMap = new Object();
-            $scope.authors = ListAuthors.query(function (data) {
+            $scope.authors = dataProvider.listAuthors(function(data){
                 var arrayLength = data.length;
                 for (var i = 0; i < arrayLength; i++) {
                     $scope.authorMap[data[i].id] = data[i];
@@ -1033,7 +1141,6 @@ app.factory('ChapterVerses', function ($resource) {
             });
         };
 
-
         //tags input auto complete function
         $scope.loadTags = function (query) {
             var tagsRestangular = Restangular.one('tags', query);
@@ -1042,7 +1149,6 @@ app.factory('ChapterVerses', function ($resource) {
 
         //tags input auto complete
         $scope.cevrelistele = function () {
-
             return $scope.extendedCircles;
         };
 
@@ -1098,6 +1204,14 @@ app.factory('ChapterVerses', function ($resource) {
                 for (var index = 0; index < $scope.mobileAllAnnotationsSearchCircleListForSelection.length; ++index) {
                     $scope.mobileAllAnnotationsSearchCircleListForSelection[index].selected=false;
                 }
+
+                $scope.mobileInferencesEditorCircleListForSelection = [];
+                Array.prototype.push.apply($scope.mobileInferencesEditorCircleListForSelection, $scope.extendedCircles);
+                //add isSelected property for mobile.
+                for (var index = 0; index < $scope.mobileInferencesEditorCircleListForSelection.length; ++index) {
+                    $scope.mobileInferencesEditorCircleListForSelection[index].selected = false;
+                }
+
                 // initialize mobileAllInferencessSearchCircleListForSelection
                 $scope.mobileAllInferencesSearchCircleListForSelection = [];
                 Array.prototype.push.apply($scope.mobileAllInferencesSearchCircleListForSelection, $scope.extendedCirclesForSearch);
@@ -1185,6 +1299,14 @@ app.factory('ChapterVerses', function ($resource) {
             //$route.reload();
         }
 
+        $scope.openAddBookMarkModal = function(verseId){
+
+            $scope.$broadcast('openAddBookMarkModal', {verseId:verseId});
+        };
+
+        $scope.goToVerseTag = function (authorId, verseId, tag, users, circles) {
+            $scope.$broadcast("tagged_verse_modal",{verseId:verseId, tag:tag, circles:circles, users:users, author:authorId+""});
+        };
 
         $scope.initializeController = function () {
 
@@ -1280,12 +1402,22 @@ app.factory('ChapterVerses', function ($resource) {
                 }
             });
 
-            if (!$scope.checkUserLoginStatus()){
+            if (!$scope.checkUserLoginStatus() && !$scope.isAllowUrlWithoutLogin()){
                 $location.path('login/');
             }
-
         };//end of init controller
 
+        $scope.isAllowUrlWithoutLogin = function(){
+            var url = $location.path();
+            if (url.indexOf('/inference/display/')>-1){
+                return true;
+            }
+            return false;
+        }
+        
+        $scope.navigateTo = function (target) {
+            $location.path(target);
+        }
 
         $scope.showProgress = function(operationName) {
 
@@ -1331,18 +1463,18 @@ app.factory('ChapterVerses', function ($resource) {
             copyFrom.select();
             document.execCommand('copy');
             body.removeChild(copyFrom);
-        }
+        };
+
+        $scope.preInit = function(){
+            $scope.initRoute();
+            $scope.initializeController();
+        };
 
         //initialization
-
-        //initialization
-        $scope.initRoute();
-
-        $scope.initializeController();
-
-
+        $ionicPlatform.ready(function(){
+            $scope.preInit();
+        });
     });
-
 
 function sidebarInit() {
     $('.cd-panel').on('click', function (event) {
@@ -1352,7 +1484,6 @@ function sidebarInit() {
         }
     });
 }
-
 function openPanel() {
     $('#cd-panel-right').addClass('is-visible');
 document.getElementById("openbtn").style.border = "1px solid blue";
@@ -1375,7 +1506,6 @@ function openLeftPanel() {
 function closeLeftPanel() {
     $('#cd-panel-left').removeClass('is-visible');
 }
-
 function toggleLeftPanel() {
     if ($('#cd-panel-left').hasClass('is-visible')) {
         closeLeftPanel();
@@ -1383,7 +1513,6 @@ function toggleLeftPanel() {
         openLeftPanel();
     }
 }
-
 function verseTagClicked(elem) {
 
     var closeClick = false;
@@ -1402,7 +1531,6 @@ function verseTagClicked(elem) {
         $(elem).addClass("btn-warning").addClass("activeTag").addClass("btn-sm").removeClass('btn-info').removeClass('btn-xs');
     }
 }
-
 function seperateChapterAndVerse(data) {
     var ret = [];
     var seperator = data.indexOf(':');
@@ -1410,7 +1538,6 @@ function seperateChapterAndVerse(data) {
     ret.verse = data.substring(seperator + 1, data.length);
     return ret;
 }
-
 function clearTextSelection() {
     if (window.getSelection) {
         if (window.getSelection().empty) {  // Chrome
@@ -1422,21 +1549,18 @@ function clearTextSelection() {
         document.selection.empty();
     }
 }
-
 function focusToVerseInput() {
     setTimeout(function () {
         document.getElementById('chapterSelection_verse').focus();
         document.getElementById('chapterSelection_verse').select();
     }, 600);
 }
-
 function focusToChapterInput() {
     setTimeout(function () {
         document.getElementById('chapterSelection_chapter').focus();
         document.getElementById('chapterSelection_chapter').select();
     }, 600);
 }
-
 function focusToInput(elementID) {
     setTimeout(function () {
         document.getElementById(elementID).focus();

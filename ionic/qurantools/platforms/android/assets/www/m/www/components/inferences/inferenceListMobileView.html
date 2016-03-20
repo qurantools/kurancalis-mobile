@@ -6,7 +6,7 @@
                 
                 <input type="hidden" ng-model="chapter_id"/>
                 <input type="hidden" ng-model="author_mask"/>
-                
+
             </ion-nav-buttons>
             <h1 class="title"></h1>
             <ion-nav-buttons side="right">
@@ -19,22 +19,17 @@
                 
             </ion-nav-buttons>
         </ion-nav-bar>
-        <ion-nav-buttons side="left">
-            <button class="button button-icon icon ion-navicon" menu-toggle="left">
-            </button>
-        </ion-nav-buttons>
-        
         <ion-nav-view name="appContent"></ion-nav-view>
         <ion-nav-view id="mobile_inferences_content" cache-view="true">
             <ion-content overflow-scroll="true" style="padding-top: 30px;">
-                <ion-list>
-                    <ion-item ng-repeat="inference in inferences | filter:allInferencesOpts.keyword">
-                        <div style="max-width: 200px; max-height: 150px; margin: 0 auto;"><a href="#/inference/display/{{inference.id}}/"><img image-check ng-src="{{inference.image}}" alt="" style="width:100%;height: 100%;"/></a></div>
-                        <div style="text-align: center; height: 20px" ><a href="#/inference/display/{{inference.id}}/" style="text-decoration: none;"><h4 style="margin-top:0;font-size: 18px">
+                <ion-list style="margin-bottom:45px;">
+                    <ion-item ng-repeat="inference in inferences">
+                        <div align="center" style="margin: 0 auto;"><a href="#/inference/display/{{inference.id}}/"><img image-check ng-src="{{inference.image}}" onerror='this.style.display = "none"' style="max-width: 200px; max-height: 150px; "/></a></div>
+                        <div style="text-align: left; height: 20px" ><a href="#/inference/display/{{inference.id}}/" style="text-decoration: none;"><h4 style="margin-top:0;font-size: 18px">
                             {{inference.title | limitTo:80}}</h4>
                         </a></div>
                         <div style="padding-left:10px;">
-                            <span ng-bind-html="inference.brief | to_trusted | limitTo:400" style="white-space: pre-wrap; font-size: 9pt"></span> <a href="#/inference/display/{{inference.id}}/" style="color: blue; font-size: 9pt">devamını oku...</a>
+                            <span ng-bind-html="inference.brief | to_trusted | limitTo:400" style="line-height: 1;white-space: pre-wrap; font-size: 10pt"></span> <a href="#/inference/display/{{inference.id}}/" style="color: blue; font-size: 10pt">devamını oku...</a>
                         </div>
                         <div class="row">
                             <div class="col">
@@ -59,10 +54,20 @@
                             </div>
                         </div>
                     </ion-item>
-                </ion-list>
+                    <div style="text-align: center; padding-top:10px;" ng-if="allInferencesOpts.hasMore==true">
+                        <button ng-click="get_all_inferences()" class="btn btn-info btn-hg">Daha fazla</button>
+                    </div>
 
+                </ion-list>
+                <div style="height: 40px"></div>
             </ion-content>
         </ion-nav-view>
     </ion-side-menu-content>
     <div ng-include="'components/navigation/left_menu.html'"></div>
 </ion-side-menus>
+
+<style>
+    .list:last-child{margin-bottom:45px;
+
+    }
+</style>

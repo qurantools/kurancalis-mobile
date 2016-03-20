@@ -9,20 +9,18 @@ authorizationModule.factory("authorization", function (Facebook, User, localStor
 
         factory.login = function (faceBookResponseMethod) {
 
-            var nativeApp = document.URL.indexOf( 'http://' ) === -1 && document.URL.indexOf( 'https://' ) === -1;
             var permissions = 'email,user_friends';
 
-            if (config_data.isMobile && !nativeApp) {
+            if (config_data.isMobile && !config_data.isNative) {
                 //different FB login for mobile web app
                 var permissionUrl = "https://m.facebook.com/dialog/oauth?client_id=" + config_data.FBAppID + "&response_type=code&redirect_uri=" + encodeURIComponent(config_data.mobileLoginCallbackAddress) + "&scope=" + permissions;
                 window.location = permissionUrl;
                 return;
-            }
-            else if(config_data.isMobile && nativeApp) {
+            }else if(config_data.isMobile && config_data.isNative) {
                 //different FB login for cordoba
                 // Settings
 
-                openFB.login(
+                /*openFB.login(
                     function(response) {
                         if(response.status === 'connected') {
                             var token = response.authResponse.accessToken;
@@ -30,7 +28,8 @@ authorizationModule.factory("authorization", function (Facebook, User, localStor
                         } else {
                             alert('Facebook girişi başarısız');
                         }
-                    }, {scope: permissions});
+                    }, {scope: permissions});*/
+                factory.facebookSignIn(faceBookResponseMethod);
                 return;
             }
 
@@ -45,7 +44,6 @@ authorizationModule.factory("authorization", function (Facebook, User, localStor
 
         factory.onFBLoginResponse=function (tokenFb, faceBookResponseMethod ) {
             var responseData = {loggedIn: false, token: ""};
-            console.log("face token : "+ tokenFb);
             if (tokenFb != "") {
 
                 var headers = {'Content-Type': 'application/x-www-form-urlencoded'};
@@ -57,7 +55,6 @@ authorizationModule.factory("authorization", function (Facebook, User, localStor
 
                 userRestangular.customPOST(data, '', '', headers).then(
                     function(response){
-                        alert("erişim success data.token : "+ JSON.stringify(response));
                         //get token
                         responseData.token = response.token;
                         responseData.loggedIn = true;
@@ -68,7 +65,6 @@ authorizationModule.factory("authorization", function (Facebook, User, localStor
                         faceBookResponseMethod(responseData);
                     },
                     function(resp) {
-                        alert("erişim success fail : "+ JSON.stringify(resp));
                         if (resp.data.code == '209') {
                             alert("Sisteme giriş yapabilmek için e-posta adresi paylaşımına izin vermeniz gerekmektedir.");
                         }
@@ -83,22 +79,25 @@ authorizationModule.factory("authorization", function (Facebook, User, localStor
                         localStorageService.remove('access_token');
                         faceBookResponseMethod(responseData);
                     });
-
-
             }
         }
 
         factory.logOut = function (faceBookResponseMethod) {
             var responseData = {loggedOut: false};
-
-            //remove auth
-            Facebook.api({
-                method: 'Auth.revokeAuthorization'
-            }, function (response) {
-                Facebook.getLoginStatus(function (response) {
+            if (config_data.isNative){
+                facebookConnectPlugin.getLoginStatus(function(response){
                     fbLoginStatus = response.status;
                 });
-            });
+            }else{
+                //remove auth
+                Facebook.api({
+                    method: 'Auth.revokeAuthorization'
+                }, function (response) {
+                    Facebook.getLoginStatus(function (response) {
+                        fbLoginStatus = response.status;
+                    });
+                });
+            }
 
             localStorageService.remove('access_token');
             responseData.loggedOut=true;

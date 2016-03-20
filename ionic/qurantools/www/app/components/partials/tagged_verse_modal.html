@@ -1,0 +1,58 @@
+<div class="modal" id="taggedVerseModal" ng-controller="TaggedVerseCtrl">
+    <div class="modal-xl modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">{{verseTagContentParams.verse_tags}}</h4>
+                <button type="button" data-dismiss="modal" aria-hidden="true" class="btn" style="float: right;margin-top: -35px;">Tamam</button>
+            </div>
+            <div class="modal-body">
+                <table style="width: 100%;margin-top: -20px;">
+                    <col width="45%">
+                    <col width="45%">
+                    <col width="10%">
+                    <tr>
+                        <td style="padding: 4px;">
+                            <tags-input ng-model="taggedVerseUsers" placeholder="Kişi Seçiniz" display-property="name"
+                                        replace-spaces-with-dashes="false" min-length="2">
+                                <auto-complete source="kisilistele($query)" min-length="2"></auto-complete>
+                            </tags-input>
+                        </td>
+                        <td style="padding: 4px;">
+                            <tags-input ng-model="taggedVerseCircles" placeholder="Çevre Seçiniz"
+                                        display-property="name" replace-spaces-with-dashes="false" min-length="1"
+                                        add-from-autocomplete-only="true" add-on-blur="false">
+                                <auto-complete source="cevrelisteleForSearch()" load-on-empty="true"
+                                               load-on-focus="true"></auto-complete>
+                            </tags-input>
+                        </td>
+                        <td style="padding: 4px;">
+                            <button type="button" ng-click="goToVerseTag(verseId, verseTagContentParams.verse_tags)"
+                                    class="btn btn-primary">
+                                <i class="fa fa-search" style="font-size: 1.3em"></i>
+                            </button>
+                        </td>
+                    </tr>
+                </table>
+                <div style="height: 5px"></div>
+                <div class="verse_tag_content" style="max-height: calc(100vh - 212px);overflow-y: auto;">
+                    <a style="float: right;" href ng-click="displayAnnotationsWithTag()">Etiketli Notları Göster>></a>
+                    <select class="verseTagContentAuthor"
+                            ng-options="author.id as author.name for author in authors"
+                            ng-model="verseTagContentAuthor"
+                            ng-change="verseTagContentAuthorUpdate(verseTagContentAuthor)">
+                    </select>
+
+                    <div ng-repeat="verseTagContent in verseTagContents">
+                        <div ng-repeat="verseTagContentTranslation in verseTagContent.translations"
+                             ng-if="verseTagContentTranslation.authorId==verseTagContentAuthor">
+                            <strong>
+                                <a href="" ng-click='showVerseDetail(verseTagContentTranslation.verseId, taggedVerseUsers, taggedVerseCircles)' data-target='#detailedVerseModal' data-dismiss='modal' data-toggle='modal'>{{verseTagContentTranslation.verseId / 1000 | number:0}}:{{verseTagContentTranslation.verseId % 1000}}</a>
+                            </strong>
+                            <span ng-class="{translation_rtl: authorMap[verseTagContentTranslation.authorId].language=='ar'}">{{verseTagContentTranslation.content}}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

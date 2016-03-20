@@ -1,5 +1,5 @@
 angular.module('ionicApp')
-    .controller('HomeCtrl', function ($scope, $compile, $q, $routeParams, $location, $timeout, ListAuthors, ChapterVerses, User, Footnotes, Facebook, Restangular, localStorageService, $document, $filter, $rootScope, $state, $stateParams, $ionicModal, $ionicScrollDelegate, $ionicPosition, authorization,$ionicActionSheet,$ionicPopup, $sce) {
+    .controller('HomeCtrl', function ($scope, $compile, $q, $routeParams, $location, $timeout, ChapterVerses, User, Facebook, Restangular, localStorageService, $document, $filter, $rootScope, $state, $stateParams, $ionicModal, $ionicScrollDelegate, $ionicPosition, authorization,$ionicActionSheet,$ionicPopup, $sce, dataProvider, $ionicPlatform) {
 
 
         $scope.linkno="";
@@ -82,19 +82,6 @@ angular.module('ionicApp')
             localStorageService.set('chapter_view_parameters', localParameterData);
         };
         
-       
-        
-        $scope.openAddBookMarkModal = function(chapterinfo, verseinfo, bookmarkverseid){
-            
-           $scope.bookmarkParameters ={}; 
-           $scope.bookmarkParameters.chapterinfo = chapterinfo;
-           $scope.bookmarkParameters.verseinfo = verseinfo;
-           $scope.bookmarkParameters.bookmarkverseid = bookmarkverseid;
-           $scope.bookmarkParameters.bookchaptername = $scope.chapters[chapterinfo - 1].nameTr;
-           
-           $scope.$broadcast('openAddBookMarkModal');
-        };
-        
         $scope.searchBookMarkModal = function(){
             
             $scope.$broadcast('searchBookMarkModal');
@@ -141,7 +128,6 @@ angular.module('ionicApp')
             }
             $location.path("/translations/", false).search(parameters);
         };
-
 
         $scope.detailedSearchAuthorToggleSelection = function (author_id) {
             var idx = $scope.detailedSearchAuthorSelection.indexOf(author_id);
@@ -470,7 +456,7 @@ angular.module('ionicApp')
         $scope.goToChapter = function () {
             $scope.showProgress("goToChapter");
             $scope.list_translations();
-            $scope.updateVerseTagContent();
+            //$scope.updateVerseTagContent();
             $scope.storeChapterViewParameters();
             $scope.setTranslationsPageURL();
 
@@ -890,14 +876,12 @@ angular.module('ionicApp')
                 $scope.annotations.splice(annotationIndex, 1);
                 $scope.scopeApply();
             }
-
-
         };
 
         //list footnotes
         $scope.list_footnotes = function (translation_id, author_id) {
 
-            $scope.footnotes = Footnotes.query({
+            $scope.footnotes = dataProvider.listFootnotes({
                 id: translation_id
             }, function (data) {
                 var footnoteDivElement = document.getElementById('t_' + translation_id);
@@ -907,8 +891,7 @@ angular.module('ionicApp')
                     var dataLength = data.length;
                     for (index = 0; index < dataLength; ++index) {
                         //add verse links
-                        //   dataContent = data[index].replace(/(\d{1,3}:\d{1,3})/g, "<a href='javascript: redirectToVerseByChapterAndVerse(\"$1\");'>$1</a>");
-                        dataContent = data[index].replace(/(\d{1,3}:\d{1,3})/g, "<a href='javascript: angular.element(document.getElementById(\"MainCtrl\")).scope().showVerseFromFootnote(\"$1\"," + author_id + "," + translation_id + ");'>$1</a>");
+                        dataContent = data[index].replace(/(\d{1,3}):(\d{1,3})/g, "<a ng-href='#MainCtrl' onclick='javascript: angular.element(document.getElementById(\"MainCtrl\")).scope().showVerseDetail($1*1000+$2)' data-target='#detailedVerseModal' data-dismiss='modal' data-toggle='modal'>$1:$2</a>");
 
                         html += "<div><div class='col-xs-1 footnote_bullet'>&#149;</div><div class='col-xs-11 footnotebg'>" + dataContent + "</div></div>";
                     }
@@ -921,7 +904,6 @@ angular.module('ionicApp')
                     //hide show verse when footnote collapses
                     $(".showVerseData").hide();
                 }
-
             });
         }
 
@@ -965,7 +947,6 @@ angular.module('ionicApp')
             }
         }
            
-        
         $scope.verseNumberValidation = function (chapters, chapter_id, verse_number) {
             var chapters = $scope.chapters;
             var chapter_id = $scope.goToVerseParameters.chapter.id;
@@ -987,71 +968,12 @@ angular.module('ionicApp')
             }
         };
 
-        //Get verses of the tag from server
-        $scope.loadVerseTagContent = function (verseTagContentParams, verseId) {
-            $scope.showProgress("loadVerseTagContent");
-            var verseTagContentRestangular = Restangular.all("translations");
-            verseTagContentRestangular.customGET("", verseTagContentParams, {'access_token': $scope.access_token}).then(function (verseTagContent) {
-                $scope.targetVerseForTagContent = verseId;
-                $scope.verseTagContents = verseTagContent;
-                $scope.scopeApply();
-                $scope.hideProgress("loadVerseTagContent")
-            });
-        };
-
-
-        //Retrieve verses with the tag.
-        $scope.goToVerseTag = function (verseId, tag) {
-            if ($scope.targetVerseForTagContent != -1) {
-                $scope.verseTagContentParams = [];
-                $scope.verseTagContentParams.author = $scope.getSelectedVerseTagContentAuthor();
-                //display all verse tags on all authors
-                //$scope.verseTagContentParams.author = MAX_AUTHOR_MASK;
-                $scope.verseTagContentParams.verse_tags = tag;
-
-                $scope.verseTagContentParams.circles = $scope.getTagsWithCommaSeparated($scope.query_circles);
-                $scope.verseTagContentParams.users = $scope.getTagsWithCommaSeparated($scope.query_users);
-
-                $scope.verseTagContentAuthor = $scope.getSelectedVerseTagContentAuthor(); //set combo
-                $scope.loadVerseTagContent($scope.verseTagContentParams, verseId);
-
-            } else {
-                $scope.targetVerseForTagContent = 0;
-            }
-        };
-
-        //Redisplay the verses of the tag with current params
-        $scope.updateVerseTagContent = function () {
-            if ($scope.targetVerseForTagContent != 0 && typeof $scope.verseTagContentParams.verse_tags != 'undefined') {
-                $scope.goToVerseTag($scope.targetVerseForTagContent, $scope.verseTagContentParams.verse_tags);
-            }
-        };
-
-        $scope.getSelectedVerseTagContentAuthor = function () {
-            if ($scope.activeVerseTagContentAuthor == "") {
-                $scope.activeVerseTagContentAuthor = $scope.selection[0];
-            }
-            else if ($scope.detailedSearchAuthorSelection.indexOf($scope.activeVerseTagContentAuthor) == -1) {
-                $scope.activeVerseTagContentAuthor = $scope.selection[0];
-            }//get the first one if the previous author is not selected now
-
-
-            return $scope.activeVerseTagContentAuthor;
-        };
-
-        $scope.verseTagContentAuthorUpdate = function (item) {
-            $scope.activeVerseTagContentAuthor = item;
-            $scope.verseTagContentAuthor = $scope.activeVerseTagContentAuthor; //comboda seciliyi degistiriyor
-            $scope.updateVerseTagContent();
-        };
-
         $scope.singleAuthorView = function (author, verse) {
             $scope.showSingleAuthor=true;
             $scope.switchAuthorViewVerseId = verse;
             $scope.selectedSingleAuthor=author;
             $scope.scopeApply();
             $scope.switchScrollWatch=!$scope.switchScrollWatch;
-
         };
 
         $scope.multipleAuthorsView = function (verse) {
@@ -1279,7 +1201,7 @@ angular.module('ionicApp')
         $scope.checked = function (durum) {
 
             $scope.query_own_annotations.value = durum;
-        }
+        };
         
         $scope.initChapterViewParameters = function () {
 
@@ -1423,24 +1345,6 @@ angular.module('ionicApp')
             return circleList;
         };
 
-        //reflects the scope parameters to URL
-        $scope.displayAnnotationsWithTag = function (tag) {
-            var parameters =
-            {
-                authorMask: MAX_AUTHOR_MASK,
-                verseTags: $scope.verseTagContentParams.verse_tags,
-                verseKeyword: "",
-                ownAnnotations: true,
-                orderby: "time",
-                chapters: "",
-                verses: "",
-                circles: Base64.encode(JSON.stringify($scope.query_circles)),
-                users: Base64.encode(JSON.stringify($scope.query_users))
-
-            }
-            $location.path("/annotations/", false).search(parameters);
-        };
-
         $scope.initializeHomeController = function () {
 
 
@@ -1490,7 +1394,6 @@ angular.module('ionicApp')
             var butonAyraclar = {text: '<i class="icon ion-android-bookmark"></i> Ayraçlar' };
             $scope.actionSheetButtons.push(butonCeviri);
             $scope.actionSheetButtons.push(butonSureAyet);
-
             if($scope.loggedIn) {
                 if($scope.user){
                     $scope.actionSheetButtons.push(butonFiltre);
@@ -1582,7 +1485,7 @@ angular.module('ionicApp')
 
                         } else if (index == 1) {
                             $scope.openModal('chapter_selection');
-                        } else if (index == 2) {
+                        }else if (index == 2) {
                             $scope.openModal('homesearch');
                         } else if (index == 3) {
                             $scope.searchBookMarkModal();
@@ -1596,11 +1499,9 @@ angular.module('ionicApp')
         }
         
         //initialization
-
-        $scope.initializeHomeController();
-        
-        
-
+        $ionicPlatform.ready(function(){
+            $scope.initializeHomeController();
+        });
     })
 
     .directive('toggle', function(){

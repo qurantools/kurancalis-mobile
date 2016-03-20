@@ -281,7 +281,7 @@ angular.module('ionicApp')
 
 
 
-        $scope.tempAnnotation
+        $scope.tempAnnotation;
         //delete operation for annotations page
         $scope.deleteAnnotation = function (annotation) {
 
@@ -551,8 +551,7 @@ angular.module('ionicApp')
             $scope.setAnnotationsPageURL();
 
             $scope.checkUserLoginStatus();
-
-
+            
             $scope.get_all_annotations();
 
             if (config_data.isMobile) {
@@ -638,10 +637,6 @@ angular.module('ionicApp')
                         $scope.modal_addtagtosearch.show();
                         focusToInput('addtagtosearch_input');
                     }
-
-
-
-
                 };
                 $scope.closeModal = function (id) {
                     $timeout(function() {
@@ -677,11 +672,8 @@ angular.module('ionicApp')
         };
 
         $scope.editAnnotation= function (annotation){
-
             $scope.showEditor(annotation);
-        }
-
-
+        };
 
         $scope.scrollDelegateTop = function(id){
             $ionicScrollDelegate.$getByHandle(id).scrollTop();

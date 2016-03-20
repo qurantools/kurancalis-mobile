@@ -30,11 +30,9 @@ angular.module('ionicApp')
             return tagsRestangular.customGET("", {}, {'access_token': $scope.access_token});
         };
         $scope.loadTags2 = function (query) {
-
             var tagsRestangular = Restangular.one('tags', query);
              tagsRestangular.customGET("", {}, {'access_token': $scope.access_token}).then(function (resp) {
                  $scope.tagListInference =resp;
-
              });
         };
         //tags input auto complete function
@@ -43,11 +41,19 @@ angular.module('ionicApp')
 
             $scope.title = "";
             $scope.content = "";
+            $scope.imageDefined = false;
 
-            var tempTaglist = [];
-            $rootScope.$on('addInferenceTags', function (event, data) {
-                tempTaglist.push(data);
-            });
+            setTimeout(function () {
+                if (typeof $scope.inferenceImage === "undefined" || $scope.inferenceImage == "undefined") {
+                    $scope.imageDefined = false;                   
+                } else {
+                    $scope.imageDefined = true;
+                }
+            },1000);
+
+            $scope.pagePrevious = function () {
+                window.history.go(-2);
+            }
 
             $ionicModal.fromTemplateUrl('components/partials/add_tag_to_inferences.html', {
                 scope: $scope,              
@@ -67,6 +73,16 @@ angular.module('ionicApp')
                 $scope.modal_view_user_search = modal
             });
 
+            $ionicModal.fromTemplateUrl('components/inferences/inferenceEditTinyMobileView.html', {
+                scope: $scope,
+                //animation: 'slide-in-right',
+                //animation: 'slide-left-right',
+                animation: 'slide-in-up',
+                id: 'inference_mobile_tiny_edit'
+            }).then(function (modal) {
+                $scope.modal_edit_inference_tiny = modal
+            });
+
             $scope.tagsquery= function (query) {
                 $scope.loadTags2(query)
             }
@@ -76,31 +92,19 @@ angular.module('ionicApp')
                     $scope.modal_view_user_search.show();
                 }else if(id == "inferenceTagsearch"){
                     $scope.modal_inference_tag_search.show();
+                }else if(id == "inference_mobile_tiny_edit"){
+                    $scope.modal_edit_inference_tiny.show();
                 }
             }
             $scope.closeModal = function (id) {
                 $timeout(function(){
 
-                    if (id == 'annotations_on_page') {
-                        $scope.modal_annotations_on_page.hide();
-                    } else if (id == 'chapter_selection') {
-                        $scope.modal_chapter_selection.hide();
-                    } else if (id == 'authors_list') {
-                        $scope.modal_authors_list.hide();
-                    } else if (id == 'annotations_on_page_sort') {
-                        $scope.modal_annotations_on_page_sort.hide();
-                    } else if (id == 'homesearch') {
-                        $scope.modal_home_search.hide();
-                    } else if (id == 'friendsearch') {
-                        $scope.modal_friend_search.hide();
-                    } else if (id == 'inferenceTagsearch') {
-                        $scope.modal_inference_tag_search.hide();
-
-                    } else if (id == 'viewusersearch') {
+                    if (id == 'viewusersearch') {
                         $scope.modal_view_user_search.hide();
-                    } else if (id == 'editor') {
-                        clearTextSelection();
-                        $scope.getModalEditor().hide();
+                    }else if(id == "inferenceTagsearch"){
+                        $scope.modal_inference_tag_search.hide();
+                    }else if(id == "inference_mobile_tiny_edit"){
+                        $scope.modal_edit_inference_tiny.hide();
                     }
                 },300);
             }
@@ -113,8 +117,7 @@ angular.module('ionicApp')
             $scope.usersParams.search_query = people_name;
             return peoplesRestangular.customGET("", $scope.usersParams, {'access_token': $scope.access_token});
         };
-
-
+        
         //tags input auto complete
         $scope.circleslistExtended = function () {
             return $scope.extendedCircles;
@@ -124,15 +127,12 @@ angular.module('ionicApp')
 
             if(config_data.isMobile){
 
-                $scope.title = document.getElementById('title').value;
-                $scope.content = document.querySelectorAll("[ng-model=content]")[0].value;
                 $scope.usersForSearch = $scope.ViewUsers;
-                $scope.tags_entry = tempTaglist;
+                $scope.circlesForSearch.length=0;
 
-
-                for (var index = 0; index < $scope.mobileAnnotationEditorCircleListForSelection.length; ++index) {
-                    if ($scope.mobileAnnotationEditorCircleListForSelection[index].selected == true) {
-                        $scope.circlesForSearch.push($scope.mobileAnnotationEditorCircleListForSelection[index]);
+                for (var index = 0; index < $scope.mobileInferencesEditorCircleListForSelection.length; ++index) {
+                    if ($scope.mobileInferencesEditorCircleListForSelection[index].selected == true) {
+                        $scope.circlesForSearch.push($scope.mobileInferencesEditorCircleListForSelection[index]);
                     }
                 }
             }
@@ -143,8 +143,8 @@ angular.module('ionicApp')
             canViewUsers_tags.length = 0;
             canCommentUsers_tags.length = 0;
 
-            for (var i = 0; i < $scope.tags_entry.length; i++) {
-                tags.push($scope.tags_entry[i].name);
+            for (var i = 0; i < $scope.tagListInference.length; i++) {
+                tags.push($scope.tagListInference[i].name);
             }
 
             for (var i = 0; i < $scope.circlesForSearch.length; i++) {
@@ -234,6 +234,10 @@ angular.module('ionicApp')
                 $scope.content = $scope.prepareContentForEdit(data.content,data.references);
                 $scope.tags_entry = data.tags;
 
+                for (var i = 0; i < data.tags.length; i++) {
+                    $scope.tagListInference.push({ name: data.tags[i] });
+                }
+                
                 var inference_PermRestangular = Restangular.one("inferences", inferenceId).all("permissions");
                 inference_PermRestangular.customGET("", {}, {'access_token': $scope.access_token}).then(function (data) {
 
@@ -241,6 +245,19 @@ angular.module('ionicApp')
                     $scope.usersForSearch = data.canViewUsers;
                     $scope.circlesForSearch1 = data.canCommentCircles;
                     $scope.usersForSearch1 = data.canCommentUsers;
+                    $scope.ViewUsers = data.canViewUsers;
+                    console.log("1 :", $scope.mobileInferencesEditorCircleListForSelection);
+                    console.log("2 :", $scope.circlesForSearch);
+
+                    for (var i = 0; i < $scope.mobileInferencesEditorCircleListForSelection.length; i++) {
+                        for (var x = 0; x < $scope.circlesForSearch.length; x++) {
+                            if ($scope.mobileInferencesEditorCircleListForSelection[i].name == $scope.circlesForSearch[x].name) {
+                                $scope.mobileInferencesEditorCircleListForSelection[i].selected = true;
+                                break;
+                            }
+                        }
+                    }
+                    
                 });
 
             });
@@ -249,7 +266,7 @@ angular.module('ionicApp')
         $scope.prepareContentForEdit = function(contentOnSystem,references){
             var content = contentOnSystem;
             for(var i=0; i< references.length;i++){
-                content = content.replace("["+references[i]+"]",Math.floor(references[i]/1000)+":"+references[i]%1000);
+                content = content.replace(new RegExp("\\["+references[i]+"\\]", 'g'),Math.floor(references[i]/1000)+":"+references[i]%1000);
             }
             return content;
         };
@@ -270,10 +287,7 @@ angular.module('ionicApp')
             if ($location.path() == "/inference/new/") {
                 $scope.pagePurpose = "new";
                 inferenceId = 0;
-             }
-           
-
-            else {
+             }else {
                 $scope.pagePurpose = "edit";
             }
 
@@ -394,21 +408,32 @@ angular.module('ionicApp')
                                 $scope.content = editor.getContent();
                             })
                     },
-                    toolbar: " bold italic underline | alignleft aligncenter alignright |  forecolor "
+                    toolbar: " bold italic underline | alignleft aligncenter  |  bullist ",
+                    inline: false,
+                    theme : 'modern',
+                    menu: {}
 
                 };
+
+                $scope.froalaOptions = {
+                    charCounterCount: false,
+                    toolbarInline: true
+                };
+
             }
 
-            $scope.$on('userInfoReady', function handler() {
-                initFileManager('theView', $scope.user.id, function () {
-                    //$('inferenceImage').onchange=
-                    $timeout(function () {
-                        angular.element($('#inferenceImage')).triggerHandler('input');
-                    });
-                });
-                console.log("Image manager initialized for: " + $scope.user.id);
-            });
+            if(!config_data.isMobile) {
+                $scope.$on('userInfoReady', function handler() {
+                    initFileManager('theView', $scope.user.id, function () {
+                        //$('inferenceImage').onchange=
+                        $timeout(function () {
+                            angular.element($('#inferenceImage')).triggerHandler('input');
 
+                        });
+                    });
+                    console.log("Image manager initialized for: " + $scope.user.id);
+                });
+            }
 
         }
 

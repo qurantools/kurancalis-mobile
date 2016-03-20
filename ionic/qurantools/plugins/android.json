@@ -114,6 +114,9 @@
         },
         "cordova-sqlite-storage": {
             "PACKAGE_NAME": "org.quran.qurantools"
+        },
+        "me.rahul.plugins.sqlDB": {
+            "PACKAGE_NAME": "org.quran.qurantools"
         }
     },
     "dependent_plugins": {}

@@ -14,10 +14,12 @@ var config_data = {
     //'FBAppID': '506964319483452',
     'clientSecret':'e1c0f664bd3e803fce38a8d6399dba2d',
     'version':"1.4",
-    'isMobile':isMobile()
+    'isMobile':isMobile(),
+    'isNative':isNative()
 }
 
 var MAX_AUTHOR_MASK = "2147483647"; //32 authors
+var DEFAULT_TURKISH_AUTHOR_MASK = "523794";
 
 function isMobile() {
     //test for mobile
@@ -39,5 +41,8 @@ function isMobile() {
             return false;
         }
     }
+}
 
+function isNative(){
+    return (document.URL.indexOf( 'http://' ) === -1 && document.URL.indexOf( 'https://' ) === -1);
 }

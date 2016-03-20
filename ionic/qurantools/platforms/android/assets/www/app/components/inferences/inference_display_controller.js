@@ -1,5 +1,5 @@
 angular.module('ionicApp')
-    .controller('InferenceDisplayController', function ($scope, $routeParams, $location, authorization, localStorageService,  Restangular, $timeout,$sce,$ionicModal,$ionicPopup) {
+    .controller('InferenceDisplayController', function ($scope, $routeParams, $location, authorization, localStorageService,  Restangular, $timeout,$sce,$ionicModal,$ionicPopup, $cordovaSocialSharing) {
 
         //All scope variables
         $scope.inferenceId=0;
@@ -21,6 +21,7 @@ angular.module('ionicApp')
         $scope.tags = [];
         $scope.open_edit = true;
         $scope.authorizedInferenceDisplay = 0;
+        $scope.isNative = false;
 
         //On Off Switch
         $scope.inlineReferenceDisplay = false;
@@ -62,20 +63,21 @@ angular.module('ionicApp')
 
         //Edit inference
         $scope.edit_inference = function () {
-            $location.path('inference/edit/' + $scope.inferenceId + "/");
-            
-
+            $location.path('inference/edit/' + $scope.inferenceId + "/");           
         }
-        
+        $scope.goToInferenceList = function () {
+            $location.path('inferences');
+        }
+
         $scope.compileContent = function(original,verseList, verseIdList, inline){
             var outContent=original;
             for (var i = 0; i < verseIdList.length; i++) {
                 var verseId = verseIdList[i];
                 if(inline) {
-                    outContent = outContent.replace(verseId, Math.floor(verseId / 1000) + ":" + verseId % 1000 + " - " + $scope.referenced.verses[verseId].translation);
+                    outContent = outContent.replace(new RegExp("\\["+verseId+"\\]", 'g'), "["+Math.floor(verseId / 1000) + ":" + verseId % 1000 + " - " + $scope.referenced.verses[verseId].translation+"]");
                 }
                 else{
-                    outContent = outContent.replace(verseId, Math.floor(verseId / 1000) + ":" + verseId % 1000);
+                    outContent = outContent.replace(new RegExp("\\["+verseId+"\\]", 'g'), "["+Math.floor(verseId / 1000) + ":" + verseId % 1000+"]");
                 }
             }
 
@@ -123,6 +125,10 @@ angular.module('ionicApp')
                 }
             }, function(response) {
                 if (response.status == "400"){
+                    if (config_data.isMobile && $scope.access_token != ""){
+                        $location.path('/');
+                        return;
+                    }
                     $scope.authorizedInferenceDisplay = 2;
                 }
             });
@@ -225,12 +231,12 @@ angular.module('ionicApp')
             $timeout( function(){
                 $scope.inference_info(inferenceId);
             });
-            $scope.shareUrl =  $location.absUrl().split('#')[0] + "__/inference/display/" + $scope.inferenceId;
+
+            $scope.shareUrl =  config_data.webAddress + "/__/inference/display/" + $scope.inferenceId;
+
+            $scope.isNative = document.URL.indexOf( 'http://' ) === -1 && document.URL.indexOf( 'https://' ) === -1;
             $scope.shareTitle = "Çıkarım Paylaşma";
         };
-
-
-
 
         $scope.restoreInferenceDisplayViewParameters = function (localParameterData) {
             $scope.circlesForSearch = localParameterData.circles;
@@ -374,6 +380,23 @@ angular.module('ionicApp')
         }
         $scope.getChapterVerseNotation = function(verseId){
             return Math.floor(verseId/1000)+":"+ verseId%1000;
+        };
+
+        $scope.shareInference = function(){
+            $cordovaSocialSharing.share($scope.title, $scope.shareTitle, null, $scope.shareUrl);
+        }
+
+        $scope.callUrlCopied = function(){
+
+            var infoPopup = $ionicPopup.alert({
+                title: 'Url Bilgisi Kopyalandı.',
+                template: '',
+                buttons: []
+            });
+
+            $timeout(function() {
+                infoPopup.close(); //close the popup after 3 seconds for some reason
+            }, 1700);
         };
 
         //definitions are finished. Now run initialization

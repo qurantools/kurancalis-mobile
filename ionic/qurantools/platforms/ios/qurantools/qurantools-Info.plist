@@ -11,7 +11,7 @@
     <key>CFBundleExecutable</key>
     <string>${EXECUTABLE_NAME}</string>
     <key>CFBundleGetInfoString</key>
-    <string></string>
+    <string/>
     <key>CFBundleIconFile</key>
     <string>icon.png</string>
     <key>LSApplicationQueriesSchemes</key>
@@ -20,34 +20,25 @@
     </array>
     <key>NSAppTransportSecurity</key>
     <dict>
+      <key>NSAllowsArbitraryLoads</key>
+      <true/>
       <key>NSExceptionDomains</key>
       <dict>
-        <key>facebook.com</key>
-        <dict>
-          <key>NSIncludesSubdomains</key>
-          <true/>
-          <key>NSTemporaryExceptionAllowsInsecureHTTPLoads</key>
-          <true/>
-          <key>NSTemporaryExceptionRequiresForwardSecrecy</key>
-          <false/>
-        </dict>
+        <key>m.facebook.com</key>
+        <dict/>
+        <key>graph.facebook.com</key>
+        <dict/>
+        <key>api.facebook.com</key>
+        <dict/>
         <key>fbcdn.net</key>
         <dict>
           <key>NSIncludesSubdomains</key>
           <true/>
-          <key>NSTemporaryExceptionAllowsInsecureHTTPLoads</key>
-          <true/>
-          <key>NSTemporaryExceptionRequiresForwardSecrecy</key>
-          <false/>
         </dict>
-        <key>kurancalis.com</key>
+        <key>akamaihd.net</key>
         <dict>
           <key>NSIncludesSubdomains</key>
           <true/>
-          <key>NSTemporaryExceptionAllowsInsecureHTTPLoads</key>
-          <true/>
-          <key>NSTemporaryExceptionRequiresForwardSecrecy</key>
-          <false/>
         </dict>
       </dict>
     </dict>
@@ -108,11 +99,11 @@
     <key>CFBundleVersion</key>
     <string>1.2.0</string>
     <key>LSApplicationCategoryType</key>
-    <string></string>
+    <string/>
     <key>LSRequiresIPhoneOS</key>
     <true/>
     <key>NSMainNibFile~ipad</key>
-    <string></string>
+    <string/>
     <key>UILaunchImages</key>
     <array>
       <dict>
@@ -226,18 +217,6 @@
     <string>Kuran Çalış</string>
     <key>CFBundleURLTypes</key>
     <array>
-      <dict>
-        <key>CFBundleURLSchemes</key>
-        <array>
-          <string>fb123456789</string>
-        </array>
-      </dict>
-      <dict>
-        <key>CFBundleURLSchemes</key>
-        <array>
-          <string>fb123456789</string>
-        </array>
-      </dict>
       <dict>
         <key>CFBundleURLSchemes</key>
         <array>

@@ -1,0 +1,7 @@
+{
+    "libsqlite3.dylib": 2,
+    "Social.framework": 2,
+    "Accounts.framework": 1,
+    "Security.framework": 1,
+    "MessageUI.framework": 1
+}

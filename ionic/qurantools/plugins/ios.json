@@ -151,6 +151,9 @@
         },
         "cordova-sqlite-storage": {
             "PACKAGE_NAME": "io.cordova.hellocordova"
+        },
+        "me.rahul.plugins.sqlDB": {
+            "PACKAGE_NAME": "io.cordova.hellocordova"
         }
     },
     "dependent_plugins": {}
