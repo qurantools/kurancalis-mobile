@@ -152,6 +152,13 @@
         },
         "cordova-plugin-network-information": {
             "PACKAGE_NAME": "org.quran.qurantools"
+        },
+        "cordova-plugin-customurlscheme": {
+            "URL_SCHEME": "qurantools",
+            "PACKAGE_NAME": "org.quran.qurantools"
+        },
+        "cordova-plugin-device": {
+            "PACKAGE_NAME": "org.quran.qurantools"
         }
     },
     "dependent_plugins": {}
