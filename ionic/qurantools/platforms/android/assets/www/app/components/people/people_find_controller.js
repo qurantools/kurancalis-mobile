@@ -1,5 +1,5 @@
 angular.module('ionicApp')
-    .controller('PeopleFindCtrl', function ($scope, $routeParams, Facebook, Restangular, localStorageService) {
+    .controller('PeopleFindCtrl', function ($scope, $routeParams, Facebook, Restangular, localStorageService, $ionicModal) {
        
        var value = [];
        var select_circle;
@@ -34,7 +34,7 @@ angular.module('ionicApp')
             }
 
             if (ekle == "1") {
-                value.push({'people_id': people_id, 'status': status});
+                value.push({'people_id': people_id, 'status': status, 'drm' : status, 'kisid' : people_id});
                 $scope.visible_hidden = false;
             }
 
@@ -49,6 +49,7 @@ angular.module('ionicApp')
            var view_circleRestangular = Restangular.all("circles");
             view_circleRestangular.customGET("", {}, {'access_token': $scope.access_token}).then(function (circles) {
                 $scope.circle_name = circles;
+                $scope.cevreadlar = circles;
            });
        
        //Peoples add    
@@ -61,8 +62,10 @@ angular.module('ionicApp')
                 var status = value[i].status;
                 var the_people_id = value[i].people_id;
 
-                var close = document.getElementById(the_people_id);
-                close.checked = false;
+                if (!config_data.isMobile){
+                    var close = document.getElementById(the_people_id);
+                    close.checked = false;
+                }
 
                 if (status == true) {
                     var headers = {
@@ -88,9 +91,59 @@ angular.module('ionicApp')
         };
 
         $scope.inviteFriends= function(){
-            Facebook.ui({ method: 'apprequests',
-                message: 'Dosdoğru yolu BİRLİKTE bulmak için Kuran Çalışalım: http://kurancalis.com'});
+            var options = {
+                method: "apprequests",
+                message: "Dosdoğru yolu BİRLİKTE bulmak için Kuran Çalışalım: http://kurancalis.com"
+            };
+            if (config_data.isNative){
+                facebookConnectPlugin.showDialog(options, function(resp){
+                    console.log("sucess : " + JSON.stringify(resp));
+                });
+            }else if (config_data.isMobile){
+                FB.ui(options, function(resp){
+                    console.log("sucess : " + JSON.stringify(resp));
+                });
+            }else {
+                Facebook.ui(options);
+            }
+        };
 
-        }
+        $scope.openModal = function (item, id){
+            if (item == "circle_selection"){
+                var values = id === undefined ? value : [{'kisid' : id, 'drm' : true}];
+                $scope.$broadcast("add_user_to_circle", {callback:function(circle) {
+                    if (id === undefined){
+                        $scope.cevreadd(circle.id);
+                        $scope.peoples_add_circle();
+                        $scope.fb_friends.filter(function (item) {
+                            $scope.people_add(item.fbId, false);
+                            document.getElementById(item.fbId).children[0].children[0].checked = false;
+                        });
+                    }
+                    $scope.closeModal("circle_selection");
+                }, users: values});
+                $scope.modal_circle_selection.show();
+            };
+        };
+
+        $scope.closeModal = function (item){
+            if (item == "circle_selection"){
+                $scope.modal_circle_selection.hide();
+            }
+        };
+
+        $scope.init = function () {
+            if (config_data.isMobile){
+                $ionicModal.fromTemplateUrl('components/partials/add_user_to_circle.html', {
+                    scope: $scope,
+                    animation: 'slide-in-up',
+                    id: 'circle_selection'
+                }).then(function (modal) {
+                    $scope.modal_circle_selection = modal
+                });
+            };
+        };
+
+        $scope.init();
     });
     

@@ -2,24 +2,15 @@ angular.module('ionicApp').factory("dataProvider", function (Restangular, localD
         var factory = {};
         factory.callback = function(){};
 
-        factory.setReady = function (param){
+        factory.initDB = function(rt) {
             if (config_data.isNative){
-                localDataProvider.setReady(param);
-            }else{
-                //do nothing
-            }
-        };
-
-        factory.initDB = function() {
-            if (config_data.isNative){
-                localDataProvider.initDB();
+                localDataProvider.initDB(rt);
             }else{
                 //nothing
             }
         };
 
         factory.listAuthors = function (callback) {
-            console.log("authors list called in dataProvider. config_data.isNative : " + config_data.isNative);
             if (config_data.isNative){
                 localDataProvider.listAuthors(callback);
             }else{
@@ -41,19 +32,13 @@ angular.module('ionicApp').factory("dataProvider", function (Restangular, localD
             }
         };
 
-        factory.listVerses = function (args, callback) {
+        factory.listChapters = function (callback) {
             if (config_data.isNative){
-                localDataProvider.listVerses(args, callback);
+                localDataProvider.listChapters(callback);
             }else{
-
-            }
-        };
-
-        factory.listChapters = function (args, callback) {
-            if (config_data.isNative){
-                localDataProvider.listChapters(args, callback);
-            }else{
-
+                Restangular.all('chapters').getList().then(function(data){
+                   callback(data);
+                });
             }
         };
 
@@ -61,10 +46,54 @@ angular.module('ionicApp').factory("dataProvider", function (Restangular, localD
             if (config_data.isNative){
                 localDataProvider.listTranslations(args, callback);
             }else{
-
+                Restangular.all("translations").customGET("", args, {}).then(function(data){
+                    callback(data);
+                });
             }
         };
 
+        factory.fetchTranslationById = function (id, callback) {
+            if (config_data.isNative){
+                localDataProvider.fetchTranslationById(id, callback);
+            }else{
+                Restangular.one('translations', id).get().then(function(data){
+                    callback(data);
+                });
+            }
+        };
+
+        factory.fetchTranslationByAuthorAndVerseId = function (args, callback) {
+            if (config_data.isNative){
+                localDataProvider.fetchTranslationByAuthorAndVerseId(args, callback);
+            }else{
+                Restangular.one('authors', args.authorId)
+                    .one('verse', args.verseId).get().then(function(data){
+                    callback(data);
+                });
+            }
+        };
+
+        factory.fetchTranslationByAuthorAndVerseList = function (args, callback) {
+            if (config_data.isNative){
+                localDataProvider.fetchTranslationByAuthorAndVerseList(args, callback);
+            }else{
+                var translationsRestangular = Restangular.one("translations").all("list");
+                translationsRestangular.customGET("", {author:args.author, verse_list:args.verse_list}, {'access_token': args.access_token}).then(function(data){
+                    callback(data);
+                });
+            }
+        };
+
+        factory.searchTranslationByKeyword = function(args, callback){
+            if (config_data.isNative){
+                localDataProvider.searchTranslationByKeyword(args, callback);
+            }else{
+                var translationsRestangular = Restangular.one("translations").all("search_keyword");
+                translationsRestangular.customGET("", {language:args.language, keyword:args.keyword}, {}).then(function(data){
+                    callback(data);
+                });
+            }
+        };
 
         return factory;
 }).factory('ListAuthors', function ($resource) {

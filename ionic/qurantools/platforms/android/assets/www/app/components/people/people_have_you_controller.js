@@ -1,5 +1,5 @@
 angular.module('ionicApp')
-    .controller('PeopleHaveYouCtrl', function ($scope, $routeParams, Facebook, Restangular, localStorageService) {
+    .controller('PeopleHaveYouCtrl', function ($scope, $routeParams, Facebook, Restangular, localStorageService, $ionicModal) {
          var value = [];
        var csec;
        $scope.hidden_visible = true;
@@ -32,10 +32,9 @@ angular.module('ionicApp')
             }
 
             if (add == "1") {
-                value.push({'people_id': people_id, 'status': status});
+                value.push({'people_id': people_id, 'status': status, 'drm' : status, 'kisid' : people_id});
                 $scope.hidden_visible = false;
             }
-
         };
         
          $scope.other_circle = false;
@@ -47,6 +46,7 @@ angular.module('ionicApp')
            var view_circleRestangular = Restangular.all("circles");
             view_circleRestangular.customGET("", {}, {'access_token': $scope.access_token}).then(function (circle_list) {
                 $scope.circle_names = circle_list;
+                $scope.cevreadlar = circle_list;
            });
            
            //Peoples add    
@@ -82,6 +82,39 @@ angular.module('ionicApp')
 
             value.length = 0;
             $scope.hidden_visible = true;
-
         };
+
+        $scope.openModal = function (item){
+            if (item == "circle_selection"){
+                $scope.$broadcast("add_user_to_circle", {callback:function(new_circle){
+                    $scope.circle_friends.filter(function(item){
+                        $scope.add_people(item.user_id, false);
+                        document.getElementById(item.user_id).children[0].children[0].checked = false;
+                    });
+                    $scope.scopeApply();
+                    $scope.closeModal("circle_selection");
+                }, users: value});
+                $scope.modal_circle_selection.show();
+            };
+        };
+
+        $scope.closeModal = function (item){
+            if (item == "circle_selection"){
+                $scope.modal_circle_selection.hide();
+            }
+        };
+
+        $scope.init = function () {
+            if (config_data.isMobile){
+                $ionicModal.fromTemplateUrl('components/partials/add_user_to_circle.html', {
+                    scope: $scope,
+                    animation: 'slide-in-up',
+                    id: 'circle_selection'
+                }).then(function (modal) {
+                    $scope.modal_circle_selection = modal
+                });
+            };
+        };
+
+        $scope.init();
     });

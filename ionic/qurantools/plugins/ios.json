@@ -63,6 +63,22 @@
                         {
                             "xml": "<access origin=\"https://*.akamaihd.net\" />",
                             "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"sqlDB\"><param name=\"ios-package\" value=\"sqlDB\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"SQLitePlugin\"><param name=\"ios-package\" value=\"SQLitePlugin\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"SocialSharing\"><param name=\"ios-package\" value=\"SocialSharing\" /><param name=\"onload\" value=\"true\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"NetworkStatus\"><param name=\"ios-package\" value=\"CDVConnection\" /></feature>",
+                            "count": 1
                         }
                     ]
                 }
@@ -96,6 +112,24 @@
                     "Security.framework": [
                         {
                             "xml": true,
+                            "count": 1
+                        }
+                    ],
+                    "MessageUI.framework": [
+                        {
+                            "xml": true,
+                            "count": 1
+                        }
+                    ],
+                    "SystemConfiguration.framework": [
+                        {
+                            "xml": true,
+                            "count": 1
+                        }
+                    ],
+                    "CoreTelephony.framework": [
+                        {
+                            "xml": false,
                             "count": 1
                         }
                     ]
@@ -146,13 +180,16 @@
             "APP_NAME": "Kuran Çalış",
             "PACKAGE_NAME": "org.quran.qurantools"
         },
+        "me.rahul.plugins.sqlDB": {
+            "PACKAGE_NAME": "org.quran.qurantools"
+        },
+        "cordova-sqlite-storage": {
+            "PACKAGE_NAME": "org.quran.qurantools"
+        },
         "cordova-plugin-x-socialsharing": {
             "PACKAGE_NAME": "io.cordova.hellocordova"
         },
-        "cordova-sqlite-storage": {
-            "PACKAGE_NAME": "io.cordova.hellocordova"
-        },
-        "me.rahul.plugins.sqlDB": {
+        "cordova-plugin-network-information": {
             "PACKAGE_NAME": "io.cordova.hellocordova"
         }
     },

@@ -61,10 +61,10 @@
             "APP_NAME": "Kuran Çalış"
         }
     },
-    "cordova-plugin-x-socialsharing": {
+    "me.rahul.plugins.sqlDB": {
         "source": {
             "type": "git",
-            "url": "https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin.git",
+            "url": "https://github.com/an-rahulpandey/cordova-plugin-dbcopy.git",
             "subdir": "."
         },
         "is_top_level": true,
@@ -79,11 +79,19 @@
         "is_top_level": true,
         "variables": {}
     },
-    "me.rahul.plugins.sqlDB": {
+    "cordova-plugin-x-socialsharing": {
         "source": {
             "type": "git",
-            "url": "https://github.com/an-rahulpandey/cordova-plugin-dbcopy.git",
+            "url": "https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin.git",
             "subdir": "."
+        },
+        "is_top_level": true,
+        "variables": {}
+    },
+    "cordova-plugin-network-information": {
+        "source": {
+            "type": "registry",
+            "id": "cordova-plugin-network-information"
         },
         "is_top_level": true,
         "variables": {}

@@ -4,9 +4,14 @@
     </ion-header-bar>
     <ion-content>
         <ul class="list">
+            <a ng-if="user!=null" href="#/profile/user/" class="item" menu-close="">Zaman Tüneli - Kişiler</a>
+            <a ng-if="user!=null" href="#/profile/circle/" class="item" menu-close="">Zaman Tüneli - Çevreler</a>
             <a href="#/translations/" class="item" menu-close="">Sureler</a>
-            <a ng-if="user!=null"href="#/annotations/" class="item" menu-close="">Ayet Notları</a>
-            <a ng-if="user!=null"href="#/inferences/" class="item" menu-close="">Çıkarım Notları</a>
+            <a href="#/search_translations/" class="item" menu-close="">Meallerde Arama</a>
+            <a ng-if="user!=null" href="#/annotations/" class="item" menu-close="">Ayet Notları</a>
+            <a ng-if="user!=null" href="#/inferences/" class="item" menu-close="">Çıkarım Notları</a>
+            <a ng-if="user!=null" href="#/lists/verse/" class="item" menu-close="">Ayet Listelerim</a>
+            <a ng-if="user!=null" href="#/people/home/" class="item" menu-close="">Kişiler</a>
             <a href="#/help/" class="item" menu-close="">Yardım</a>
             <a ng-if="user!=null" href ng-click="logOut()" class="item">Çıkış</a>
             <a ng-if="user==null" href ng-click="login()" class="item" menu-close>Giriş</a>

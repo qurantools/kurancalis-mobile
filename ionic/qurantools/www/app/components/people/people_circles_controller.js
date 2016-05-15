@@ -1,10 +1,12 @@
 var mymodal = angular.module('ionicApp')
-    .controller('PeopleCirclesCtrl', function ($scope, $routeParams, Facebook, Restangular, localStorageService, $window) {
+    .controller('PeopleCirclesCtrl', function ($scope, $routeParams, Facebook, Restangular, localStorageService, $window, $timeout, $ionicModal, $ionicPopup) {
 
         $scope.testData = "circles";
         $scope.ackapakisi = true;
         $scope.ackapa = true;
+        $scope.showAddButton = false;
 
+        $scope.createNewCircleCallBack = $scope.createNewCircleCallBack || function(cevre){};
 
         var deger = [];
         var csec;
@@ -90,17 +92,28 @@ var mymodal = angular.module('ionicApp')
             cevregosterRestangular.customGET("", {}, {'access_token': $scope.access_token}).then(function (cevreliste) {
                 $scope.cevreadlar = cevreliste;
                 $scope.dcevreadlar = cevreliste;
+
+                if (config_data.isMobile){
+                    if (typeof $routeParams.circleid !== 'undefined') {
+                        var selectedCircle = $scope.cevreadlar.filter(function(item){
+                            return item.id+"" == $routeParams.circleid;
+                        })[0];
+                        $scope.kisigoruntule(selectedCircle.id, selectedCircle.name);
+                    }
+                }
             });
         };
 
         cevregoster = function (circleid, cvrad) {
             var cevregosterRestangular = Restangular.all("circles");
             cevregosterRestangular.customGET("", {}, {'access_token': $scope.access_token}).then(function (cevreliste) {
-                //$scope.cevreadlar = cevreliste;
+                if (config_data.isMobile){
+                    $scope.cevreadlar = cevreliste;
+                }
                 $scope.dcevreadlar = cevreliste;
                 for (var i = 0; i < cevreliste.length; i++) {
                     var ls = cevreliste[i].id;
-                    if (ls == circleid) {
+                    if (ls == circleid && !config_data.isMobile) {
                         var lbl = document.getElementById('lb' + circleid);
                         lbl.textContent = cevreliste[i].user_count;
 
@@ -108,7 +121,6 @@ var mymodal = angular.module('ionicApp')
                         lblad.textContent = cevreliste[i].name;
                     }
                 }
-
             });
         };
 
@@ -128,7 +140,6 @@ var mymodal = angular.module('ionicApp')
                 cirlist.push({'user_count': '0', 'id': circleUsers.id, 'name': circleUsers.name});
 
                 $scope.cevreadlar.push(cirlist[0]);
-
             });
         };
 
@@ -223,22 +234,24 @@ var mymodal = angular.module('ionicApp')
         $scope.kisigoruntule = function (circleid, circlead) {
             var kisialRestangular = Restangular.one("circles", circleid).all("users");
             kisialRestangular.customGET("", "", {'access_token': $scope.access_token}).then(function (kisiler) {
-
-                var lblad = document.getElementById('ad' + circleid);
-                circlead = lblad.textContent;
+                if (!config_data.isMobile) {
+                    var lblad = document.getElementById('ad' + circleid);
+                    circlead = lblad.textContent;
+                }
 
                 if ($scope.cevretanim != circlead) {
-                    $scope.cevrekisiler = kisiler;
+                    $scope.cevrekisiler = _.filter(kisiler, function(token) {
+                        token.selected = false;
+                        return true;
+                    });
                     if (!$scope.$$phase) {
                         $scope.$apply();
                     }
                 }
-
                 cevreidyaz(circleid, circlead);
                 deger.length = 0;
                 $scope.ackapakisi = false;
             });
-
         };
 
         cevreidyaz = function (cevreid, circlead) {
@@ -275,14 +288,11 @@ var mymodal = angular.module('ionicApp')
                 deger.push({'kisid': kisid, 'drm': drm});
                 $scope.ackapa = false;
             }
-
         };
 
         $scope.cevreadd = function (csecim) {
-
             csec = csecim;
         };
-
 
         $scope.kisisilme = function (circleid) {
             for (var i = 0; i < deger.length; i++) {
@@ -339,9 +349,90 @@ var mymodal = angular.module('ionicApp')
 
             deger.length = 0;
             $scope.ackapa = true;
-
         };
 
+        $scope.toggleButton = function(){
+            $scope.showAddButton = !$scope.showAddButton;
+        };
+
+        $scope.openModal = function (item){
+            if (item == 'add_people'){
+                $scope.query_users = [];
+                $scope.query_users = _.filter($scope.cevrekisiler, function(item){
+                    $scope.query_users.push(item);
+                    return true;
+                });
+                $scope.modal_friend_search.show();
+            } else if (item == "circle_selection"){
+                $scope.$broadcast("add_user_to_circle", {callback:function(new_circle){
+                    $scope.closeModal("circle_selection");
+                }, users: deger});
+                $scope.modal_circle_selection.show();
+            };
+        };
+
+        $scope.closeModal = function (item){
+            if (item == 'friendsearch'){
+                if ($scope.query_users.length > $scope.cevrekisiler.length){
+                    var user = $scope.query_users[$scope.query_users.length-1];
+                    $scope.kisiekle(user.id,$scope.cvrid);
+                }
+                $scope.modal_friend_search.hide();
+            } else if (item == "circle_selection"){
+                $scope.modal_circle_selection.hide();
+            }
+        };
+
+        $scope.createNewCircle = function(){
+            $scope.item = {};
+            $scope.item.name = "";
+            var promptPopup = $ionicPopup.prompt({
+                template: '<input type="text" ng-model="item.name">',
+                title: 'Yeni Çevre Oluştur',
+                scope : $scope,
+                inputType: 'text',
+                inputPlaceholder: 'Çevre Tanımı',
+            });
+
+            promptPopup.then(function(res) {
+                if (isDefined(res) && $scope.item.name != ""){
+                    $scope.cevrekle($scope.item.name);
+                }
+            });
+        };
+
+        $scope.deleteCircle = function(item){
+            var confirmPop = $ionicPopup.confirm({
+                title: 'Çevre Silme',
+                template: '<b>'+ item.name + "</b> çevresini silmek istiyor musunuz?",
+                cancelText: 'Hayır',
+                okText: 'Sil',
+                okType : 'button-assertive'
+            });
+
+            confirmPop.then(function (res) {
+                if (res) {
+                    $scope.cevresil(item.id);
+                }
+            });
+        };
+
+        $scope.updateCircle = function (item) {
+            $scope.item = $.extend( true, {}, item );
+            var promptPopup = $ionicPopup.prompt({
+                template: '<input type="text" ng-model="item.name">',
+                title: 'İsim Değiştirme',
+                scope : $scope,
+                inputType: 'text',
+                inputPlaceholder: 'Çevre Tanımı',
+            });
+
+            promptPopup.then(function(res) {
+                if (isDefined(res) && $scope.item.name != item.name){
+                    $scope.cevredegistir(item.id, $scope.item.name);
+                }
+            });
+        };
 
         $scope.initializePeopleCircles = function () {
             $scope.checkUserLoginStatus();
@@ -350,7 +441,23 @@ var mymodal = angular.module('ionicApp')
                 window.location.href = '#/';
             }
             $scope.cevreadlar = cevrelisteac();
-        }
+            if (config_data.isMobile){
+                $ionicModal.fromTemplateUrl('components/partials/add_friend_to_search.html', {
+                    scope: $scope,
+                    animation: 'slide-in-up',
+                    id: 'friendsearch'
+                }).then(function (modal) {
+                    $scope.modal_friend_search = modal
+                });
+                $ionicModal.fromTemplateUrl('components/partials/add_user_to_circle.html', {
+                    scope: $scope,
+                    animation: 'slide-in-up',
+                    id: 'circle_selection'
+                }).then(function (modal) {
+                    $scope.modal_circle_selection = modal
+                });
+            };
+        };
 
         //definitions are finished. Now run initialization
         $scope.initializePeopleCircles();

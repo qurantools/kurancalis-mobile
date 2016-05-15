@@ -277,11 +277,8 @@ angular.module('ionicApp')
             $scope.allAnnotationsOrderBy = selectedOrderOption;
             $scope.allAnnotationsOpts.start = 0;
             $scope.get_all_annotations();
-        }
+        };
 
-
-
-        $scope.tempAnnotation;
         //delete operation for annotations page
         $scope.deleteAnnotation = function (annotation) {
 
@@ -311,32 +308,24 @@ angular.module('ionicApp')
                      }
                    });
             }else{
-                
-                 $("#deleteAnnotationModal").modal("show");
-                 $scope.tempAnnotation =annotation;
+                 $scope.showAnnotationDeleteModal(annotation, $scope.mdeleteAnnotation);
             }
-        }
+        };
 
-         $scope.closeAnnotationModal = function(){
-            $("#deleteAnnotationModal").modal("hide");
-        }
-
-        $scope.mdeleteAnnotation = function(){
-             var annotationRestangular = Restangular.one("annotations", $scope.tempAnnotation.annotationId);
+        $scope.mdeleteAnnotation = function(annotation){
+             var annotationRestangular = Restangular.one("annotations", annotation.annotationId);
              annotationRestangular.customDELETE("", {}, {'access_token': $scope.access_token}).then(function (result) {
-
                 if (result.code == '200') {
                     var annotationIndex = $scope.getIndexOfArrayByElement($scope.annotations, 'annotationId', $scope.tempAnnotation.annotationId);
                          if (annotationIndex > -1) {
                          $scope.annotations.splice(annotationIndex, 1);
                          }
                  }
-                    });
-            $("#deleteAnnotationModal").modal("hide");
-        }
+             });
+        };
 
 
-        $scope.submitEditor = function () {
+        $scope.submitEditor = function (annotationModalData) {
 
             if (config_data.isMobile) {
                 //prepare canView circle list
@@ -348,27 +337,17 @@ angular.module('ionicApp')
                 }
             }
 
-            //get tag Parameters
-            var tagParameters = $scope.getTagParametersForAnnotatorStore($scope.ViewCircles, $scope.yrmcevres, $scope.ViewUsers, $scope.yrmkisis, $scope.annotationModalDataTagsInput)
-            //now annotationModalData belogs to root scope, may be we can get it later
-            $scope.annotationModalData.canViewCircles = tagParameters.canViewCircles;
-            $scope.annotationModalData.canCommentCircles = tagParameters.canCommentCircles;
-            $scope.annotationModalData.canViewUsers = tagParameters.canViewUsers;
-            $scope.annotationModalData.canCommentUsers = tagParameters.canCommentUsers;
-            $scope.annotationModalData.tags = tagParameters.tags;
-
             $scope.editorSubmitted = 1;
 
-            $scope.updateAnnotation($scope.annotationModalData);
+            $scope.updateAnnotation(annotationModalData);
 
             //coming from another page fix
-            if ($scope.getIndexOfArrayByElement($scope.annotations, 'annotationId', $scope.annotationModalData.annotationId) == -1) {
-                $scope.addAnnotation($scope.annotationModalData);
+            if ($scope.getIndexOfArrayByElement($scope.annotations, 'annotationId', annotationModalData.annotationId) == -1) {
+                $scope.addAnnotation(annotationModalData);
             }
             if (config_data.isMobile) {
                 $scope.closeModal('editor');
             }
-
         };
 
         //update  annotation fro Annotations page
@@ -570,14 +549,6 @@ angular.module('ionicApp')
                     $scope.modal_all_annotations_sort = modal
                 });
 
-                $ionicModal.fromTemplateUrl('components/partials/editor_modal.html', {
-                    scope: $scope,
-                    animation: 'slide-in-left',
-                    id: 'editor'
-                }).then(function (modal) {
-                    $scope.setModalEditor(modal);
-                });
-
                 $ionicModal.fromTemplateUrl('components/partials/add_canviewuser.html', {
                     scope: $scope,
                     //animation: 'slide-in-right',
@@ -628,11 +599,13 @@ angular.module('ionicApp')
                         $scope.getModalEditor().show();
                     } else  if (id == 'viewusersearch') {
                         $scope.modal_add_canviewuser.show();
+                        focusToInput('mobil_peoples')
                     } else  if (id == 'addUserToAllAnnotationsSearch') {
                         $scope.modal_addUserToAllAnnotationsSearch.show();
+                        focusToInput('add_view_user_toAllAnnotationsSearch_people');
                     } else  if (id == 'tagsearch') {
                         $scope.modal_tag_search.show();
-                        focusToInput('tagsearch_input');
+                        focusToInput('addtagtoannotation_input');
                     } else  if (id == 'addtagtosearch') {
                         $scope.modal_addtagtosearch.show();
                         focusToInput('addtagtosearch_input');
@@ -669,6 +642,10 @@ angular.module('ionicApp')
                 }
             });
 
+        };
+
+        $scope.showEditor = function (annotation, position) {
+            $scope.showEditorModal(annotation, position, $scope.submitEditor);
         };
 
         $scope.editAnnotation= function (annotation){

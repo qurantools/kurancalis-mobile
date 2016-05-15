@@ -1,8 +1,8 @@
-<div class="modal modal-fullscreen">
+<div class="modal modal-fullscreen"  id="taggedVerseModal">
     <ion-nav-bar animation="nav-title-slide-ios7" class="bar-balanced" align-title="center">
         <ion-nav-title>Etiketli Ayetler</ion-nav-title>
-        <ion-nav-buttons side="right">
-            <button class="button button-icon icon-left ion-checkmark"
+        <ion-nav-buttons side="left">
+            <button class="button button-icon icon-left ion-close-circled"
                     ng-click="closeModal('tagged_verse');"
                     style="float: right">
             </button>
@@ -10,13 +10,13 @@
     </ion-nav-bar>
     <ion-header-bar class="bar bar-subheader item-input-inset">
         <div class="col-xs-12 col-sm-9" style="width: 100%;height: 100%;">
-            <label class="item-input-wrapper">
-                {{verseTagContentParams.verse_tags}}
+            <label class="item-input-wrapper" style="font-weight: bold; font-size: 18px">
+               {{verseTagContentParams.verse_tags}}
             </label><br/>
         </div>
     </ion-header-bar>
-    <ion-content>
-        <div class="col-xs-12 col-sm-9" ng-click="openModal('tagged_verse_detailed_search');">
+    <ion-content delegate-handle="content">
+        <div class="col-xs-12 col-sm-9" ng-click="openModal('tagged_verse_detailed_search');" id="tagged_verse_content">
             <div class="list">
                 <div class="item item-divider">
                     Etiket Sahipleri
@@ -47,8 +47,10 @@
         <div>
             <div ng-repeat="verseTagContent in verseTagContents">
                 <div ng-repeat="verseTagContentTranslation in verseTagContent.translations"
-                     ng-if="verseTagContentTranslation.authorId==verseTagContentAuthor">
-                    <strong>{{verseTagContentTranslation.verseId / 1000 | number:0}}:{{verseTagContentTranslation.verseId % 1000}}</strong>
+                     ng-if="verseTagContentTranslation.authorId==verseTagContentAuthor" style="padding-left: 3px;padding-right: 5px">
+                    <a style="color: blue" ng-click='showVerseDetail(verseTagContentTranslation.verseId, taggedVerseUsers, taggedVerseCircles)'>
+                        <strong >{{verseTagContentTranslation.verseId / 1000 | number:0}}:{{verseTagContentTranslation.verseId % 1000}}</strong>
+                    </a>
                     <span ng-class="{translation_rtl: authorMap[verseTagContentTranslation.authorId].language=='ar'}">{{verseTagContentTranslation.content}}</span>
                 </div>
             </div>

@@ -71,7 +71,7 @@
                 "parents": {
                     "/*": [
                         {
-                            "xml": "<string name=\"fb_app_id\">400142910165594</string>",
+                            "xml": "<string name=\"fb_app_id\">295857580594128</string>",
                             "count": 1
                         },
                         {
@@ -129,7 +129,7 @@
             "PACKAGE_NAME": "org.quran.qurantools"
         },
         "phonegap-facebook-plugin": {
-            "APP_ID": "400142910165594",
+            "APP_ID": "295857580594128",
             "APP_NAME": "Kuran Çalış",
             "PACKAGE_NAME": "org.quran.qurantools"
         },

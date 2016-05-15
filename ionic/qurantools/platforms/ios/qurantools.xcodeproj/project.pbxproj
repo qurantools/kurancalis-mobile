@@ -46,14 +46,21 @@
 		7E7966E71810823500FA85AD /* icon-small@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 7E7966DD1810823500FA85AD /* icon-small@2x.png */; };
 		95F548E0A0AD4C98AFD8A2B4 /* UIWebViewExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D46557EAE0F45D3A27DEC07 /* UIWebViewExtension.m */; };
 		B430153916CE41E49C2259AE /* IonicKeyboard.m in Sources */ = {isa = PBXBuildFile; fileRef = 91D801B1644E4B719C0F990B /* IonicKeyboard.m */; };
-		BFF26E6CBC3D4E4CB81B4EDB /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 6FC368D146114388963FE570 /* libsqlite3.dylib */; };
 		D4A0D8761607E02300AEF8BB /* Default-568h@2x~iphone.png in Resources */ = {isa = PBXBuildFile; fileRef = D4A0D8751607E02300AEF8BB /* Default-568h@2x~iphone.png */; };
-		DCD0AB5379EB4629950B4248 /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A5F5B6E2C61342F38E23A0FC /* Social.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		E32B77EC2C0748B0B5813A33 /* CDVInAppBrowser.m in Sources */ = {isa = PBXBuildFile; fileRef = 3B75198B6AEF478EAF5C893F /* CDVInAppBrowser.m */; };
 		F58CEC788B18458E816D497D /* FacebookConnectPlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = A1193299B9E94CE0BB0958C2 /* FacebookConnectPlugin.m */; };
-		1EB79556BC6343CEAA077239 /* SQLitePlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = C8E36B58A85148F8B9968A2B /* SQLitePlugin.m */; };
-		7A0C97AED1B943C98FDA5D23 /* sqlDB.h in Resources */ = {isa = PBXBuildFile; fileRef = 2FB2F7E512574979959A36B6 /* sqlDB.h */; };
-		44FECB7059934C3D97DD06DF /* sqlDB.m in Sources */ = {isa = PBXBuildFile; fileRef = 7865417EC5E848D7B90509C8 /* sqlDB.m */; };
+		827E907B51334C109FD12C20 /* sqlDB.h in Resources */ = {isa = PBXBuildFile; fileRef = 9112F68E9AF6445297AEA5BA /* sqlDB.h */; };
+		63315C4FC18B429EAC147CFE /* sqlDB.m in Sources */ = {isa = PBXBuildFile; fileRef = 029C96FC3F954904925F8ECF /* sqlDB.m */; };
+		70724763C7E543FD98AE41C2 /* SQLitePlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F634186C3E546DD8490E605 /* SQLitePlugin.m */; };
+		3EBE4C687E7E41909D1B6A82 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 3B44A23F36DB4C559A547DA3 /* libsqlite3.dylib */; };
+		E81A5B85586C4C6ABBBA7598 /* NSString+URLEncoding.m in Sources */ = {isa = PBXBuildFile; fileRef = 0629FF6C39024144B2E85C8D /* NSString+URLEncoding.m */; };
+		3D21D81E554546C38F42ADC4 /* SocialSharing.m in Sources */ = {isa = PBXBuildFile; fileRef = 165F8B2002D44DB0895AFECC /* SocialSharing.m */; };
+		09E53F9F1C31498CBB441A31 /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 84A49DF55E77424D94D87288 /* Social.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		6DD851B984DF45938978F975 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B166B6D47AE64C519685E477 /* MessageUI.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		73D1C4A508234F4CA0558908 /* CDVConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = 239C1B6B757447C99F971FAD /* CDVConnection.m */; };
+		C47F5C0AFD424D03A5B9DC87 /* CDVReachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 191B3CA4E6F14E1C9C12EC62 /* CDVReachability.m */; };
+		9946F33D59C948E58F149FC5 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A0963BA115D4C90A66D6999 /* SystemConfiguration.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		66CD384D303E4C77967A5DFF /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8FECF931386F41CE8AB45697 /* CoreTelephony.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -109,7 +116,6 @@
 		3FA13BF7439E4C2DB7DA508A /* CDVStatusBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CDVStatusBar.m; path = org.apache.cordova.statusbar/CDVStatusBar.m; sourceTree = "<group>"; };
 		40A689A5B5E2416DA17CEA38 /* IonicKeyboard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IonicKeyboard.h; path = "ionic-plugin-keyboard/IonicKeyboard.h"; sourceTree = "<group>"; };
 		5B1594DC16A7569C00FEF299 /* AssetsLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AssetsLibrary.framework; path = System/Library/Frameworks/AssetsLibrary.framework; sourceTree = SDKROOT; };
-		6FC368D146114388963FE570 /* libsqlite3.dylib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
 		7E7966D41810823500FA85AD /* icon-40.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon-40.png"; sourceTree = "<group>"; };
 		7E7966D51810823500FA85AD /* icon-40@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon-40@2x.png"; sourceTree = "<group>"; };
 		7E7966D61810823500FA85AD /* icon-50.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon-50.png"; sourceTree = "<group>"; };
@@ -125,7 +131,6 @@
 		978C31BA48AB44569F94EF78 /* CDVLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDVLogger.h; path = org.apache.cordova.console/CDVLogger.h; sourceTree = "<group>"; };
 		A1193299B9E94CE0BB0958C2 /* FacebookConnectPlugin.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FacebookConnectPlugin.m; path = "phonegap-facebook-plugin/FacebookConnectPlugin.m"; sourceTree = "<group>"; };
 		A24E55AC01464CC691684DA3 /* Accounts.framework */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.framework; name = Accounts.framework; path = System/Library/Frameworks/Accounts.framework; sourceTree = SDKROOT; };
-		A5F5B6E2C61342F38E23A0FC /* Social.framework */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.framework; name = Social.framework; path = System/Library/Frameworks/Social.framework; sourceTree = SDKROOT; };
 		B12B56057E05498FB496AF9E /* FacebookSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FacebookSDK.framework; path = "qurantools/Plugins/phonegap-facebook-plugin/FacebookSDK.framework"; sourceTree = "<group>"; };
 		B634EC7CEBE0487681254E3D /* FacebookConnectPlugin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FacebookConnectPlugin.h; path = "phonegap-facebook-plugin/FacebookConnectPlugin.h"; sourceTree = "<group>"; };
 		D0AC415B09414E3FAA752A01 /* Security.framework */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
@@ -136,10 +141,23 @@
 		F04F8634286E407D8450C3BF /* CDVSpinnerDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDVSpinnerDialog.h; path = com.filfatstudios.spinnerdialog/CDVSpinnerDialog.h; sourceTree = "<group>"; };
 		F840E1F0165FE0F500CFE078 /* config.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = config.xml; path = qurantools/config.xml; sourceTree = "<group>"; };
 		FEAD870C5C824FA28DB6681C /* CDVInAppBrowser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDVInAppBrowser.h; path = org.apache.cordova.inappbrowser/CDVInAppBrowser.h; sourceTree = "<group>"; };
-		C8E36B58A85148F8B9968A2B /* SQLitePlugin.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "SQLitePlugin.m"; path = "cordova-sqlite-storage/SQLitePlugin.m"; sourceTree = "<group>"; fileEncoding = 4; };
-		BD84F50374554E23B161C9CE /* SQLitePlugin.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "SQLitePlugin.h"; path = "cordova-sqlite-storage/SQLitePlugin.h"; sourceTree = "<group>"; fileEncoding = 4; };
-		2FB2F7E512574979959A36B6 /* sqlDB.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "sqlDB.h"; path = "me.rahul.plugins.sqlDB/sqlDB.h"; sourceTree = "<group>"; fileEncoding = 4; };
-		7865417EC5E848D7B90509C8 /* sqlDB.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "sqlDB.m"; path = "me.rahul.plugins.sqlDB/sqlDB.m"; sourceTree = "<group>"; fileEncoding = 4; };
+		9112F68E9AF6445297AEA5BA /* sqlDB.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "sqlDB.h"; path = "me.rahul.plugins.sqlDB/sqlDB.h"; sourceTree = "<group>"; fileEncoding = 4; };
+		029C96FC3F954904925F8ECF /* sqlDB.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "sqlDB.m"; path = "me.rahul.plugins.sqlDB/sqlDB.m"; sourceTree = "<group>"; fileEncoding = 4; };
+		3F634186C3E546DD8490E605 /* SQLitePlugin.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "SQLitePlugin.m"; path = "cordova-sqlite-storage/SQLitePlugin.m"; sourceTree = "<group>"; fileEncoding = 4; };
+		B69F438AFE67451AA969219F /* SQLitePlugin.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "SQLitePlugin.h"; path = "cordova-sqlite-storage/SQLitePlugin.h"; sourceTree = "<group>"; fileEncoding = 4; };
+		3B44A23F36DB4C559A547DA3 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libsqlite3.dylib"; path = "usr/lib/libsqlite3.dylib"; sourceTree = SDKROOT; fileEncoding = 4; };
+		0629FF6C39024144B2E85C8D /* NSString+URLEncoding.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "NSString+URLEncoding.m"; path = "cordova-plugin-x-socialsharing/NSString+URLEncoding.m"; sourceTree = "<group>"; fileEncoding = 4; };
+		165F8B2002D44DB0895AFECC /* SocialSharing.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "SocialSharing.m"; path = "cordova-plugin-x-socialsharing/SocialSharing.m"; sourceTree = "<group>"; fileEncoding = 4; };
+		A3FF10A0F4ED404BBF61A417 /* NSString+URLEncoding.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "NSString+URLEncoding.h"; path = "cordova-plugin-x-socialsharing/NSString+URLEncoding.h"; sourceTree = "<group>"; fileEncoding = 4; };
+		662BFF77636F431EA39911BE /* SocialSharing.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "SocialSharing.h"; path = "cordova-plugin-x-socialsharing/SocialSharing.h"; sourceTree = "<group>"; fileEncoding = 4; };
+		84A49DF55E77424D94D87288 /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "Social.framework"; path = "System/Library/Frameworks/Social.framework"; sourceTree = SDKROOT; fileEncoding = 4; };
+		B166B6D47AE64C519685E477 /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "MessageUI.framework"; path = "System/Library/Frameworks/MessageUI.framework"; sourceTree = SDKROOT; fileEncoding = 4; };
+		239C1B6B757447C99F971FAD /* CDVConnection.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "CDVConnection.m"; path = "cordova-plugin-network-information/CDVConnection.m"; sourceTree = "<group>"; fileEncoding = 4; };
+		191B3CA4E6F14E1C9C12EC62 /* CDVReachability.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "CDVReachability.m"; path = "cordova-plugin-network-information/CDVReachability.m"; sourceTree = "<group>"; fileEncoding = 4; };
+		B1568C0B22494D6C8C42C501 /* CDVConnection.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "CDVConnection.h"; path = "cordova-plugin-network-information/CDVConnection.h"; sourceTree = "<group>"; fileEncoding = 4; };
+		952C462CDF1A42AD965E50AC /* CDVReachability.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "CDVReachability.h"; path = "cordova-plugin-network-information/CDVReachability.h"; sourceTree = "<group>"; fileEncoding = 4; };
+		4A0963BA115D4C90A66D6999 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "SystemConfiguration.framework"; path = "System/Library/Frameworks/SystemConfiguration.framework"; sourceTree = SDKROOT; fileEncoding = 4; };
+		8FECF931386F41CE8AB45697 /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "CoreTelephony.framework"; path = "System/Library/Frameworks/CoreTelephony.framework"; sourceTree = SDKROOT; fileEncoding = 4; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -152,10 +170,13 @@
 				288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */,
 				305D5FD1115AB8F900A74A75 /* MobileCoreServices.framework in Frameworks */,
 				6714DB43B0A347279A70FB64 /* FacebookSDK.framework in Frameworks */,
-				BFF26E6CBC3D4E4CB81B4EDB /* libsqlite3.dylib in Frameworks */,
-				DCD0AB5379EB4629950B4248 /* Social.framework in Frameworks */,
 				1FEBE527840A4817BEE0D27A /* Accounts.framework in Frameworks */,
 				2855337917334921BED176B8 /* Security.framework in Frameworks */,
+				3EBE4C687E7E41909D1B6A82 /* libsqlite3.dylib in Frameworks */,
+				09E53F9F1C31498CBB441A31 /* Social.framework in Frameworks */,
+				6DD851B984DF45938978F975 /* MessageUI.framework in Frameworks */,
+				9946F33D59C948E58F149FC5 /* SystemConfiguration.framework in Frameworks */,
+				66CD384D303E4C77967A5DFF /* CoreTelephony.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -229,10 +250,13 @@
 				288765FC0DF74451002DB57D /* CoreGraphics.framework */,
 				305D5FD0115AB8F900A74A75 /* MobileCoreServices.framework */,
 				B12B56057E05498FB496AF9E /* FacebookSDK.framework */,
-				6FC368D146114388963FE570 /* libsqlite3.dylib */,
-				A5F5B6E2C61342F38E23A0FC /* Social.framework */,
 				A24E55AC01464CC691684DA3 /* Accounts.framework */,
 				D0AC415B09414E3FAA752A01 /* Security.framework */,
+				3B44A23F36DB4C559A547DA3 /* libsqlite3.dylib */,
+				84A49DF55E77424D94D87288 /* Social.framework */,
+				B166B6D47AE64C519685E477 /* MessageUI.framework */,
+				4A0963BA115D4C90A66D6999 /* SystemConfiguration.framework */,
+				8FECF931386F41CE8AB45697 /* CoreTelephony.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -262,10 +286,18 @@
 				F04F8634286E407D8450C3BF /* CDVSpinnerDialog.h */,
 				A1193299B9E94CE0BB0958C2 /* FacebookConnectPlugin.m */,
 				B634EC7CEBE0487681254E3D /* FacebookConnectPlugin.h */,
-				C8E36B58A85148F8B9968A2B /* SQLitePlugin.m */,
-				BD84F50374554E23B161C9CE /* SQLitePlugin.h */,
-				2FB2F7E512574979959A36B6 /* sqlDB.h */,
-				7865417EC5E848D7B90509C8 /* sqlDB.m */,
+				9112F68E9AF6445297AEA5BA /* sqlDB.h */,
+				029C96FC3F954904925F8ECF /* sqlDB.m */,
+				3F634186C3E546DD8490E605 /* SQLitePlugin.m */,
+				B69F438AFE67451AA969219F /* SQLitePlugin.h */,
+				0629FF6C39024144B2E85C8D /* NSString+URLEncoding.m */,
+				165F8B2002D44DB0895AFECC /* SocialSharing.m */,
+				A3FF10A0F4ED404BBF61A417 /* NSString+URLEncoding.h */,
+				662BFF77636F431EA39911BE /* SocialSharing.h */,
+				239C1B6B757447C99F971FAD /* CDVConnection.m */,
+				191B3CA4E6F14E1C9C12EC62 /* CDVReachability.m */,
+				B1568C0B22494D6C8C42C501 /* CDVConnection.h */,
+				952C462CDF1A42AD965E50AC /* CDVReachability.h */,
 			);
 			name = Plugins;
 			path = qurantools/Plugins;
@@ -462,9 +494,13 @@
 				95F548E0A0AD4C98AFD8A2B4 /* UIWebViewExtension.m in Sources */,
 				0C2C0BBF8A9E4261AE28524B /* CDVSpinnerDialog.m in Sources */,
 				F58CEC788B18458E816D497D /* FacebookConnectPlugin.m in Sources */,
-				1EB79556BC6343CEAA077239 /* SQLitePlugin.m in Sources */,
-				7A0C97AED1B943C98FDA5D23 /* sqlDB.h in Resources */,
-				44FECB7059934C3D97DD06DF /* sqlDB.m in Sources */,
+				827E907B51334C109FD12C20 /* sqlDB.h in Resources */,
+				63315C4FC18B429EAC147CFE /* sqlDB.m in Sources */,
+				70724763C7E543FD98AE41C2 /* SQLitePlugin.m in Sources */,
+				E81A5B85586C4C6ABBBA7598 /* NSString+URLEncoding.m in Sources */,
+				3D21D81E554546C38F42ADC4 /* SocialSharing.m in Sources */,
+				73D1C4A508234F4CA0558908 /* CDVConnection.m in Sources */,
+				C47F5C0AFD424D03A5B9DC87 /* CDVReachability.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -1,5 +1,5 @@
 angular.module('ionicApp')
-    .controller('DetailedVerseCtrl', function ($scope, $timeout, Restangular, $location, authorization, $ionicModal, $ionicActionSheet) {
+    .controller('DetailedVerseCtrl', function ($scope, $timeout, Restangular, $location, authorization, $ionicModal, $ionicActionSheet, dataProvider, $ionicScrollDelegate, $ionicPopup) {
 
         $scope.detailedChapters = [];
         $scope.detailedVerseCircles = [];
@@ -48,12 +48,8 @@ angular.module('ionicApp')
             $scope.goToVerseParameters.chapter = $scope.detailedChapters[Math.floor($scope.verseId/1000) -1];
             $scope.goToVerseParameters.verse = $scope.verseId%1000;
             $scope.getVerseTranslations();
-            $scope.getVerseDetails();
-        };
-
-        $scope.getVerseDetails = function(){
-            $scope.getAnnotations();
             $scope.get_inferences();
+            $scope.addVerseToHistory($scope.verseId);
         };
 
         $scope.verseNumberValidation = function () {
@@ -101,82 +97,171 @@ angular.module('ionicApp')
 
             $scope.allInferencesParams.users = kisiTags;
             $scope.allInferencesParams.circles = cevreTags;
-
+            $scope.inferences = [];
             inferencesRestangular.customGET("", $scope.allInferencesParams, { 'access_token': authorization.getAccessToken() }).then(function (inferences) {
-                    $scope.inferences = [];
                     $scope.inferences = $scope.inferences.concat(inferences);
                 }
             );
         };
 
-        $scope.getAnnotations = function(){
-
-            var annotationsRestangular = Restangular.all("annotations");
-            $scope.allAnnotationsParams = [];
-
-            var kisiTags = "";
-            var cevreTags = "";
-
-            for (var i = 0; isDefined($scope.detailedVerseUsers) && i < $scope.detailedVerseUsers.length; i++) {
-                if (i != 0)kisiTags += ",";
-                kisiTags += $scope.detailedVerseUsers[i].id;
-            }
-
-            for (var i = 0; isDefined($scope.detailedVerseCircles) && i < $scope.detailedVerseCircles.length; i++) {
-                if (i != 0)cevreTags += ",";
-                cevreTags += $scope.detailedVerseCircles[i].id;
-            }
-
-            $scope.allAnnotationsParams.users = kisiTags;
-            $scope.allAnnotationsParams.circles = cevreTags;
-            $scope.allAnnotationsParams.chapters = Math.floor($scope.verseId/1000);
-            $scope.allAnnotationsParams.verse = $scope.verseId%1000;
-
-            annotationsRestangular.customGET("", $scope.allAnnotationsParams, {'access_token': authorization.getAccessToken()}).then(function (annotations) {
-                $scope.detailedTags = [];
-                $scope.detailedAnnotations = annotations;
-                for (var i = 0; i < annotations.length; i++){
-                    for (var j = 0; j < annotations[i].tags.length; j++){
-                        $scope.detailedTags.push(annotations[i].tags[j]);
-                    }
-                }
-            });
-        };
-
         $scope.getVerseTranslations = function () {
             $scope.translationDivMap = [];
 
-            var verseTagContentRestangular = Restangular.all("translations");
             var translationParams = [];
-
             translationParams.author = $scope.detailed_query_author_mask;
             translationParams.chapter = Math.floor($scope.verseId/1000);
             translationParams.verse = $scope.verseId%1000;
-
-            verseTagContentRestangular.customGET("", translationParams, {}).then( function(data){
+            $scope.verse = [];
+            dataProvider.listTranslations(translationParams, function(data){
                 $scope.prepareTranslationDivMap(data);
+                $scope.annotate_it();
             });
         };
 
         $scope.prepareTranslationDivMap = function (data) {
-
+            $scope.translationDivMap = [];
             for (var i = 0; i < data.length; i++) {
                 for (var j = 0; j < data[i].translations.length; j++) {
-                    var vid = data[i].translations[j].id;
-                    var ilkimi;
-                    if (j == 0) {
-                        ilkimi = 3;
+                    if (!config_data.isMobile){
+                        $scope.translationDivMap[data[i].translations[j].id] = "/div[1]/div[1]/div[" + (j + 1) + "]/div[1]/div[2]/span[1]";
                     }else {
-                        ilkimi = 1;
-                    }
-                    if (data[i].translations.length == 1) { //there is only one author selected
-                        $scope.translationDivMap[vid] = "/div[" + (i + 1) + "]/div[1]/div[1]/div[1]/div[3]";
-                    }else {
-                        $scope.translationDivMap[vid] = "/div[" + (i + 1) + "]/div[1]/div[1]/div[" + (j + 1) + "]/div[" + ilkimi + "]/div[3]/span[1]";
+                        $scope.translationDivMap[data[i].translations[j].id] = "/div[1]/div[" + (j + 1) + "]/div[1]/div[2]/span[1]";
                     }
                 }
             }
             $scope.verse = data[0];
+            if (config_data.isMobile){
+                $timeout(function() {
+                    var delegate = _.filter($ionicScrollDelegate._instances, function(item){
+                         return item.element.innerHTML.indexOf('detailed_verse_content') > -1;
+                    })[0];
+                    delegate.scrollTop();
+                });
+            }
+        };
+
+        $scope.annotate_it = function(){
+
+            if ($scope.annotatorActivated == 1) {
+                annotator.unsubscribe();
+                annotator.destroy();
+                delete annotator;
+            }
+
+            annotator = new Annotator($('#detailed_translations'));
+            annotator.setTranslationDivMap($scope.translationDivMap);
+            annotator.setAccessToken($scope.access_token);
+
+            var queryParams = {};
+            queryParams.chapter = $scope.goToVerseParameters.chapter.id;
+            queryParams.author_mask_on_view = $scope.detailedVerseTagContentAuthor;
+            queryParams.circles = $scope.getTagsWithCommaSeparated($scope.detailedVerseCircles);
+            queryParams.users = $scope.getTagsWithCommaSeparated($scope.detailedVerseUsers);
+            queryParams.verses = $scope.verseId%1000;
+
+            annotator.setQueryParameters(queryParams);
+
+            annotator.addPlugin('Store', {
+                prefix: config_data.webServiceUrl,
+                urls: {
+                    create: '/annotations',
+                    update: '/annotations/:id',
+                    destroy: '/annotations/:id',
+                    search: '/search'
+                }
+            });
+
+            $scope.annotatorActivated = 1;
+            annotator.subscribe("annotationCreated", $scope.colorTheAnnotation);
+            annotator.subscribe("annotationCreated", $scope.addAnnotation);
+            annotator.subscribe("annotationUpdated", $scope.colorTheAnnotation);
+            annotator.subscribe("annotationsLoaded", $scope.loadAnnotations);
+            annotator.subscribe("adderClicked", $scope.showEditor);
+            annotator.subscribe("editClicked", $scope.showEditor);
+            annotator.subscribe("annotationDeleted", $scope.deleteAnnotationFromScope);
+
+            //unbind
+            if (config_data.isMobile) {
+                $(document).unbind('mouseup');
+                $(document).unbind('mousedown');
+            }
+        };
+
+        $scope.showEditor = function (annotation, position) {
+            $scope.showEditorModal(annotation, position, $scope.submitEditor);
+        };
+
+        $scope.editAnnotation = function (index){
+            annotator.onEditAnnotation($scope.detailedAnnotations[index]);
+        };
+
+        //delete annotation from annotator library (highlight)
+        $scope.deleteAnnotation = function (index) {
+            //console.log("$scope.filteredAnnotations: "+JSON.stringify($scope.filteredAnnotations));
+            if (config_data.isMobile) {
+                var confirmPopup = $ionicPopup.confirm({
+                    title: 'Ayet Notu Sil',
+                    template: 'Ayet notu silinecektir, onaylıyor musunuz?',
+                    cancelText: 'VAZGEC',
+                    okText: 'TAMAM',
+                    okType: 'button-assertive'
+                });
+                confirmPopup.then(function(res) {
+                    if(res) {
+                        annotator.deleteAnnotation($scope.detailedAnnotations[index]);
+                    } else {
+                    }
+                });
+            }else{
+                $scope.showAnnotationDeleteModal(index, $scope.mdeleteAnnotation);
+            }
+        };
+
+        $scope.mdeleteAnnotation = function(index){
+            annotator.deleteAnnotation($scope.detailedAnnotations[index]);
+        };
+
+        //remove annotation from scope
+        $scope.deleteAnnotationFromScope = function (annotation) {
+            var arrLen = $scope.detailedAnnotations.length;
+            var annotationId = annotation.annotationId;
+            var annotationIndex = -1;
+
+            for (var i = 0; i < arrLen; i++) {
+                if ($scope.detailedAnnotations[i].annotationId == annotationId) {
+                    annotationIndex = i;
+                }
+            }
+
+            if (annotationIndex != -1) {
+                $scope.detailedAnnotations[annotationIndex].tags.forEach(function(item) {
+                    $scope.detailedTags.splice($scope.detailedTags.indexOf(item), 1);
+                });
+                $scope.detailedAnnotations.splice(annotationIndex, 1);
+                $scope.scopeApply();
+            }
+        };
+
+        $scope.addAnnotation = function (annotation) {
+            $timeout(function(){
+                $scope.detailedAnnotations.push(annotation);
+                for (var j = 0; j < annotation.tags.length; j++){
+                    $scope.detailedTags.push(annotation.tags[j]);
+                }
+                $scope.scopeApply();
+            },250);
+        };
+
+        $scope.loadAnnotations = function(annotations){
+            $scope.detailedTags = [];
+            for (var i = 0; i < annotations.length; i++){
+                for (var j = 0; j < annotations[i].tags.length; j++){
+                    $scope.detailedTags.push(annotations[i].tags[j]);
+                }
+            }
+            $scope.detailedAnnotations = annotations;
+            $scope.scopeApply();
+            $scope.colorAnnotations(annotations);
         };
 
         $scope.detailedSearchAuthorToggleSelection = function (author_id) {
@@ -226,7 +311,7 @@ angular.module('ionicApp')
             }
             $scope.verseId = $scope.verseId + 1;
             $scope.goToVerseDetail();
-        }
+        };
 
         $scope.gotoPrev = function(){
             if ($scope.verseId == 1001)
@@ -276,9 +361,16 @@ angular.module('ionicApp')
                 $scope.detailedSearchAuthorSelection = $scope.localDetailedSearchAuthorSelection;
                 $scope.modal_authors_list.show();
             } else if (item == 'add_to_list') {
-
+                $scope.addVerseToVerseList($scope.verseId, $scope.closeModal);
+                $scope.modal_verse_selection.show();
             } else if (item == 'go_to_verse') {
-                window.location.href = '#/translations/?author='+$scope.detailed_query_author_mask+'&chapter='+$scope.goToVerseParameters.chapter.id+'&verse='+$scope.goToVerseParameters.verse;
+                $location.path("/translations").search(
+                    {
+                        chapter: $scope.goToVerseParameters.chapter.id,
+                        verse: $scope.goToVerseParameters.verse
+                    }
+                );
+                $scope.scopeApply();
                 $scope.closeModal('detailed_verse_modal');
             } else if (item == 'bookmark') {
                 $scope.openAddBookMarkModal($scope.verseId);
@@ -308,6 +400,8 @@ angular.module('ionicApp')
                 $scope.modal_authors_list.hide();
             } else if (item == 'chapter_selection'){
                 $scope.chapter_selection_modal.hide();
+            } else if (item == 'verselist_selection'){
+                $scope.modal_verse_selection.hide();
             }
         };
 
@@ -340,6 +434,18 @@ angular.module('ionicApp')
                     return true;
                 }
             });
+        };
+
+        $scope.submitEditor = function (annotationModalData) {
+            $timeout(function () {
+                annotator.publish('annotationEditorSubmit', [annotator.editor, annotationModalData]);
+                $scope.editorSubmitted = 1;
+                annotator.onEditorHide();
+                annotator.ignoreMouseup = false;
+                $timeout(function(){
+                    $scope.scopeApply();
+                },50);
+            },370);
         };
 
         $scope.initializeDetailedVerseController = function () {
@@ -392,6 +498,13 @@ angular.module('ionicApp')
                     id: 'chapter_selection_modal'
                 }).then(function (modal) {
                     $scope.chapter_selection_modal = modal
+                });
+                $ionicModal.fromTemplateUrl('components/partials/add_verse_to_verselist.html', {
+                    scope: $scope,
+                    animation: 'slide-in-up',
+                    id: 'verse_selection'
+                }).then(function (modal) {
+                    $scope.modal_verse_selection = modal
                 });
             };
             $scope.$on('open_verse_detail', function(event, args) {
@@ -449,15 +562,15 @@ angular.module('ionicApp')
                 $scope.detailedVerseUsers.push($scope.taggedVerseUsersForMobileSearch[i]);
             }
             $scope.closeModal('tagged_verse_detailed_search');
-            $scope.getVerseDetails();
+            $scope.goToVerseDetail();
         };
 
         //list footnotes
         $scope.list_detailed_footnotes = function (translation_id, author_id) {
 
-            var footnotesRestangular = Restangular.one("translations",translation_id).all("footnotes");
-
-            footnotesRestangular.getList().then(function (data) {
+            dataProvider.listFootnotes({
+                    id: translation_id
+                },function (data) {
                     var footnoteDivElement = document.getElementById('detail_t_' + translation_id);
                     //don't list if already listed
                     if (!document.getElementById("detail_fn_" + translation_id)) {
@@ -465,9 +578,30 @@ angular.module('ionicApp')
                         var dataLength = data.length;
                         for (index = 0; index < dataLength; ++index) {
                             //add verse links
-                            dataContent = data[index].replace(/(\d{1,3}):(\d{1,3})/g, "<a ng-href='#MainCtrl' onclick='javascript: angular.element(document.getElementById(\"MainCtrl\")).scope().showVerseDetail($1*1000+$2)' data-target='#detailedVerseModal' data-dismiss='modal' data-toggle='modal'>$1:$2</a>");
+                            dataContent = data[index].replace(/(\d{1,3}):(\d{1,3})/g, "<a ng-href='#MainCtrl' onclick='javascript: angular.element(document.getElementById(\"MainCtrl\")).scope().showVerseDetail($1*1000+$2)' data-target='#detailedVerseModal' data-dismiss='modal' data-toggle='modal' style='color: blue'>$1:$2</a>");
 
                             html += "<div><div class='col-xs-1 footnote_bullet'>&#149;</div><div class='col-xs-11 footnotebg'>" + dataContent + "</div></div>";
+                        }
+                        if (author_id == $scope.author_hakki_yilmaz){
+                            if (config_data.isMobile){
+                                html += "<div>" +
+                                            "<div class='col-xs-1'>&nbsp;</div>" +
+                                            "<div class='col-xs-11 footnotebg'>" +
+                                                "<a ng-href='#MainCtrl' onclick='javascript: angular.element(document.getElementById(\"MainCtrl\")).scope().openModal(\"hakki_yilmaz_notes\")'>" +
+                                                    "<div style='color: #6b006d;margin-bottom: 8px;'>Tüm Notlar</div>" +
+                                                "</a>" +
+                                            "</div>" +
+                                        "</div>";
+                            }else{
+                                html += "<div>" +
+                                            "<div class='col-xs-1'>&nbsp;</div>" +
+                                            "<div class='col-xs-11 footnotebg'>" +
+                                                "<a style='float: right;'>" +
+                                                    "<div style='width:100%; height: 40px; padding-top:8px;' data-target='#hakkiYilmazAllNotesModal' data-toggle='modal'>Tüm Notlar</div>" +
+                                                "</a>" +
+                                            "</div>" +
+                                        "</div>";
+                            }
                         }
                         html += '</div>';
                         footnoteDivElement.innerHTML = footnoteDivElement.innerHTML + html;

@@ -62,7 +62,7 @@
                 </div>
                 <div class="modal-footer">
                     <a type="button" class="btn btn-primary btn-wide" data-dismiss="modal">İptal</a>
-                    <a class="btn btn-primary btn-wide" ng-click="kisisilme(cvrid)" data-dismiss="modal">Tamam</a>
+                    <a class="btn btn-primary btn-wide" ng-click="kisisilme(cvrid);" data-dismiss="modal">Tamam</a>
                 </div>
             </kisisilmodal>
         </div>
@@ -165,7 +165,7 @@
                         <tr>
                             <td nowrap="nowrap" align="left"
                                 style="vertical-align: top; width: 140px; height: 40px; color:White">
-                                {{cevrekisiler[$index].name}}
+                                <a ng-href="#/profile/user/{{item.username}}/" style="color: darkblue;">{{item.name}}</a>
                             </td>
                         </tr>
                     </table>

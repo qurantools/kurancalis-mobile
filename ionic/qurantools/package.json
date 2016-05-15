@@ -34,7 +34,20 @@
       },
       "locator": "https://github.com/Wizcorp/phonegap-facebook-plugin.git",
       "id": "phonegap-facebook-plugin"
-    }
+    },
+    {
+      "locator": "https://github.com/an-rahulpandey/cordova-plugin-dbcopy.git",
+      "id": "me.rahul.plugins.sqlDB"
+    },
+    {
+      "locator": "https://github.com/brodysoft/Cordova-SQLitePlugin.git",
+      "id": "cordova-sqlite-storage"
+    },
+    {
+      "locator": "https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin.git",
+      "id": "cordova-plugin-x-socialsharing"
+    },
+    "cordova-plugin-network-information"
   ],
   "cordovaPlatforms": [
     "ios",

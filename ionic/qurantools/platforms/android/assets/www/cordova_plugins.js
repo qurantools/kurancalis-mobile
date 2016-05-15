@@ -3,7 +3,6 @@ module.exports = [
     {
         "file": "plugins/org.apache.cordova.inappbrowser/www/inappbrowser.js",
         "id": "org.apache.cordova.inappbrowser.inappbrowser",
-        "pluginId": "org.apache.cordova.inappbrowser",
         "clobbers": [
             "window.open"
         ]
@@ -11,7 +10,6 @@ module.exports = [
     {
         "file": "plugins/org.apache.cordova.statusbar/www/statusbar.js",
         "id": "org.apache.cordova.statusbar.statusbar",
-        "pluginId": "org.apache.cordova.statusbar",
         "clobbers": [
             "window.StatusBar"
         ]
@@ -19,13 +17,11 @@ module.exports = [
     {
         "file": "plugins/cordova-plugin-whitelist/whitelist.js",
         "id": "cordova-plugin-whitelist.whitelist",
-        "pluginId": "cordova-plugin-whitelist",
         "runs": true
     },
     {
         "file": "plugins/ionic-plugin-keyboard/www/android/keyboard.js",
         "id": "ionic-plugin-keyboard.keyboard",
-        "pluginId": "ionic-plugin-keyboard",
         "clobbers": [
             "cordova.plugins.Keyboard"
         ],
@@ -34,7 +30,6 @@ module.exports = [
     {
         "file": "plugins/com.filfatstudios.spinnerdialog/www/SpinnerDialog.js",
         "id": "com.filfatstudios.spinnerdialog.SpinnerDialog",
-        "pluginId": "com.filfatstudios.spinnerdialog",
         "clobbers": [
             "SpinnerDialog"
         ]
@@ -42,33 +37,44 @@ module.exports = [
     {
         "file": "plugins/phonegap-facebook-plugin/facebookConnectPlugin.js",
         "id": "phonegap-facebook-plugin.FacebookConnectPlugin",
-        "pluginId": "phonegap-facebook-plugin",
         "clobbers": [
             "facebookConnectPlugin"
         ]
     },
     {
-        "file": "plugins/cordova-plugin-x-socialsharing/www/SocialSharing.js",
-        "id": "cordova-plugin-x-socialsharing.SocialSharing",
-        "pluginId": "cordova-plugin-x-socialsharing",
+        "file": "plugins/me.rahul.plugins.sqlDB/www/sqlDB.js",
+        "id": "me.rahul.plugins.sqlDB.sqlDB",
         "clobbers": [
-            "window.plugins.socialsharing"
+            "window.plugins.sqlDB"
         ]
     },
     {
         "file": "plugins/cordova-sqlite-storage/www/SQLitePlugin.js",
         "id": "cordova-sqlite-storage.SQLitePlugin",
-        "pluginId": "cordova-sqlite-storage",
         "clobbers": [
             "SQLitePlugin"
         ]
     },
     {
-        "file": "plugins/me.rahul.plugins.sqlDB/www/sqlDB.js",
-        "id": "me.rahul.plugins.sqlDB.sqlDB",
-        "pluginId": "me.rahul.plugins.sqlDB",
+        "file": "plugins/cordova-plugin-x-socialsharing/www/SocialSharing.js",
+        "id": "cordova-plugin-x-socialsharing.SocialSharing",
         "clobbers": [
-            "window.plugins.sqlDB"
+            "window.plugins.socialsharing"
+        ]
+    },
+    {
+        "file": "plugins/cordova-plugin-network-information/www/network.js",
+        "id": "cordova-plugin-network-information.network",
+        "clobbers": [
+            "navigator.connection",
+            "navigator.network.connection"
+        ]
+    },
+    {
+        "file": "plugins/cordova-plugin-network-information/www/Connection.js",
+        "id": "cordova-plugin-network-information.Connection",
+        "clobbers": [
+            "Connection"
         ]
     }
 ];
@@ -82,9 +88,10 @@ module.exports.metadata =
     "ionic-plugin-keyboard": "1.0.7",
     "com.filfatstudios.spinnerdialog": "1.0.2",
     "phonegap-facebook-plugin": "0.12.0",
-    "cordova-plugin-x-socialsharing": "5.0.10",
+    "me.rahul.plugins.sqlDB": "1.0.3",
     "cordova-sqlite-storage": "0.8.4-dev",
-    "me.rahul.plugins.sqlDB": "1.0.3"
+    "cordova-plugin-x-socialsharing": "5.0.12-dev",
+    "cordova-plugin-network-information": "1.2.1"
 }
 // BOTTOM OF METADATA
 });

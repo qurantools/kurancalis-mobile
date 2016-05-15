@@ -27,11 +27,24 @@ if [ "$1" == "production" ]; then
     sed -i 'bak' 's/var domain = .*/var domain = "http:\/\/kurancalis.com";/g' ${TARGET_DIR}/assets/js/config.js
     sed -i "bak" "s/'webServiceUrl.*/\'webServiceUrl\': \'https:\/\/securewebserver.net\/jetty\/qt\/rest',/g" ${TARGET_DIR}/assets/js/config.js
 
+    sed -i 'bak' 's/400142910165594/295857580594128/g' ${TARGET_DIR}/../plugins/ios.json
+    sed -i 'bak' 's/400142910165594/295857580594128/g' ${TARGET_DIR}/../plugins/android.json
+    sed -i 'bak' 's/400142910165594/295857580594128/g' ${TARGET_DIR}/../platforms/ios/ios.json
+    sed -i 'bak' 's/400142910165594/295857580594128/g' ${TARGET_DIR}/../platforms/android/android.json
+    sed -i 'bak' 's/400142910165594/295857580594128/g' ${TARGET_DIR}/../plugins/fetch.json
+    sed -i 'bak' 's/400142910165594/295857580594128/g' ${TARGET_DIR}/../package.json
+
 
 #'webServiceUrl': 'https://securewebserver.net/jetty/qttest/rest',
 elif [ "$1" == "test" ]; then
+
     sed -i 'bak' 's/var domain = .*/var domain = "http:\/\/test\.kurancalis\.com";/g' ${TARGET_DIR}/assets/js/config.js
     sed -i "bak" "s/'webServiceUrl.*/\'webServiceUrl\': \'https:\/\/securewebserver.net\/jetty\/qttest\/rest',/g" ${TARGET_DIR}/assets/js/config.js
+
+    sed -i 'bak' 's/295857580594128/400142910165594/g' ${TARGET_DIR}/../plugins/ios.json
+    sed -i 'bak' 's/295857580594128/400142910165594/g' ${TARGET_DIR}/../plugins/android.json
+    sed -i 'bak' 's/295857580594128/400142910165594/g' ${TARGET_DIR}/../plugins/fetch.json
+    sed -i 'bak' 's/295857580594128/400142910165594/g' ${TARGET_DIR}/../package.json
 
 fi
 

@@ -1,4 +1,4 @@
-var requiredModules = ['ionic', 'ngResource', 'ngRoute', 'facebook', 'restangular', 'LocalStorageModule', 'ngTagsInput', 'duScroll', 'directives.showVerse', 'directives.repeatCompleted', 'ui.select', 'myConfig', 'authorizationModule','djds4rce.angular-socialshare', 'ngSanitize', 'com.2fdevs.videogular','com.2fdevs.videogular.plugins.controls','com.2fdevs.videogular.plugins.overlayplay','com.2fdevs.videogular.plugins.poster', 'ngCordova','ui.tinymce', 'ui.bootstrap'];
+var requiredModules = ['ionic', 'ngResource', 'ngRoute', 'facebook', 'restangular', 'LocalStorageModule', 'ngTagsInput', 'duScroll', 'directives.showVerse', 'directives.repeatCompleted', 'ui.select', 'myConfig', 'authorizationModule','djds4rce.angular-socialshare', 'ngSanitize', 'com.2fdevs.videogular','com.2fdevs.videogular.plugins.controls','com.2fdevs.videogular.plugins.overlayplay','com.2fdevs.videogular.plugins.poster', 'ngCordova','ui.tinymce', 'ui.bootstrap', 'ion-affix', 'infinite-scroll', 'ngCordova.plugins.appAvailability'];
 
 if (config_data.isMobile) {
     var mobileModules = [];//'ionic'
@@ -100,7 +100,7 @@ var app = angular.module('ionicApp', requiredModules)
     .filter('mark_verse_annotation', [
         function () {
             return function (translation, annotation, markVerseAnnotations) {
-                if (markVerseAnnotations == true) {
+                if (markVerseAnnotations == true && annotation.ranges[0] != undefined) {
                     var startOffset = annotation.ranges[0].startOffset;
                     var endOffset = annotation.ranges[0].endOffset;
 
@@ -117,8 +117,38 @@ var app = angular.module('ionicApp', requiredModules)
                 }
             };
         }])
+    .filter('with_search_text', [
+        function () {
+            return function (text, searched_text) {
+                var re = new RegExp('('+searched_text + ')', 'i');
+                return text.replace(re, "<div style='color: red;background-color:yellow;display: inline-block;'>$1</div>");
+            };
+        }])
+    .filter('time_in_string',[
+        function(){
+            return function (milis){
+                var difference = new Date().getTime() - milis;
+                if(difference < 0) {
+                    difference = 0;
+                }
+                var minutes = Math.floor(difference / (1000 * 60));
+                var hours = Math.floor(difference / (1000 * 60 * 60));
+                var days = Math.floor(difference / (1000 * 60 * 60 * 24));
+                if(days > 364){
+                    return Math.floor(days/364 ) + " yıl";
+                }else if (days > 30){
+                    return Math.floor(days/30) + " ay";
+                }else if (days >= 1){
+                    return (days) + " gün";
+                }else if (hours >= 1){
+                    return (hours) + " sa";
+                }else {
+                    return minutes + " dk";
+                }
+            }
+        }
+    ])
     .run(function ($rootScope, $ionicPlatform, dataProvider) {
-
         $ionicPlatform.ready(function () {
             // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
             // for form inputs)
@@ -134,9 +164,14 @@ var app = angular.module('ionicApp', requiredModules)
                 // org.apache.cordova.statusbar required
                 StatusBar.styleLightContent();
             }
-            dataProvider.initDB(function(){
-                dataProvider.setReady(true);
-            });
+            $rootScope.sqliteDbInit = false;
+            dataProvider.initDB($rootScope);
+
+            if (config_data.isNative && typeof window.localStorage.getItem("external_load") !== 'undefined' && window.localStorage.getItem("external_load") != null){
+                $rootScope.redirectUrl = window.localStorage.getItem("external_load");
+                console.log(" 2 : redirected url : "+ $rootScope.redirectUrl + ", date : " + new Date().getTime());
+                window.localStorage.removeItem("external_load");
+            };
         });
 
         $rootScope.$on('$routeChangeSuccess', function (event, current, previous) {
@@ -146,16 +181,16 @@ var app = angular.module('ionicApp', requiredModules)
         });
 
         /*var original = $location.path;
-        $location.path = function (path, reload) {
-            if (reload === false) {
-                var lastRoute = $route.current;
-                var un = $rootScope.$on('$locationChangeSuccess', function () {
-                    $route.current = lastRoute;
-                    un();
-                });
-            }
-            return original.apply($location, [path]);
-        };*/
+         $location.path = function (path, reload) {
+         if (reload === false) {
+         var lastRoute = $route.current;
+         var un = $rootScope.$on('$locationChangeSuccess', function () {
+         $route.current = lastRoute;
+         un();
+         });
+         }
+         return original.apply($location, [path]);
+         };*/
     }).directive('ngEnter', function () {
         return function (scope, element, attrs) {
             element.bind("keydown keypress", function (event) {
@@ -174,10 +209,19 @@ if (config_data.isMobile == false) { //false
     app.config(function ($routeProvider, FacebookProvider, RestangularProvider, localStorageServiceProvider, $httpProvider) {
         RestangularProvider.setBaseUrl(config_data.webServiceUrl);
         localStorageServiceProvider.setStorageCookie(0, '/');
-
-        $httpProvider.interceptors.push(function ($q, $injector) {
+        $httpProvider.interceptors.push(function ($q, $injector, $rootScope) {
             var isConfirmPopupCalledBefore = false;
+            var isDisplay = false;
+            var regex = /.*(html?|js|css|png|je?pg|video|audio)$/;
             return {
+                'response' : function (response){
+                    if (isDisplay && !regex.test(response.config.url)){
+                        $rootScope.$broadcast('onlineNetworkConnection');
+                        isConfirmPopupCalledBefore = !isConfirmPopupCalledBefore;
+                        isDisplay = false;
+                    }
+                    return response;
+                },
                 'responseError': function (rejection) {
                     var $route = $injector.get('$route');
                     var $modal = $injector.get('$modal');
@@ -194,7 +238,11 @@ if (config_data.isMobile == false) { //false
                                     $modalInstance.dismiss();
                                 };
                             }
-                        })
+                        });
+                    }
+                    if (rejection.status == 0 ){
+                        $rootScope.$broadcast('offlineNetworkConnection', rejection);
+                        isDisplay = true;
                     }
                     return $q.reject(rejection);
                 }
@@ -208,7 +256,6 @@ if (config_data.isMobile == false) { //false
                 templateUrl: 'app/components/home/homeView.html',
                 reloadOnSearch: false,
                 pageTitle: 'Kuran Çalış - Sureler'
-
             })
             .when('/annotations/', {
                 controller: 'AnnotationsCtrl',
@@ -264,14 +311,49 @@ if (config_data.isMobile == false) { //false
                 reloadOnSearch: false,
                 pageTitle: 'Kuran Çalış - Çıkarım Notu'
             })
-            
+            .when('/search_translations/', {
+                controller: 'SearchTranslationsController',
+                templateUrl: 'app/components/search/translations.html',
+                reloadOnSearch: false,
+                pageTitle: 'Ayet Arama'
+            })
+            .when('/lists/verse', {
+                controller: 'VerseListController',
+                templateUrl: 'app/components/lists/verse_list.html',
+                reloadOnSearch: false,
+                pageTitle: 'Ayet Listelerim'
+            })
+            .when('/profile/user/', {
+                controller: 'ProfileController',
+                templateUrl: 'app/components/profile/friend.html',
+                reloadOnSearch: false,
+                pageTitle: 'Kuran Çalış - Kullanıcı Profili'
+            })
+            .when('/profile/user/:friendName/', {
+                controller: 'ProfileController',
+                templateUrl: 'app/components/profile/friend.html',
+                reloadOnSearch: false,
+                pageTitle: 'Kuran Çalış - Kullanıcı Profili'
+            })
+            .when('/profile/circle/', {
+                controller: 'ProfileController',
+                templateUrl: 'app/components/profile/circle.html',
+                reloadOnSearch: false,
+                pageTitle: 'Kuran Çalış - Çevre Zaman Tüneli'
+            })
+            .when('/profile/circle/:circleId/', {
+                controller: 'ProfileController',
+                templateUrl: 'app/components/profile/circle.html',
+                reloadOnSearch: false,
+                pageTitle: 'Kuran Çalış - Çevre Zaman Tüneli'
+            })
             .when('/', {
                 redirectTo: '/translations/'
             })
             .when('/chapter/:chapter/author/:author/', {
                 redirectTo: '/translations/?chapter=:chapter&verse=1&author=:author'
             })
-			.when('/help/',{
+            .when('/help/',{
                 controller:'HelpController',
                 templateUrl:'app/components/help/index.html',
                 pageTitle: 'Kuran Çalış - Yardım'
@@ -289,19 +371,18 @@ if (config_data.isMobile == false) { //false
 
         //facebook
         FacebookProvider.init(config_data.FBAppID);
-
     });
 } else {
-    app.config(function ($routeProvider, FacebookProvider, RestangularProvider, localStorageServiceProvider, $stateProvider, $urlRouterProvider, $httpProvider) {
-            console.log("mobile version")
-
+    app.config(function ($routeProvider, FacebookProvider, RestangularProvider, localStorageServiceProvider, $stateProvider, $urlRouterProvider, $httpProvider, $compileProvider) {
+            console.log("mobile version");
+            $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|chrome-extension|qurantools):/);
             //redirect / to /m/www/
             var currentPath = window.location.pathname;
             if (currentPath == '/kurancalis-web/' || currentPath == '/') {
                 var diyezIndex =  window.location.href.indexOf("#");
                 var locationURL = "";
                 if(diyezIndex!= -1){
-                  locationURL = window.location.href.substring(diyezIndex);
+                    locationURL = window.location.href.substring(diyezIndex);
                 }
                 var mobileURL = currentPath + 'm/www/'+ locationURL;
                 console.log("Redirectiong to mobile version:" + mobileURL);
@@ -313,26 +394,40 @@ if (config_data.isMobile == false) { //false
                 localStorageServiceProvider.setStorageCookie(0, '/');
                 //route
 
-                $httpProvider.interceptors.push(function ($q, $injector) {
+                $httpProvider.interceptors.push(function ($q, $injector, $rootScope) {
                     var isConfirmPopupCalledBefore = false;
+                    var isDisplay = false;
+                    var regex = /.*\.(html?|js|css|png|jpg|jepg|video|audio|mp4)$/;
                     return {
+                        'response' : function (response){
+                            if (isDisplay && !regex.test(response.config.url)){
+                                $rootScope.$broadcast('onlineNetworkConnection');
+                                isConfirmPopupCalledBefore = !isConfirmPopupCalledBefore;
+                                isDisplay = false;
+                            }
+                            return response;
+                        },
                         'responseError': function (rejection) {
-                            var ionicPopup = $injector.get('$ionicPopup');
-                            var route = $injector.get('$route');
+                            var $route = $injector.get('$route');
+                            var $ionicPopup = $injector.get('$ionicPopup');
                             if (rejection.status == 0 && !isConfirmPopupCalledBefore) {
                                 isConfirmPopupCalledBefore = true;
-                                var confirmPop = ionicPopup.confirm({
+                                var confirmPop = $ionicPopup.confirm({
                                     title: 'Internet Bağlantı Problemi!',
-                                    template: 'İnternet bağlantınız bulunmamaktadır. Yapabileceğiniz İşlemler kısıtlanmıştır. İşlem listesi aşağıdaki şekildedir...',
+                                    template: 'İnternet bağlantınız bulunmamaktadır. Yapabileceğiniz İşlemler kısıtlıdır.',
                                     cancelText: 'DEVAM',
                                     okText: 'YENİDEN DENE'
                                 });
 
                                 confirmPop.then(function (res) {
                                     if (res) {
-                                        route.reload();
+                                        $route.reload();
                                     }
                                 });
+                            }
+                            if (rejection.status == 0 ){
+                                $rootScope.$broadcast('offlineNetworkConnection', rejection);
+                                isDisplay = true;
                             }
                             return $q.reject(rejection);
                         }
@@ -345,114 +440,128 @@ if (config_data.isMobile == false) { //false
                         controller: 'HomeCtrl',
                         templateUrl: 'components/home/home.html',
                         reloadOnSearch: false,
-                        pageTitle: 'Kuran Çalış - Sure',
-                        resolve : {
-                            initializeDB : function (dataProvider){
-                                dataProvider.initDB().then(function(res){
-                                    return res;
-                                });
-                            }
-                        }
+                        pageTitle: 'Kuran Çalış - Sure'
                     })
                     .when('/annotations/', {
                         controller: 'AnnotationsCtrl',
                         templateUrl: 'components/annotations/all_annotations.html',
                         reloadOnSearch: false,
-                        pageTitle: 'Kuran Çalış - Ayet Notları',
-                        resolve : {
-                            initializeDB : function (dataProvider){
-                                dataProvider.initDB().then(function(res){
-                                    return res;
-                                });
-                            }
-                        }
+                        pageTitle: 'Kuran Çalış - Ayet Notları'
                     })
                     .when('/chapter/:chapter/author/:author/', {
                         redirectTo: '/translations/?chapter=:chapter&verse=1&author=:author',
-                        pageTitle: 'Kuran Çalış',
-                        resolve : {
-                            initializeDB : function (dataProvider){
-                                dataProvider.initDB().then(function(res){
-                                    return res;
-                                });
-                            }
-                        }
+                        pageTitle: 'Kuran Çalış'
                     })
                     .when('/inferences/', {
                         controller: 'InferenceListController',
                         templateUrl: 'components/inferences/inferenceListMobileView.html',
                         reloadOnSearch: false,
-                        pageTitle: 'Kuran Çalış - Çıkarım Notları',
-                        resolve : {
-                            initializeDB : function (dataProvider){
-                                dataProvider.initDB().then(function(res){
-                                    return res;
-                                });
-                            }
-                        }
+                        pageTitle: 'Kuran Çalış - Çıkarım Notları'
                     })
                     .when('/inference/display/:inferenceId/', {
                         controller: 'InferenceDisplayController',
                         templateUrl: 'components/inferences/inferenceDisplayMobileView.html',
                         reloadOnSearch: false,
-                        pageTitle: 'Kuran Çalış',
-                        resolve : {
-                            initializeDB : function (dataProvider){
-                                dataProvider.initDB().then(function(res){
-                                    return res;
-                                });
-                            }
-                        }
+                        pageTitle: 'Kuran Çalış'
                     })
                     .when('/inference/new/', {
                         controller: 'InferenceEditController',
                         templateUrl: 'components/inferences/inferenceEditMobileView.html',
                         reloadOnSearch: false,
-                        pageTitle: 'Kuran Çalış - Yeni Çıkarım Notu',
-                        resolve : {
-                            initializeDB : function (dataProvider){
-                                dataProvider.initDB().then(function(res){
-                                    return res;
-                                });
-                            }
-                        }
+                        pageTitle: 'Kuran Çalış - Yeni Çıkarım Notu'
                     })
                     .when('/inference/edit/:inferenceId/', {
                         controller: 'InferenceEditController',
                         templateUrl: 'components/inferences/inferenceEditMobileView.html',
                         reloadOnSearch: false,
-                        pageTitle: 'Kuran Çalış',
-                        resolve : {
-                            initializeDB : function (dataProvider){
-                                dataProvider.initDB().then(function(res){
-                                    return res;
-                                });
-                            }
-                        }
-					})
-					.when('/help/',{
+                        pageTitle: 'Kuran Çalış'
+                    })
+                    .when('/help/',{
                         controller:'HelpController',
                         templateUrl:'components/help/index.html',
-                        pageTitle: 'Kuran Çalış - Yardım',
-                        resolve : {
-                            initializeDB : function (dataProvider){
-                                dataProvider.initDB().then(function(res){
-                                    return res;
-                                });
-                            }
-                        }
+                        pageTitle: 'Kuran Çalış - Yardım'
                     })
                     .when('/login/',{
                         controller:'LoginController',
                         templateUrl:'components/login/login.html',
-                        pageTitle: 'Kuran Çalış - Giriş',
-                        resolve : {
-                            initializeDB : function (dataProvider){
-                                dataProvider.initDB().then(function(res){
-                                    return res;
-                                });
-                            }
-                        }
+                        pageTitle: 'Kuran Çalış - Giriş'
+                    })
+                    .when('/search_translations/', {
+                        controller: 'SearchTranslationsController',
+                        templateUrl: 'components/search/translations.html',
+                        pageTitle: 'Ayet Arama'
+                    })
+                    .when('/people/home/', {
+                        controller: 'PeopleFindCtrl',
+                        templateUrl: 'components/people/index.html',
+                        reloadOnSearch: false,
+                        pageTitle: 'Kuran Çalış - Kişiler'
+                    })
+                    .when('/people/find_people/', {
+                        controller: 'PeopleFindCtrl',
+                        templateUrl: 'components/people/find_people.html',
+                        reloadOnSearch: false,
+                        pageTitle: 'Kuran Çalış - Facebook Arkadaşlarımı Bul'
+                    })
+                    .when('/people/search_people/', {
+                        controller: 'friendSearchController',
+                        templateUrl: 'components/people/search_people.html',
+                        reloadOnSearch: false,
+                        pageTitle: 'Kuran Çalış - Arkadaş Bul'
+                    })
+                    .when('/people/people_have_you/', {
+                        controller: 'PeopleHaveYouCtrl',
+                        templateUrl: 'components/people/people_have_you.html',
+                        reloadOnSearch: false,
+                        pageTitle: 'Kuran Çalış - Seni Takip Eden Kişiler'
+                    })
+                    .when('/people/circles/', {
+                        controller: 'PeopleCirclesCtrl',
+                        templateUrl: 'components/people/circles.html',
+                        reloadOnSearch: false,
+                        pageTitle: 'Kuran Çalış - Çevreler'
+                    })
+                    .when('/people/peoples/:circleid/', {
+                        controller: 'PeopleCirclesCtrl',
+                        templateUrl: 'components/people/peoples.html',
+                        reloadOnSearch: false,
+                        pageTitle: 'Kuran Çalış - Arkadaş Bul'
+                    })
+                    .when('/lists/verse/', {
+                        controller: 'VerseListController',
+                        templateUrl: 'components/lists/verse_lists.html',
+                        reloadOnSearch: false,
+                        pageTitle: 'Ayet Listelerim'
+                    })
+                    .when('/lists/verse/:listid/', {
+                        controller: 'VerseListController',
+                        templateUrl: 'components/lists/verses.html',
+                        reloadOnSearch: false,
+                        pageTitle: 'Ayet Listelerim'
+                    })
+                    .when('/profile/user/', {
+                        controller: 'ProfileController',
+                        templateUrl: 'components/profile/friend.html',
+                        reloadOnSearch: false,
+                        pageTitle: 'Kuran Çalış - Kullanıcı Profili'
+                    })
+                    .when('/profile/user/:friendName/', {
+                        controller: 'ProfileController',
+                        templateUrl: 'components/profile/friend.html',
+                        reloadOnSearch: false,
+                        pageTitle: 'Kuran Çalış - Kullanıcı Profili'
+                    })
+                    .when('/profile/circle/', {
+                        controller: 'ProfileController',
+                        templateUrl: 'components/profile/circle.html',
+                        reloadOnSearch: false,
+                        pageTitle: 'Kuran Çalış - Çevre Zaman Tüneli'
+                    })
+                    .when('/profile/circle/:circleId/', {
+                        controller: 'ProfileController',
+                        templateUrl: 'components/profile/circle.html',
+                        reloadOnSearch: false,
+                        pageTitle: 'Kuran Çalış - Çevre Zaman Tüneli'
                     })
                     .when('/', {
                         redirectTo: '/translations/',
@@ -462,10 +571,6 @@ if (config_data.isMobile == false) { //false
                         redirectTo: '/translations/',
                         pageTitle: 'Kuran Çalış'
                     });
-
-                if (config_data.isNative){
-                    openFB.init({appId: config_data.FBAppID});
-                }
             }
             /*
              $ionicAppProvider.identify({
@@ -477,6 +582,7 @@ if (config_data.isMobile == false) { //false
              // gcm_id: 'YOUR_GCM_ID'
              });
              */
+            FacebookProvider.init(config_data.FBAppID);
         }
     );
 }
@@ -518,271 +624,313 @@ app.factory('ChapterVerses', function ($resource) {
             }
         }
     );
-}).controller('MainCtrl', function ($scope, $q, $routeParams, $ionicSideMenuDelegate, $location, $timeout, ChapterVerses, User, Footnotes, Facebook, Restangular, localStorageService, $document, $filter, $rootScope, $state, $stateParams, $ionicModal, $ionicScrollDelegate, $ionicPosition, $ionicLoading, authorization,$rootScope, $ionicPopup, dataProvider, $ionicPlatform) {
-        console.log("MainCtrl");
+}).controller('MainCtrl', function ($scope, $q, $routeParams, $ionicSideMenuDelegate, $location, $timeout, ChapterVerses, User, Footnotes, Facebook, Restangular, localStorageService, $document, $filter, $rootScope, $state, $stateParams, $ionicModal, $ionicScrollDelegate, $ionicPosition, $ionicLoading, authorization,$rootScope, $ionicPopup, dataProvider) {
+    console.log("MainCtrl");
 
-        //all root scope parameters should be defined and documented here
-        $scope.access_token = "";
-        $scope.loggedIn = false;
-        $scope.verseTagsJSON = {};
-        $scope.chapter_id = 1;
-        $scope.chapters = [];
-        $scope.chapterSelected = 1;
-        $scope.currentPage = "";
-        var chaptersVersion = 4;
-        $scope.modal_editor = null;
+    //all root scope parameters should be defined and documented here
+    $scope.access_token = "";
+    $scope.loggedIn = false;
+    $scope.verseTagsJSON = {};
+    $scope.chapter_id = 1;
+    $scope.chapters = [];
+    $scope.chapterSelected = 1;
+    $scope.currentPage = "";
+    var chaptersVersion = 4;
+    $scope.modal_editor = null;
 
-        $scope.circleDropdownArray = [];
+    $scope.circleDropdownArray = [];
 
-        //selected authors
-        $scope.selection = ["16", "32"];
-        $scope.verseTagContentAuthor = $scope.selection[0];
-        $scope.activeVerseTagContentAuthor = "";
-        $scope.authorMap = new Object();
+    //selected authors
+    $scope.selection = ["16", "32"];
+    $scope.verseTagContentAuthor = $scope.selection[0];
+    $scope.activeVerseTagContentAuthor = "";
+    $scope.authorMap = new Object();
 
-        /* facebook login */
+    /* facebook login */
 
-        $scope.fbLoginStatus = 'disconnected';
-        $scope.facebookIsReady = false;
+    $scope.fbLoginStatus = 'disconnected';
+    $scope.facebookIsReady = false;
 
-        //editor model
-        $scope.annotationModalData = {};
-        $scope.annotationModalDataTagsInput = [];
-        $scope.annotationModalDataVerse = "0:0";
-        $scope.ViewCircles = [];
-        $scope.ViewUsers = [];
-        $scope.yrmcevres = [];
-        $scope.yrmkisis = [];
+    //editor model
+    $scope.annotationModalData = {};
+    $scope.annotationModalDataTagsInput = [];
+    $scope.annotationModalDataVerse = "0:0";
+    $scope.ViewCircles = [];
+    $scope.ViewUsers = [];
+    $scope.yrmcevres = [];
+    $scope.yrmkisis = [];
 
-        //share modal
-        $scope.shareText = "";
-        $scope.shareUrl = "";
-        $scope.shareTitle = "";
+    //share modal
+    $scope.shareText = "";
+    $scope.shareUrl = "";
+    $scope.shareTitle = "";
 
-        //    $scope.user = null;
+    //    $scope.user = null;
 
-        $scope.modal_editor = null;
-        $scope.author_mask = 1040;
-        $scope.authorMaskCheckPoint = $scope.author_mask;
+    $scope.modal_editor = null;
+    $scope.author_mask = 8208;
+    $scope.author_hakki_yilmaz = 262144;
+    $scope.authorMaskCheckPoint = $scope.author_mask;
 
-        $scope.verse = {};
-        $scope.annotations = [];
+    $scope.verse = {};
+    $scope.annotations = [];
 
-        $scope.tagSearchResult = [];
+    $scope.tagSearchResult = [];
 
-        $scope.filterTags = [];
+    $scope.filterTags = [];
 
-        $scope.verseTags = [];
+    $scope.verseTags = [];
 
-        $scope.verseTagsJSON = [];
-        $scope.editorSubmitted = 0;
-        $scope.verseTagContents = [];
-
-
-        //go to chapter / verse parameters for header display
-        $scope.goToVerseParameters = {};
-        $scope.goToVerseParameters.chapter = 1;
-        $scope.goToVerseParameters.verse = 0;
-
-        //route variables
-        $scope.myRoute = [];
-        $scope.myRoute['tag'] = '';
-        $scope.myRoute['tagAuthor'] = '';
-        $scope.myRoute['targetVerse'] = '';
-        $scope.targetVerseForTagContent = 0;
-
-        //verse tags
-        $scope.verseTagContentParams = [];
-        $scope.targetVerseForTagContent = 0;
+    $scope.verseTagsJSON = [];
+    $scope.editorSubmitted = 0;
+    $scope.verseTagContents = [];
 
 
-        $scope.selection = [];
+    //go to chapter / verse parameters for header display
+    $scope.goToVerseParameters = {};
+    $scope.goToVerseParameters.chapter = 1;
+    $scope.goToVerseParameters.verse = 0;
 
-        //hizli meal gosterimi - show verse
-        $scope.showVerseData = {};
-        $scope.markVerseAnnotations = true;
-        $scope.showVerseAtTranslation = 0;
+    //route variables
+    $scope.myRoute = [];
+    $scope.myRoute['tag'] = '';
+    $scope.myRoute['tagAuthor'] = '';
+    $scope.myRoute['targetVerse'] = '';
+    $scope.targetVerseForTagContent = 0;
 
-        //tutorial
-        $scope.showTutorial = 0;
-        $scope.tutorialCarouselActive = 0;
+    //verse tags
+    $scope.verseTagContentParams = [];
+    $scope.targetVerseForTagContent = 0;
 
 
-        /* side panel */
-        $scope.sidebarActive = 0;
-        $scope.tagSearchResult = [];
-        $scope.searchText = "";
+    $scope.selection = [];
 
-        //mobile
-        $scope.annotationAddable = false;
+    //hizli meal gosterimi - show verse
+    $scope.showVerseData = {};
+    $scope.markVerseAnnotations = true;
+    $scope.showVerseAtTranslation = 0;
 
-        //hide list of authors div
-        $scope.showAuthorsList = false;
+    //tutorial
+    $scope.showTutorial = 0;
+    $scope.tutorialCarouselActive = 0;
 
-        //Çevreleri listeleme - show circles
-        $scope.extendedCircles = [];
-        $scope.extendedCirclesForSearch = [];
-        $scope.circleListsPromise=null;
 
-        $scope.clickBlocking = false;
+    /* side panel */
+    $scope.sidebarActive = 0;
+    $scope.tagSearchResult = [];
+    $scope.searchText = "";
 
-        //mobile: can View circle list for editor
-        $scope.mobileAnnotationEditorCircleListForSelection = [];
-        //mobile: circle list for detailed search
-        $scope.mobileDetailedSearchCircleListForSelection = [];
-        //mobile: circle list for all annotations search
-        $scope.mobileAllAnnotationsSearchCircleListForSelection = [];
-        $scope.query_users = [];
+    //mobile
+    $scope.annotationAddable = false;
 
-        $scope.checkAPIVersion = function(){
-            var versionRestangular = Restangular.all("apiversioncompatibility");
-            $scope.versionParams = [];
-            $scope.versionParams.version = config_data.version;
-            $scope.versionParams.platform = ionic.Platform.platform();
-            versionRestangular.customGET("", $scope.versionParams, {}).then(function(data){
-                if(data.message != "OK"){
-                    alert(data.message);
-                }
-            });
+    //hide list of authors div
+    $scope.showAuthorsList = false;
 
+    //Çevreleri listeleme - show circles
+    $scope.extendedCircles = [];
+    $scope.extendedCirclesForSearch = [];
+    $scope.circleListsPromise=null;
+
+    $scope.clickBlocking = false;
+
+    //mobile: can View circle list for editor
+    $scope.mobileAnnotationEditorCircleListForSelection = [];
+    //mobile: circle list for detailed search
+    $scope.mobileDetailedSearchCircleListForSelection = [];
+    //mobile: circle list for all annotations search
+    $scope.mobileAllAnnotationsSearchCircleListForSelection = [];
+    $scope.query_users = [];
+
+    $scope.internet_display_message = "";
+    $scope.internet_display_show = false;
+    $scope.internet_display_style = {"background-color": "orange"};
+
+    $scope.verselists = [];
+
+    $scope.cevreadlar = [];
+
+    $scope.currentPageUrl = "";
+    $scope.app_id = "app-id=1032659897";
+    $scope.apple_itunes_content = "app-id=1032659897";
+
+    $scope.checkAPIVersion = function(){
+        var versionRestangular = Restangular.all("apiversioncompatibility");
+        $scope.versionParams = [];
+        $scope.versionParams.version = config_data.version;
+        $scope.versionParams.platform = ionic.Platform.platform();
+        versionRestangular.customGET("", $scope.versionParams, {}).then(function(data){
+            if(data.message != "OK"){
+                alert(data.message);
+            }
+        });
+    };
+
+    $scope.tutorial = function (parameter) {
+        if (parameter == 'init') {
+            if ($scope.loggedIn == false) {
+                $('#tutorialModal').modal('show');
+            }
+        } else if (parameter == 'next') {
+            $('#tutorialCarousel').carousel('next');
+            $scope.tutorialCarouselActive++;
+        } else if (parameter == 'previous') {
+            $('#tutorialCarousel').carousel('prev');
+            $scope.tutorialCarouselActive--;
+        }
+    };
+
+    $scope.setPageTitle= function(title){
+        $rootScope.pageTitle = title;
+    };
+
+    //currentPage
+    $scope.getCurrentPage = function () {
+        var retcp = "";
+
+        url = $location.path();
+        if ( url == '/annotations/') {
+            retcp = 'annotations';
+        } else if ( url == "/people/circles/"){
+            retcp = "people_circle";
+        } else if ( url == "/people/people_have_you/"){
+            retcp = "people_have_you";
+        } else if ( url == "/people/find_people/"){
+            retcp = "people_find";
+        } else if ( url == "/people/explore/"){
+            retcp = "people_explore";
+        } else if ( url == "/search_translations/"){
+            retcp = "search_translations";
+        } else if ( url == "/lists/verse"){
+            retcp = "verse_lists";
+        } else if ( url.indexOf("/profile/user/") > -1){
+            retcp = "profile_user";
+        } else if ( url.indexOf("/profile/circle/") > -1){
+            retcp = "profile_circle";
+        } else {
+            retcp = 'home';
         }
 
-        $scope.tutorial = function (parameter) {
-            if (parameter == 'init') {
-                if ($scope.loggedIn == false) {
-                    $('#tutorialModal').modal('show');
-                }
-            } else if (parameter == 'next') {
-                $('#tutorialCarousel').carousel('next');
-                $scope.tutorialCarouselActive++;
-            } else if (parameter == 'previous') {
-                $('#tutorialCarousel').carousel('prev');
-                $scope.tutorialCarouselActive--;
+        return retcp;
+    };
+
+
+    /* auth */
+    //general login.
+    $scope.onFacebookLoginSuccess = function (responseData) {
+        if (responseData.loggedIn == false) {
+            $scope.loggedIn = false;
+            $scope.logOut();
+        } else {
+            $scope.access_token = responseData.token;
+            $scope.user = responseData.user;
+            $scope.loggedIn = true;
+
+            $scope.initializeCircleLists();
+
+            $scope.$broadcast('login', responseData);
+            $scope.$broadcast('userInfoReady');
+        }
+    };
+
+    //general logout.
+    $scope.onFacebookLogOutSuccess = function (responseData) {
+        if (responseData.loggedOut == true) {
+
+            $scope.verseTagsJSON = {};
+            $scope.access_token = "";
+            $scope.loggedIn = false;
+            $scope.user = null;
+
+            localStorageService.remove('chapter_view_parameters');
+            localStorageService.remove('annotations_view_parameters');
+            $scope.$broadcast('logout', responseData);
+            $location.path('/login');
+        }
+    };
+
+
+    //sub page should write the its function if it needs custom login.
+    $scope.login = function () { //new
+        authorization.login($scope.onFacebookLoginSuccess);
+    }
+
+    $scope.logOut = function () { //new
+        if($ionicSideMenuDelegate.isOpenLeft()){
+            $ionicSideMenuDelegate.toggleLeft();
+        }
+        authorization.logOut($scope.onFacebookLogOutSuccess);
+    };
+
+    $scope.$watch(function () {
+            return Facebook.isReady();
+        }, function (newVal) {
+            if (newVal) {
+                $scope.facebookIsReady = true;
             }
         }
+    );
+    $scope.checkUserLoginStatus = function () {
+        var status = false;
+        var access_token = authorization.getAccessToken();
+        if (access_token != null && access_token != "") {
+            $scope.access_token = access_token;
+            $scope.get_user_info();
+            $scope.loggedIn = true;
 
-        $scope.setPageTitle= function(title){
-            $rootScope.pageTitle = title;
+            status = true;
+
+            //Show Circles - Kullanıcı login olduğunda çevre listesi çekilir.
+            $scope.initializeCircleLists();
+            $scope.initializeVerseLists();
         }
-
-        //currentPage
-        $scope.getCurrentPage = function () {
-            var retcp = "";
-            
-            url = $location.path();
-            if ( url == '/annotations/') {
-                retcp = 'annotations';
-            } else if ( url == "/people/circles/"){
-                retcp = "people_circle";
-            } else if ( url == "/people/people_have_you/"){
-                retcp = "people_have_you";
-            } else if ( url == "/people/find_people/"){
-                retcp = "people_find";
-            } else if ( url == "/people/explore/"){
-                retcp = "people_explore";
-            }
-            else {
-                retcp = 'home';
-            }
-            
-            return retcp;
+        else {
+            $scope.loggedIn = false;
+            //do some cleaning
         }
+        return status;
+    };
+
+    $scope.goToVerseParameters.setSelectedChapter = function (chapter) {
+        $scope.goToVerseParameters.chapter = chapter;
+    };
 
 
-        /* auth */
-        //general login.
-        $scope.onFacebookLoginSuccess = function (responseData) {
-            if (responseData.loggedIn == false) {
-                $scope.loggedIn = false;
-                $scope.logOut();
-            }
-            else {
-                $scope.access_token = responseData.token;
-                $scope.user = responseData.user;
-                $scope.loggedIn = true;
+    //get user info
 
-                $scope.initializeCircleLists();
-
-                $scope.$broadcast('login', responseData);
+    $scope.get_user_info = function () {
+        var usersRestangular = Restangular.all("users");
+        //TODO: document knowhow: custom get with custom header
+        usersRestangular.customGET("", {}, {'access_token': $scope.access_token}).then(function (user) {
+                console.log("User info retrieved");
+                $scope.user = user;
                 $scope.$broadcast('userInfoReady');
-            }
-        }
+            },
+            function(response) {
+                console.log("Could not get user info");
+                console.log("isNative:"+config_data.isNative +" conn:"+navigator.network.connection.type);
+                if( config_data.isNative){
+                    if(navigator.network.connection.type == Connection.NONE) {
+                        $ionicPopup.confirm({
+                            title: "Internet Bağlantısı Yok",
+                            content: "Internet baglantısı olmadığı için kullanıcı işlemleri yapılamayacaktır"
+                        });
 
-        //general logout.
-        $scope.onFacebookLogOutSuccess = function (responseData) {
-            if (responseData.loggedOut == true) {
-
-                $scope.verseTagsJSON = {};
-                $scope.access_token = "";
-                $scope.loggedIn = false;
-                $scope.user = null;
-
-                localStorageService.remove('chapter_view_parameters');
-                localStorageService.remove('annotations_view_parameters');
-                $scope.$broadcast('logout', responseData);
-                $location.path('/login');
-            }
-        }
-
-
-        //sub page should write the its function if it needs custom login.
-        $scope.login = function () { //new
-            authorization.login($scope.onFacebookLoginSuccess);
-        }
-
-        $scope.logOut = function () { //new
-            if($ionicSideMenuDelegate.isOpenLeft()){
-                $ionicSideMenuDelegate.toggleLeft();
-            }
-            authorization.logOut($scope.onFacebookLogOutSuccess);
-
-        }
-
-        $scope.$watch(function () {
-                return Facebook.isReady();
-            }, function (newVal) {
-                if (newVal) {
-                    $scope.facebookIsReady = true;
+                    }
+                    else{
+                        if(response.data.code == "201"){
+                            var infoPopup = $ionicPopup.alert({
+                                title: 'Var olan oturumuzun süresi dolmuştur. Çıkış yapılıyor.',
+                                template: '',
+                                buttons: []
+                            });
+                            $timeout(function () {
+                                infoPopup.close();
+                                $scope.logOut();
+                            }, 1700);
+                        }
+                    }
                 }
-            }
-        );
-        $scope.checkUserLoginStatus = function () {
-            var status = false;
-            var access_token = authorization.getAccessToken();
-            if (access_token != null && access_token != "") {
-                $scope.access_token = access_token;
-                $scope.get_user_info();
-                $scope.loggedIn = true;
-
-                status = true;
-
-                //Show Circles - Kullanıcı login olduğunda çevre listesi çekilir.
-                $scope.initializeCircleLists();
-
-            }
-            else {
-                $scope.loggedIn = false;
-                //do some cleaning
-            }
-
-            return status;
-        };
-
-        $scope.goToVerseParameters.setSelectedChapter = function (chapter) {
-            $scope.goToVerseParameters.chapter = chapter;
-        };
-
-
-        //get user info
-
-        $scope.get_user_info = function () {
-            var usersRestangular = Restangular.all("users");
-            //TODO: document knowhow: custom get with custom header
-            usersRestangular.customGET("", {}, {'access_token': $scope.access_token}).then(function (user) {
-                    $scope.user = user;
-                    $scope.$broadcast('userInfoReady');
-                },
-                function(response) {
+                else {
                     console.log("Error occured while validating user login with status code", response.status);
                     var infoPopup = $ionicPopup.alert({
                         title: 'Var olan oturumuzun süresi dolmuştur. Çıkış yapılıyor.',
@@ -790,691 +938,659 @@ app.factory('ChapterVerses', function ($resource) {
                         buttons: []
                     });
 
-                    $timeout(function() {
+                    $timeout(function () {
                         infoPopup.close();
                         $scope.logOut();
                     }, 1700);
                 }
-            );
+            }
+        );
+    };
+
+
+    //     $scope.checkUserLoginStatus();
+    /* end of facebook login */
+    /* end of auth */
+
+
+    $scope.initRoute = function () {
+
+        if (typeof $routeParams.tag !== 'undefined') {
+            $scope.myRoute['tag'] = $routeParams.tag;
+        }
+        if (typeof $routeParams.tagAuthor !== 'undefined') {
+            $scope.myRoute['tagAuthor'] = $routeParams.tagAuthor;
+        }
+        if (typeof $routeParams.targetVerse !== 'undefined') {
+            $scope.targetVerseForTagContent = $routeParams.targetVerse;
         }
 
-
-        //     $scope.checkUserLoginStatus();
-        /* end of facebook login */
-        /* end of auth */
+    };
 
 
-        $scope.initRoute = function () {
+    $scope.getTagsWithCommaSeparated = function (tagList) {
+        //prepare tags
+        var tagParameter = [];
 
-            if (typeof $routeParams.tag !== 'undefined') {
-                $scope.myRoute['tag'] = $routeParams.tag;
-            }
-            if (typeof $routeParams.tagAuthor !== 'undefined') {
-                $scope.myRoute['tagAuthor'] = $routeParams.tagAuthor;
-            }
-            if (typeof $routeParams.targetVerse !== 'undefined') {
-                $scope.targetVerseForTagContent = $routeParams.targetVerse;
-            }
+        for (var i = 0; i < tagList.length; i++) {
+            tagParameter[i] = tagList[i].id;
+        }
+        return tagParameter.join(',');
+    };
 
-        };
+    $scope.getIdArrayFromCommaSeparated = function (tagList) {
+        if(tagList.length==0){
+            return [];
+        } else{
+            return tagList.split(',');
+        }
+    };
 
+    $scope.getTagParametersForAnnotatorStore = function (canViewCircles, canCommentCircles, canViewUsers, canCommentUsers, tags) {
+        //prepare tags
+        var tagParameters = {};
+        tagParameters.canViewCircles = [];
+        tagParameters.canViewUsers = [];
+        tagParameters.canCommentCircles = [];
+        tagParameters.canCommentUsers = [];
 
-        $scope.getTagsWithCommaSeparated = function (tagList) {
-            //prepare tags
-            var tagParameter = [];
+        for (var i = 0; i < canViewCircles.length; i++) {
+            tagParameters.canViewCircles[i] = canViewCircles[i].id;
+        }
 
-            for (var i = 0; i < tagList.length; i++) {
-                tagParameter[i] = tagList[i].id;
-            }
+        for (var i = 0; i < canViewUsers.length; i++) {
+            tagParameters.canViewUsers[i] = canViewUsers[i].id;
+        }
 
-            return tagParameter.join(',');
-        };
+        for (var i = 0; i < canCommentUsers.length; i++) {
+            tagParameters.canCommentUsers[i] = canCommentUsers[i].id;
+        }
 
-        $scope.getIdArrayFromCommaSeparated = function (tagList) {
-            if(tagList.length==0){
-                return [];
-            }
-            else{
-                return tagList.split(',');
-            }
-        };
+        for (var i = 0; i < canCommentCircles.length; i++) {
+            tagParameters.canCommentCircles[i] = canCommentCircles[i].id;
+        }
 
-        $scope.getTagParametersForAnnotatorStore = function (canViewCircles, canCommentCircles, canViewUsers, canCommentUsers, tags) {
-            //prepare tags
-            var tagParameters = {};
-            tagParameters.canViewCircles = [];
-            tagParameters.canViewUsers = [];
-            tagParameters.canCommentCircles = [];
-            tagParameters.canCommentUsers = [];
+        //the tags data should be in annotationModalDataTagInputs
+        var jsTags = tags;
 
-            for (var i = 0; i < canViewCircles.length; i++) {
-                tagParameters.canViewCircles[i] = canViewCircles[i].id;
-            }
+        if (typeof jsTags == 'undefined') {
+            jsTags = [];
+        }
 
-            for (var i = 0; i < canViewUsers.length; i++) {
-                tagParameters.canViewUsers[i] = canViewUsers[i].id;
-            }
+        var newTags = [];
+        for (var i = 0; i < jsTags.length; i++) {
+            newTags.push(jsTags[i].name);
+        }
 
-            for (var i = 0; i < canCommentUsers.length; i++) {
-                tagParameters.canCommentUsers[i] = canCommentUsers[i].id;
-            }
+        tagParameters.tags = newTags;
 
-            for (var i = 0; i < canCommentCircles.length; i++) {
-                tagParameters.canCommentCircles[i] = canCommentCircles[i].id;
-            }
+        return tagParameters;
+    };
 
-            //the tags data should be in annotationModalDataTagInputs
-            var jsTags = tags;
+    $scope.showEditorModal = function (annotation, position, postCallback) {
+        $timeout(function(){
+            $scope.$broadcast("show_editor",{annotation: annotation, position:position, postCallback: postCallback});
+        });
+    };
 
-            if (typeof jsTags == 'undefined') {
-                jsTags = [];
-            }
+    $scope.showAnnotationDeleteModal = function (index, postCallback) {
+        $timeout(function(){
+            $scope.$broadcast("show_delete_editor_modal",{index:index, postCallback: postCallback});
+        });
+    };
 
-            var newTags = [];
-            for (var i = 0; i < jsTags.length; i++) {
-                newTags.push(jsTags[i].name);
-            }
+    $scope.colorTheAnnotation = function (annotation) {
+        var cat = annotation.colour;
+        var highlights = annotation.highlights;
+        if (cat) {
+            for (var h in highlights) {
+                var classes = highlights[h].className.split(" ");
+                var newClass = "";
 
-            tagParameters.tags = newTags;
-
-            return tagParameters;
-        };
-
-        //retrives the permissions of an annotation to scope variables
-        $scope.restoreScopeAnnotationPermissions = function (annoid) {
-            var cevregosterRestangular = Restangular.one("annotations", annoid).all("permissions");
-            cevregosterRestangular.customGET("", "", {'access_token': $scope.access_token}).then(function (cevreliste) {
-
-
-                //todo: replace locale "All circles" and "All users" for -2 and -1 circle ids
-                var clis = [];
-
-                for (var i = 0; i < cevreliste.canViewCircles.length; i++) {
-                    clis.push({'id': cevreliste.canViewCircles[i].id, 'name': cevreliste.canViewCircles[i].name});
-
-                }
-                $scope.ViewCircles = clis;
-                //do some special for mobile widget
-                $scope.setMobileAnnotationEditorCircleListForSelection($scope.ViewCircles);
-
-                var clis1 = [];
-                for (var i = 0; i < cevreliste.canViewUsers.length; i++) {
-                    clis1.push({'id': cevreliste.canViewUsers[i].id, 'name': cevreliste.canViewUsers[i].name});
-                }
-
-                $scope.ViewUsers = clis1;
-
-                var clis2 = [];
-                for (var i = 0; i < cevreliste.canCommentCircles.length; i++) {
-                    clis2.push({
-                        'id': cevreliste.canCommentCircles[i].id,
-                        'name': cevreliste.canCommentCircles[i].name
-                    });
-                }
-
-                $scope.yrmcevres = clis2;
-
-                var clis3 = [];
-                for (var i = 0; i < cevreliste.canCommentUsers.length; i++) {
-                    clis3.push({'id': cevreliste.canCommentUsers[i].id, 'name': cevreliste.canCommentUsers[i].name});
-                }
-
-                $scope.yrmkisis = clis3;
-
-            });
-        };
-
-
-
-        $scope.setMobileAnnotationEditorCircleListForSelection = function(circles){
-            //reset mobileAnnotationEditorCircleListForSelection
-            for (var checkboxIndex = 0; checkboxIndex < $scope.mobileAnnotationEditorCircleListForSelection.length; checkboxIndex++) {
-                $scope.mobileAnnotationEditorCircleListForSelection[checkboxIndex].selected=false;
-            }
-
-            //prepare circle checkbox  list
-            for( var circleIndex = 0; circleIndex < circles.length; circleIndex++){
-                for (var checkboxIndex = 0; checkboxIndex < $scope.mobileAnnotationEditorCircleListForSelection.length; checkboxIndex++) {
-                    if( circles[circleIndex].id == $scope.mobileAnnotationEditorCircleListForSelection[checkboxIndex].id ){
-                        $scope.mobileAnnotationEditorCircleListForSelection[checkboxIndex].selected=true;
+                //remove the class if already coloured
+                for (var theClass in classes) {
+                    if (classes[theClass].indexOf("a_hl_") > -1) { //the class is a colour class
+                        classes.splice(theClass, 1);
                     }
                 }
-
+                newClass = classes.join(" ");
+                newClass = newClass + ' a_hl_' + cat;
+                highlights[h].className = newClass;
             }
-        };
+        }
+    };
+
+    $scope.colorAnnotations = function (annotations) {
+        for (var annotationIndex in annotations) {
+            $scope.colorTheAnnotation(annotations[annotationIndex]);
+        }
+    };
+
+    //go to chapter for general purpuse.
+    $scope.goToChapter = function () {
+        window.location.href = '#/chapter/' + $scope.chapter_id + '/author/' + $scope.author_mask + '/verse/' + $scope.verse.number;
+    };
+
+    $scope.goToChapterWithParameters = function (chapter_id, author_mask, verse_number) {
+        $scope.chapter_id = chapter_id;
+        $scope.author_mask = author_mask;
+        $scope.verse.number = verse_number;
+        $scope.goToChapter();
+
+    };
+
+    /*
+     moved to homectrl
+     $scope.editAnnotation = function (index) {
+     console.log("$scope.filteredAnnotations:"+$scope.filteredAnnotations);
+     if (typeof $scope.filteredAnnotations != 'undefined' && $scope.filteredAnnotations.length > 0) {
+     index = $scope.getAnnotationIndexFromFilteredAnnotationIndex(index);
+     }
+     annotator.onEditAnnotation($scope.annotations[index]);
+     annotator.updateAnnotation($scope.annotations[index]);
+     }
+     */
 
 
-
-        $scope.showEditor = function (annotation, position) {
-
-            //debug for annotation start - end
-            //this will be used after html structure change
-            console.log(annotation.ranges[0].start);
-
-
-
-            //prepare canView circles.
-            if (typeof annotation.annotationId != 'undefined') {
-                $scope.ViewCircles = [];
-                $scope.ViewUsers = [];
-                $scope.yrmcevres = [];
-                $scope.yrmkisis = [];
-                $scope.restoreScopeAnnotationPermissions(annotation.annotationId);
+    $scope.getIndexOfArrayByElement = function (arr, k, v) {
+        var arrLen = arr.length;
+        var foundOnIndex = -1;
+        for (var i = 0; i < arrLen; i++) {
+            if (arr[i][k] == v) {
+                foundOnIndex = i;
             }
-            else {
-                if ($scope.ViewCircles.length == 0 && $scope.ViewUsers.length == 0 && $scope.yrmcevres.length == 0 && $scope.yrmkisis.length == 0) {
-                    //all empty //share to everyone by default
-
-                    $scope.ViewCircles.push({'id': '-1', 'name': 'Herkes'});
-                }
-                else { //use previous values.
-
-                }
-                //do some special for mobile widget
-                $scope.setMobileAnnotationEditorCircleListForSelection($scope.ViewCircles);
-            }
+        }
+        return foundOnIndex;
+    };
 
 
-            var newTags = [];
+    $scope.scopeApply = function () {
+        if (!$scope.$$phase) {
+            $scope.$apply();
+        }
+    };
 
-            //Volkan Ekledi.
-            var cvrtags = [];
-            if (typeof annotation.vcircles != 'undefined') {
-                for (var i = 0; i < annotation.vcircles.length; i++) {
-                    cvrtags.push({"id": annotation.vcircles[i]});
 
-                }
-            }
-            //
+    //Hizli Meal Gosterimi / Fast Translation Display
+    $scope.showVerse = function (annotation) {
+        $scope.showVerseData = {};
+        dataProvider.fetchTranslationById(annotation.translationId, function (translation) {
+            $scope.markVerseAnnotations = true;
+            $scope.showVerseData.annotationId = annotation.annotationId;
+            $scope.showVerseData.data = translation;
 
-            if (typeof annotation.tags != 'undefined') {
-                for (var i = 0; i < annotation.tags.length; i++) {
-                    newTags.push({"name": annotation.tags[i]});
-                }
-            }
+        });
+    };
 
-            $scope.annotationModalData = annotation;
-            $scope.annotationModalDataTagsInput = newTags;
-            if (typeof $scope.annotationModalData.text == 'undefined') {
-                $scope.annotationModalData.text = "";
-            }
-            //set default color
-            if (typeof $scope.annotationModalData.colour == 'undefined') {
-                $scope.annotationModalData.colour = 'yellow';
-            }
-            $scope.annotationModalDataVerse = Math.floor(annotation.verseId / 1000) + ":" + annotation.verseId % 1000;
+    $scope.showVerseDetail = function (chapterVerse, users, circles){
+        $timeout(function(){
+            $scope.$broadcast("open_verse_detail",{chapterVerse: chapterVerse, circles:circles, users:users});
+        });
+    };
 
-            $scope.scopeApply();
-            if (!config_data.isMobile) {
-                $('#annotationModal').modal('show');
+    $scope.addVerseToVerseList = function (verse, closeModal){
+        $timeout(function(){
+            $scope.$broadcast("add_verse_to_verse_lists", {verse:verse, closeModal:closeModal});
+        });
+    };
 
+    $scope.showVerseFromFootnote = function (chapterVerse, author, translationId) {
+
+        $scope.showVerseData = {};
+        $scope.showVerseData.data = {};
+        var chapterAndVerse = seperateChapterAndVerse(chapterVerse);
+        $scope.showVerseData.data.chapter = chapterAndVerse.chapter;
+        $scope.showVerseData.data.verse = chapterAndVerse.verse;
+        $scope.showVerseData.data.authorId = author;
+        $scope.showVerseAtTranslation = translationId;
+        $scope.showVerseByParameters('go');
+        $(".showVerseData").show();
+
+    };
+
+    $scope.showVerseByParameters = function (action) {
+
+        var showVerseParameters = [];
+        if (action == 'next') {
+            if ($scope.showVerseData.data.verse != ($scope.chapters[$scope.showVerseData.data.chapter - 1].verseCount)) {
+                $scope.showVerseData.data.verse++;
             } else {
-
-                $scope.openModal('editor');
+                $scope.showVerseData.data.chapter++;
+                $scope.showVerseData.data.verse = 0;
             }
-
-        };
-
-
-        //go to chapter for general purpuse.
-        $scope.goToChapter = function () {
-            window.location.href = '#/chapter/' + $scope.chapter_id + '/author/' + $scope.author_mask + '/verse/' + $scope.verse.number;
-        };
-
-        $scope.goToChapterWithParameters = function (chapter_id, author_mask, verse_number) {
-            $scope.chapter_id = chapter_id;
-            $scope.author_mask = author_mask;
-            $scope.verse.number = verse_number;
-            $scope.goToChapter();
-
-        };
-
-        /*
-         moved to homectrl
-         $scope.editAnnotation = function (index) {
-         console.log("$scope.filteredAnnotations:"+$scope.filteredAnnotations);
-         if (typeof $scope.filteredAnnotations != 'undefined' && $scope.filteredAnnotations.length > 0) {
-         index = $scope.getAnnotationIndexFromFilteredAnnotationIndex(index);
-         }
-         annotator.onEditAnnotation($scope.annotations[index]);
-         annotator.updateAnnotation($scope.annotations[index]);
-         }
-         */
-
-
-        $scope.getIndexOfArrayByElement = function (arr, k, v) {
-            var arrLen = arr.length;
-            var foundOnIndex = -1;
-            for (var i = 0; i < arrLen; i++) {
-                if (arr[i][k] == v) {
-                    foundOnIndex = i;
-                }
+        } else if (action == 'previous') {
+            if ($scope.showVerseData.data.verse != 0) {
+                $scope.showVerseData.data.verse--;
+            } else {
+                $scope.showVerseData.data.chapter--;
+                $scope.showVerseData.data.verse = $scope.chapters[$scope.showVerseData.data.chapter - 1].verseCount;
             }
-            return foundOnIndex;
-        };
+        } else if (action == 'go') {
 
+        }
+        showVerseParameters.chapter = $scope.showVerseData.data.chapter;
+        showVerseParameters.verse = $scope.showVerseData.data.verse;
 
-        $scope.scopeApply = function () {
-            if (!$scope.$$phase) {
-                $scope.$apply();
-            }
-        };
-
-
-        //Hizli Meal Gosterimi / Fast Translation Display
-        $scope.showVerse = function (annotation) {
-            $scope.showVerseData = {};
-            Restangular.one('translations', annotation.translationId).get().then(function (translation) {
-                $scope.markVerseAnnotations = true;
-                $scope.showVerseData.annotationId = annotation.annotationId;
+        var verseId = $scope.showVerseData.data.chapter * 1000 + parseInt($scope.showVerseData.data.verse);
+        dataProvider.fetchTranslationByAuthorAndVerseId({authorId : $scope.showVerseData.data.authorId, verseId: verseId},function (translation) {
+            if (translation != "") {
+                $scope.markVerseAnnotations = false;
                 $scope.showVerseData.data = translation;
+            }
+        });
+    };
+    /* end of show verse */
 
-            });
-        };
+    //list authors
+    $scope.list_authors = function () {
+        $scope.authorMap = new Object();
+        $scope.authors = new Object();
+        dataProvider.listAuthors(function(data){
+            $scope.authors = data;
+            var arrayLength = data.length;
+            for (var i = 0; i < arrayLength; i++) {
+                $scope.authorMap[data[i].id] = data[i];
+                $scope.setAuthors($scope.author_mask);
+            }
+            $scope.$broadcast("authorMap ready");
+        });
+    };
 
-        $scope.showVerseDetail = function (chapterVerse, users, circles){
+    //tags input auto complete function
+    $scope.loadTags = function (query) {
+        var tagsRestangular = Restangular.one('tags', query);
+        return tagsRestangular.customGET("", {}, {'access_token': $scope.access_token});
+    };
+
+    //tags input auto complete
+    $scope.cevrelistele = function () {
+        return $scope.extendedCircles;
+    };
+
+    //tags input auto complete
+    $scope.cevrelisteleForSearch = function () {
+
+        return $scope.extendedCirclesForSearch;
+    };
+
+    $scope.initializeCircleLists = function () {
+
+        Restangular.all("circles").customGET("", {}, {'access_token': $scope.access_token}).then(function (circleList) {
+
+            $scope.cevreadlar = circleList;
+            $scope.extendedCircles = [];
+            $scope.extendedCircles.push({'id': '-2', 'name': 'Tüm Çevrelerim'});
+            $scope.extendedCircles.push({'id': '-1', 'name': 'Herkes'});
+
+            $scope.extendedCirclesForSearch = [];
+            $scope.extendedCirclesForSearch.push({'id': '-2', 'name': 'Tüm Çevrelerim'});
+
+
+            $scope.circleDropdownArray = [];
+            $scope.circleDropdownArray.push({'id': '-2', 'name': 'Tüm Çevrelerim'});
+            $scope.circleDropdownArray.push({'id': '', 'name': 'Sadece Ben'});
+
+            $scope.query_circle_dropdown = $scope.circleDropdownArray[1];
+            Array.prototype.push.apply($scope.circleDropdownArray, circleList);
+
+            //also initialize extended circles
+            Array.prototype.push.apply($scope.extendedCircles, circleList);
+            Array.prototype.push.apply($scope.extendedCirclesForSearch, circleList);
+
+            // initialize mobileAnnotationEditorCircleListForSelection
+            $scope.mobileAnnotationEditorCircleListForSelection=[];
+            Array.prototype.push.apply($scope.mobileAnnotationEditorCircleListForSelection, $scope.extendedCircles);
+            //add isSelected property for mobile.
+            for (var index = 0; index < $scope.mobileAnnotationEditorCircleListForSelection.length; ++index) {
+                $scope.mobileAnnotationEditorCircleListForSelection[index].selected=false;
+            }
+
+            // initialize mobileDetailedSearchCircleListForSelection
+            $scope.mobileDetailedSearchCircleListForSelection=[];
+            Array.prototype.push.apply($scope.mobileDetailedSearchCircleListForSelection, $scope.extendedCirclesForSearch);
+            //add isSelected property for mobile.
+            for (var index = 0; index < $scope.mobileDetailedSearchCircleListForSelection.length; ++index) {
+                $scope.mobileDetailedSearchCircleListForSelection[index].selected=false;
+            }
+
+            // initialize mobileAllAnnotationsSearchCircleListForSelection
+            $scope.mobileAllAnnotationsSearchCircleListForSelection=[];
+            Array.prototype.push.apply($scope.mobileAllAnnotationsSearchCircleListForSelection, $scope.extendedCirclesForSearch);
+            //add isSelected property for mobile.
+            for (var index = 0; index < $scope.mobileAllAnnotationsSearchCircleListForSelection.length; ++index) {
+                $scope.mobileAllAnnotationsSearchCircleListForSelection[index].selected=false;
+            }
+
+            $scope.mobileInferencesEditorCircleListForSelection = [];
+            Array.prototype.push.apply($scope.mobileInferencesEditorCircleListForSelection, $scope.extendedCircles);
+            //add isSelected property for mobile.
+            for (var index = 0; index < $scope.mobileInferencesEditorCircleListForSelection.length; ++index) {
+                $scope.mobileInferencesEditorCircleListForSelection[index].selected = false;
+            }
+
+            // initialize mobileAllInferencessSearchCircleListForSelection
+            $scope.mobileAllInferencesSearchCircleListForSelection = [];
+            Array.prototype.push.apply($scope.mobileAllInferencesSearchCircleListForSelection, $scope.extendedCirclesForSearch);
+            //add isSelected property for mobile.
+            for (var index = 0; index < $scope.mobileAllInferencesSearchCircleListForSelection.length; ++index) {
+                $scope.mobileAllInferencesSearchCircleListForSelection[index].selected = false;
+            }
+            $scope.$broadcast("circleLists ready");
+
+        });
+    };
+
+    $scope.initializeVerseLists = function(){
+        Restangular.all("verselists").customGET("", {}, {'access_token': $scope.access_token}).then(function (verselists) {
+            $scope.verselists = verselists;
+        });
+    };
+
+    //tags input auto complete
+    $scope.kisilistele = function (kisiad) {
+        var kisilisteRestangular = Restangular.all("users/search");
+        $scope.usersParams = [];
+        $scope.usersParams.search_query = kisiad;
+        return kisilisteRestangular.customGET("", $scope.usersParams, {'access_token': $scope.access_token});
+
+    };
+
+    //selected authors
+    $scope.setAuthors = function (authorMask) {
+        $scope.selection = [];
+        for (var index in $scope.authorMap) {
+            if (authorMask & $scope.authorMap[index].id) {
+                $scope.selection.push($scope.authorMap[index].id);
+            }
+        }
+    };
+
+    //toggle selection for an author id
+    $scope.toggleSelection = function toggleSelection(author_id) {
+        var idx = $scope.selection.indexOf(author_id);
+
+        // is currently selected
+        if (idx > -1) {
+            $scope.selection.splice(idx, 1);
+        }
+        // is newly selected
+        else {
+            $scope.selection.push(author_id);
+        }
+        $scope.author_mask = 0;
+        for (var index in $scope.selection) {
+            $scope.author_mask = $scope.author_mask | $scope.selection[index];
+        }
+        //$scope.setAuthorMask();
+        //localStorageService.set('author_mask', $scope.author_mask);
+    };
+
+    //go to chapter / verse from navigation header
+    $scope.goToVerse = function () {
+        $scope.query_chapter_id = $scope.goToVerseParameters.chapter.id ;
+        $scope.verse.number = $scope.goToVerseParameters.verse;
+        $scope.goToChapter();
+    };
+
+    $scope.verseNumberValidation = function (chapters, chapter_id, verse_number) {
+        var chapters = $scope.chapters;
+        var chapter_id = $scope.goToVerseParameters.chapter.id;
+        var verse_number = $scope.goToVerseParameters.verse;
+
+        //search array with id
+        var validationErrorMessage = "Geçerli ayet ve sure numarası giriniz";
+        var index = chapters.map(function (el) {
+            return el.id;
+        }).indexOf(chapter_id);
+        if (index == -1 || chapters[index].verseCount < verse_number || isNaN(chapter_id) || isNaN(verse_number)) {
+            if (typeof annotator != 'undefined') {
+                Annotator.showNotification(validationErrorMessage);
+            } else {
+                alert(validationErrorMessage);
+            }
+        } else {
+            $scope.goToVerse();
+        }
+    };
+
+    $scope.goToURL = function(url){
+        $location.path(url).search({});
+        $scope.scopeApply();
+        //$route.reload();
+    };
+
+    $scope.openAddBookMarkModal = function(verseId){
+        $scope.$broadcast('openAddBookMarkModal', {verseId:verseId});
+    };
+
+    $scope.goToVerseTag = function (authorId, verseId, tag, users, circles) {
+        $scope.$broadcast("tagged_verse_modal",{verseId:verseId, tag:tag, circles:circles, users:users, author:authorId+""});
+    };
+
+    $scope.openVerseListForVerseSelection = function (callback, closeModal) {
+        $scope.$broadcast("open_verse_for_verse_selection",{callback:callback, closeModal:closeModal});
+    };
+
+    $scope.openVerseHistory = function(author){
+        $scope.$broadcast("open_verse_history",{author:author});
+    };
+
+    $scope.addVerseToHistory = function(verseId){
+        $scope.$broadcast("add_verse_to_history",{verseId:verseId});
+    };
+
+    $scope.initializeController = function () {
+        $scope.checkAPIVersion();
+
+        $scope.$on('$routeChangeStart', function(next, current) {
+            $scope.currentPage = $scope.getCurrentPage();
+            $scope.apple_itunes_content = $scope.app_id + ",app-argument=qurantools:/"+ $location.$$url;
+        });
+
+        $scope.$on('onlineNetworkConnection', function() {
+            $scope.internet_display_show = true;
+            $scope.internet_display_style = {"background-color": "green"};
+            $scope.internet_display_message = "Internet bağlantınız sağlandı.";
             $timeout(function(){
-                $scope.$broadcast("open_verse_detail",{chapterVerse: chapterVerse, circles:circles, users:users});
-            });
-        };
+                $scope.internet_display_show = false;
+            },2000);
+        });
 
-        $scope.showVerseFromFootnote = function (chapterVerse, author, translationId) {
+        $scope.$on('offlineNetworkConnection', function(message) {
+            $scope.internet_display_show = true;
+            $scope.internet_display_style = {"background-color": "orange"};
+            $scope.internet_display_message = "Internet bağlantınız kesildi. Yapabileceğiniz işlemler kısıtlıdır.";
+        });
 
-            $scope.showVerseData = {};
-            $scope.showVerseData.data = {};
-            var chapterAndVerse = seperateChapterAndVerse(chapterVerse);
-            $scope.showVerseData.data.chapter = chapterAndVerse.chapter;
-            $scope.showVerseData.data.verse = chapterAndVerse.verse;
-            $scope.showVerseData.data.authorId = author;
-            $scope.showVerseAtTranslation = translationId;
-            $scope.showVerseByParameters('go');
-            $(".showVerseData").show();
-
-        };
-
-        $scope.showVerseByParameters = function (action) {
-
-            var showVerseParameters = [];
-            if (action == 'next') {
-                if ($scope.showVerseData.data.verse != ($scope.chapters[$scope.showVerseData.data.chapter - 1].verseCount)) {
-                    $scope.showVerseData.data.verse++;
-                } else {
-                    $scope.showVerseData.data.chapter++;
-                    $scope.showVerseData.data.verse = 0;
-                }
-            } else if (action == 'previous') {
-                if ($scope.showVerseData.data.verse != 0) {
-                    $scope.showVerseData.data.verse--;
-                } else {
-                    $scope.showVerseData.data.chapter--;
-                    $scope.showVerseData.data.verse = $scope.chapters[$scope.showVerseData.data.chapter - 1].verseCount;
-                }
-            } else if (action == 'go') {
-
-            }
-            showVerseParameters.chapter = $scope.showVerseData.data.chapter;
-            showVerseParameters.verse = $scope.showVerseData.data.verse;
-
-            var verseId = $scope.showVerseData.data.chapter * 1000 + parseInt($scope.showVerseData.data.verse);
-            var showVerseRestangular = Restangular.one('authors', $scope.showVerseData.data.authorId)
-                                                .one('verse', verseId);
-            showVerseRestangular.get().then(function (translation) {
-                if (translation != "") {
-                    $scope.markVerseAnnotations = false;
-                    $scope.showVerseData.data = translation;
-                }
-            });
-        };
-        /* end of show verse */
-
-
-        //list authors
-        $scope.list_authors = function () {
-            $scope.authorMap = new Object();
-            $scope.authors = dataProvider.listAuthors(function(data){
-                var arrayLength = data.length;
-                for (var i = 0; i < arrayLength; i++) {
-                    $scope.authorMap[data[i].id] = data[i];
-                    $scope.setAuthors($scope.author_mask);
-                }
-                $scope.$broadcast("authorMap ready");
-            });
-        };
-
-        //tags input auto complete function
-        $scope.loadTags = function (query) {
-            var tagsRestangular = Restangular.one('tags', query);
-            return tagsRestangular.customGET("", {}, {'access_token': $scope.access_token});
-        };
-
-        //tags input auto complete
-        $scope.cevrelistele = function () {
-            return $scope.extendedCircles;
-        };
-
-        //tags input auto complete
-        $scope.cevrelisteleForSearch = function () {
-
-            return $scope.extendedCirclesForSearch;
-        };
-
-        $scope.initializeCircleLists = function () {
-
-            Restangular.all("circles").customGET("", {}, {'access_token': $scope.access_token}).then(function (circleList) {
-
-                $scope.extendedCircles = [];
-                $scope.extendedCircles.push({'id': '-2', 'name': 'Tüm Çevrelerim'});
-                $scope.extendedCircles.push({'id': '-1', 'name': 'Herkes'});
-
-                $scope.extendedCirclesForSearch = [];
-                $scope.extendedCirclesForSearch.push({'id': '-2', 'name': 'Tüm Çevrelerim'});
-
-
-                $scope.circleDropdownArray = [];
-                $scope.circleDropdownArray.push({'id': '-2', 'name': 'Tüm Çevrelerim'});
-                $scope.circleDropdownArray.push({'id': '', 'name': 'Sadece Ben'});
-
-                $scope.query_circle_dropdown = $scope.circleDropdownArray[1];
-                Array.prototype.push.apply($scope.circleDropdownArray, circleList);
-
-                //also initialize extended circles
-                Array.prototype.push.apply($scope.extendedCircles, circleList);
-                Array.prototype.push.apply($scope.extendedCirclesForSearch, circleList);
-
-                // initialize mobileAnnotationEditorCircleListForSelection
-                $scope.mobileAnnotationEditorCircleListForSelection=[];
-                Array.prototype.push.apply($scope.mobileAnnotationEditorCircleListForSelection, $scope.extendedCircles);
-                //add isSelected property for mobile.
-                for (var index = 0; index < $scope.mobileAnnotationEditorCircleListForSelection.length; ++index) {
-                    $scope.mobileAnnotationEditorCircleListForSelection[index].selected=false;
-                }
-
-                // initialize mobileDetailedSearchCircleListForSelection
-                $scope.mobileDetailedSearchCircleListForSelection=[];
-                Array.prototype.push.apply($scope.mobileDetailedSearchCircleListForSelection, $scope.extendedCirclesForSearch);
-                //add isSelected property for mobile.
-                for (var index = 0; index < $scope.mobileDetailedSearchCircleListForSelection.length; ++index) {
-                    $scope.mobileDetailedSearchCircleListForSelection[index].selected=false;
-                }
-
-                // initialize mobileAllAnnotationsSearchCircleListForSelection
-                $scope.mobileAllAnnotationsSearchCircleListForSelection=[];
-                Array.prototype.push.apply($scope.mobileAllAnnotationsSearchCircleListForSelection, $scope.extendedCirclesForSearch);
-                //add isSelected property for mobile.
-                for (var index = 0; index < $scope.mobileAllAnnotationsSearchCircleListForSelection.length; ++index) {
-                    $scope.mobileAllAnnotationsSearchCircleListForSelection[index].selected=false;
-                }
-
-                $scope.mobileInferencesEditorCircleListForSelection = [];
-                Array.prototype.push.apply($scope.mobileInferencesEditorCircleListForSelection, $scope.extendedCircles);
-                //add isSelected property for mobile.
-                for (var index = 0; index < $scope.mobileInferencesEditorCircleListForSelection.length; ++index) {
-                    $scope.mobileInferencesEditorCircleListForSelection[index].selected = false;
-                }
-
-                // initialize mobileAllInferencessSearchCircleListForSelection
-                $scope.mobileAllInferencesSearchCircleListForSelection = [];
-                Array.prototype.push.apply($scope.mobileAllInferencesSearchCircleListForSelection, $scope.extendedCirclesForSearch);
-                //add isSelected property for mobile.
-                for (var index = 0; index < $scope.mobileAllInferencesSearchCircleListForSelection.length; ++index) {
-                    $scope.mobileAllInferencesSearchCircleListForSelection[index].selected = false;
-                }
-                $scope.$broadcast("circleLists ready");
-
+        if (config_data.isMobile) {
+            $ionicModal.fromTemplateUrl('components/partials/editor_modal.html', {
+                scope: $scope,
+                animation: 'slide-in-left',
+                id: 'editor'
+            }).then(function (modal) {
+                $scope.modal_editor = modal;
             });
 
-        }
+            $scope.getModalEditor = function(){
+                return $scope.modal_editor;
+            };
 
-
-        //tags input auto complete
-        $scope.kisilistele = function (kisiad) {
-            var kisilisteRestangular = Restangular.all("users/search");
-            $scope.usersParams = [];
-            $scope.usersParams.search_query = kisiad;
-            return kisilisteRestangular.customGET("", $scope.usersParams, {'access_token': $scope.access_token});
-
-        };
-
-        //selected authors
-        $scope.setAuthors = function (authorMask) {
-            $scope.selection = [];
-            for (var index in $scope.authorMap) {
-                if (authorMask & $scope.authorMap[index].id) {
-                    $scope.selection.push($scope.authorMap[index].id);
-                }
-            }
-        };
-
-        //toggle selection for an author id
-        $scope.toggleSelection = function toggleSelection(author_id) {
-            var idx = $scope.selection.indexOf(author_id);
-
-            // is currently selected
-            if (idx > -1) {
-                $scope.selection.splice(idx, 1);
-            }
-            // is newly selected
-            else {
-                $scope.selection.push(author_id);
-            }
-            $scope.author_mask = 0;
-            for (var index in $scope.selection) {
-                $scope.author_mask = $scope.author_mask | $scope.selection[index];
-            }
-            //$scope.setAuthorMask();
-            //localStorageService.set('author_mask', $scope.author_mask);
-        };
-
-        //go to chapter / verse from navigation header
-        $scope.goToVerse = function () {
-            $scope.query_chapter_id = $scope.goToVerseParameters.chapter.id ;
-            $scope.verse.number = $scope.goToVerseParameters.verse;
-            $scope.goToChapter();
-        };
-
-        $scope.verseNumberValidation = function (chapters, chapter_id, verse_number) {
-            var chapters = $scope.chapters;
-            var chapter_id = $scope.goToVerseParameters.chapter.id;
-            var verse_number = $scope.goToVerseParameters.verse;
-
-            //search array with id
-            var validationErrorMessage = "Geçerli ayet ve sure numarası giriniz";
-            var index = chapters.map(function (el) {
-                return el.id;
-            }).indexOf(chapter_id);
-            if (index == -1 || chapters[index].verseCount < verse_number || isNaN(chapter_id) || isNaN(verse_number)) {
-                if (typeof annotator != 'undefined') {
-                    Annotator.showNotification(validationErrorMessage);
-                } else {
-                    alert(validationErrorMessage);
-                }
-            } else {
-                $scope.goToVerse();
-            }
-        };
-
-        $scope.goToURL = function(url){
-            $location.path(url).search({});
-            $scope.scopeApply();
-            //$route.reload();
-        }
-
-        $scope.openAddBookMarkModal = function(verseId){
-
-            $scope.$broadcast('openAddBookMarkModal', {verseId:verseId});
-        };
-
-        $scope.goToVerseTag = function (authorId, verseId, tag, users, circles) {
-            $scope.$broadcast("tagged_verse_modal",{verseId:verseId, tag:tag, circles:circles, users:users, author:authorId+""});
-        };
-
-        $scope.initializeController = function () {
-
-            $scope.checkAPIVersion();
-
-            $scope.$on('$routeChangeStart', function(next, current) {
-                $scope.currentPage = $scope.getCurrentPage();
+            $ionicModal.fromTemplateUrl('components/partials/hakki_yilmaz_all_notes_modal.html', {
+                scope: $scope,
+                animation: 'slide-in-up',
+            }).then(function (modal) {
+                $scope.hakki_yilmaz_modal = modal
             });
 
-            if (config_data.isMobile) {
+            $scope.openModal = function (id) {
+                if (id == 'editor') {
+                    $scope.modal_editor.show();
+                } else if (id === 'hakki_yilmaz_notes'){
+                    $scope.hakki_yilmaz_modal.show();
+                }
+            };
 
-                $scope.setModalEditor= function(modal){
-                    $scope.modal_editor = modal;
-                };
+            $scope.closeModal = function (id) {
+                $timeout(function() {
 
-                $scope.getModalEditor= function(){
-                    return $scope.modal_editor;
-                };
-
-                $scope.openModal = function (id) {
                     if (id == 'editor') {
-                        $scope.modal_editor.show();
+                        clearTextSelection();
+                        $scope.modal_editor.hide();
+                    } else if (id === 'hakki_yilmaz_notes'){
+                        $scope.hakki_yilmaz_modal.hide();
                     }
-                };
+                },300);
+            }
 
-                $scope.closeModal = function (id) {
-                    $timeout(function() {
+            $scope.annotationAddable = false;
+            $scope.selectionEnded = function () {
+                $scope.annotationAddable = true;
+                $scope.scopeApply();
+            }
 
-                        if (id == 'editor') {
-                            clearTextSelection();
-                            $scope.modal_editor.hide();
-                        }
-                    },300);
-                }
-
+            $scope.selectionCancel = function () {
                 $scope.annotationAddable = false;
-                $scope.selectionEnded = function () {
-                    $scope.annotationAddable = true;
-                    $scope.scopeApply();
-                }
-
-                $scope.selectionCancel = function () {
-                    $scope.annotationAddable = false;
-                    $scope.scopeApply();
-                }
+                $scope.scopeApply();
             }
-            if ($location.path() == "/") {
-                $scope.showTutorial = 1;
-            }
+        }
+        if ($location.path() == "/") {
+            $scope.showTutorial = 1;
+        }
 
-            //list the authors on page load
-            $scope.list_authors(); //prepare map
-
-
-            // $scope.toggleSidebar();
-            sidebarInit();
+        //list the authors on page load
+        $scope.list_authors(); //prepare map
 
 
-            //list of chapters
-            $scope.chapters = [];
-
-            var localChaptersVersion = localStorageService.get('chaptersVersion');
-
-            if (localChaptersVersion == null || localChaptersVersion < chaptersVersion) {
-                Restangular.all('chapters').getList().then(function (data) {
-                    $scope.chapters = data;
-                    localStorageService.set('chapters', data);
-                    localStorageService.set('chaptersVersion', chaptersVersion);
-                });
-            } else {
-                $scope.chapters = localStorageService.get('chapters');
-            }
+        // $scope.toggleSidebar();
+        sidebarInit();
 
 
-            if ($scope.myRoute['tag'] != "") {
-                $scope.goToVerseTag($scope.targetVerseForTagContent, $scope.myRoute['tag']);
-            }
+        //list of chapters
+        $scope.chapters = [];
 
-            //init chapter select box
-            var chaptersLen = $scope.chapters.length;
-            for (var chaptersIndex = 0; chaptersIndex < chaptersLen; chaptersIndex++) {
-                if ($scope.chapters[chaptersIndex].id == $scope.chapter_id) {
-                    $scope.goToVerseParameters.chapter = $scope.chapters[chaptersIndex];
-                    break;
-                }
-            }
+        var localChaptersVersion = localStorageService.get('chaptersVersion');
 
-            $scope.$on('modal.shown', function(event, modal) {
-                if(config_data.isMobile) {
-                    $timeout(function () {
-                        $ionicScrollDelegate.$getByHandle(modal.id).scrollTop();
-                    });
-                }
+        if (localChaptersVersion == null || localChaptersVersion < chaptersVersion) {
+            dataProvider.listChapters(function (data) {
+                $scope.chapters = data;
+                localStorageService.set('chapters', data);
+                localStorageService.set('chaptersVersion', chaptersVersion);
             });
-
-            if (!$scope.checkUserLoginStatus() && !$scope.isAllowUrlWithoutLogin()){
-                $location.path('login/');
-            }
-        };//end of init controller
-
-        $scope.isAllowUrlWithoutLogin = function(){
-            var url = $location.path();
-            if (url.indexOf('/inference/display/')>-1){
-                return true;
-            }
-            return false;
-        }
-        
-        $scope.navigateTo = function (target) {
-            $location.path(target);
+        } else {
+            $scope.chapters = localStorageService.get('chapters');
         }
 
-        $scope.showProgress = function(operationName) {
+
+        if ($scope.myRoute['tag'] != "") {
+            $scope.goToVerseTag($scope.targetVerseForTagContent, $scope.myRoute['tag']);
+        }
+
+        //init chapter select box
+        var chaptersLen = $scope.chapters.length;
+        for (var chaptersIndex = 0; chaptersIndex < chaptersLen; chaptersIndex++) {
+            if ($scope.chapters[chaptersIndex].id == $scope.chapter_id) {
+                $scope.goToVerseParameters.chapter = $scope.chapters[chaptersIndex];
+                break;
+            }
+        }
+
+        $scope.$on('modal.shown', function(event, modal) {
+            if(config_data.isMobile) {
+                $timeout(function () {
+                    $ionicScrollDelegate.$getByHandle(modal.id).scrollTop();
+                });
+            }
+        });
+
+        if (!$scope.checkUserLoginStatus() && !$scope.isAllowUrlWithoutLogin()){
+            $location.path('/login/');
+        }
+
+        if (config_data.isNative && typeof $scope.redirectUrl !== 'undefined'){
+            console.log(" 3 : received url : "+ $scope.redirectUrl + ", date : " + new Date().getTime());
+            window.location.href = $scope.redirectUrl;
+            $scope.redirectUrl = null;
+        }
+    };//end of init controller
+
+    $scope.isAllowUrlWithoutLogin = function(){
+        var url = $location.path();
+        if (url.indexOf('/inference/display/')>-1){
+            return true;
+        }
+        return false;
+    }
+
+    $scope.navigateTo = function (target) {
+        $location.path(target);
+    }
+
+    $scope.showProgress = function(operationName) {
 
 
-            $scope.progressOperation=operationName;
-            if(config_data.isMobile){
-                $scope.clickBlocking = true;
+        $scope.progressOperation=operationName;
+        if(config_data.isMobile){
+            $scope.clickBlocking = true;
             /*    if (window.cordova && window.cordova.plugins){
 
-                    SpinnerDialog.show("","",$scope.hideProgress);
-                }
-                else{*/
-                    $ionicLoading.show({
-                        template: 'Yükleniyor...',
-                        delay:100,
-                        duration:1000
-                    });
+             SpinnerDialog.show("","",$scope.hideProgress);
+             }
+             else{*/
+            $ionicLoading.show({
+                template: 'Yükleniyor...',
+                delay:100,
+                duration:1000
+            });
+            //}
+        }
+    };
+    $scope.hideProgress = function(operationName){
+        //hide only for started operation
+        if(operationName == $scope.progressOperation) {
+            if (config_data.isMobile) {
+                $scope.clickBlocking = false;
+                /*    if (window.cordova && window.cordova.plugins){
+
+                 SpinnerDialog.hide();
+                 }
+                 else{*/
+                $ionicLoading.hide();
                 //}
             }
-        };
-        $scope.hideProgress = function(operationName){
-            //hide only for started operation
-            if(operationName == $scope.progressOperation) {
-                if (config_data.isMobile) {
-                    $scope.clickBlocking = false;
-                    /*    if (window.cordova && window.cordova.plugins){
+        }
+    };
 
-                     SpinnerDialog.hide();
-                     }
-                     else{*/
-                    $ionicLoading.hide();
-                    //}
-                }
-            }
+    $scope.kopyala = function(url){
+        var copyFrom = document.createElement("textarea");
+        copyFrom.textContent = url;
+        var body = document.getElementsByTagName('body')[0];
+        body.appendChild(copyFrom);
+        copyFrom.select();
+        document.execCommand('copy');
+        body.removeChild(copyFrom);
+    };
 
-        };
+    $scope.forward2NativeApp = function(){
 
-        $scope.kopyala = function(url){
-            var copyFrom = document.createElement("textarea");
-            copyFrom.textContent = url;
-            var body = document.getElementsByTagName('body')[0];
-            body.appendChild(copyFrom);
-            copyFrom.select();
-            document.execCommand('copy');
-            body.removeChild(copyFrom);
-        };
+    };
 
-        $scope.preInit = function(){
-            $scope.initRoute();
+    $scope.initRoute();
+
+    //initialization
+    if(config_data.isNative && !$scope.sqliteDbInit) {
+        $scope.$on('db.init.finish', function() {
             $scope.initializeController();
-        };
-
-        //initialization
-        $ionicPlatform.ready(function(){
-            $scope.preInit();
         });
-    });
+    }else{
+        $scope.initializeController();
+    };
+});
+
+var handleOpenURL = function(url){
+    var newUrl = url.substring(url.indexOf("//") + 2);
+    window.localStorage.setItem("external_load", newUrl);
+    console.log(" 1 : received url : "+ newUrl + ", date : " + new Date().getTime());
+}
 
 function sidebarInit() {
     $('.cd-panel').on('click', function (event) {
@@ -1486,7 +1602,7 @@ function sidebarInit() {
 }
 function openPanel() {
     $('#cd-panel-right').addClass('is-visible');
-document.getElementById("openbtn").style.border = "1px solid blue";
+    document.getElementById("openbtn").style.border = "1px solid blue";
 }
 function closePanel() {
     $('#cd-panel-right').removeClass('is-visible');
@@ -1497,7 +1613,7 @@ function togglePanel() {
         closePanel();
     } else {
         openPanel();
-        
+
     }
 }
 function openLeftPanel() {

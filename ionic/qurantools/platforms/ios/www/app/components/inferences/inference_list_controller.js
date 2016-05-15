@@ -223,7 +223,7 @@ angular.module('ionicApp')
 
 
 
-        //delete operation for inferences page
+        //elete operation for inferences page
         $scope.deleteInference = function (inference) {
             var inferenceRestangular = Restangular.one("inferences", inference.inferenceId);
             inferenceRestangular.customDELETE("", {}, { 'access_token': $scope.access_token }).then(function (result) {
@@ -235,10 +235,7 @@ angular.module('ionicApp')
                     }
                 }
             });
-        }
-
-
-
+        };
 
         $scope.submitEditor = function () {
 
@@ -436,14 +433,6 @@ angular.module('ionicApp')
                     $scope.modal_all_inferences_sort = modal
                 });
 
-                $ionicModal.fromTemplateUrl('components/partials/editor_modal.html', {
-                    scope: $scope,
-                    animation: 'slide-in-left',
-                    id: 'editor'
-                }).then(function (modal) {
-                    $scope.setModalEditor(modal);
-                });
-
                 $ionicModal.fromTemplateUrl('components/partials/add_canviewuser.html', {
                     scope: $scope,
                     //animation: 'slide-in-right',
@@ -493,12 +482,14 @@ angular.module('ionicApp')
                         $scope.getModalEditor().show();
                     } else if (id == 'viewusersearch') {
                         $scope.modal_add_canviewuser.show();
+
                     } else if (id == 'addUserToAllInferencesSearch') {
                         $scope.modal_addUserToAllInferencesSearch.show();
                     } else if (id == 'tagsearch') {
                         $scope.modal_tag_search.show();
                     } else if (id == 'addtagtosearch') {
                         $scope.modal_addtagtosearch.show();
+                        focusToInput('addtagtosearch_input');
                     }
                 };
                 $scope.closeModal = function (id) {
@@ -538,13 +529,13 @@ angular.module('ionicApp')
             console.log("inf : ", inference);
             $location.path('inference/edit/' + inference.id + "/");
           //  $scope.showEditor(inference);
-        }
+        };
 
         $scope.allInferencesOrderByChanged = function (selectedOrderOption) {
             $scope.allInferencesOrderBy = selectedOrderOption;
             $scope.allInferencesParams.start = 0;
             $scope.get_all_inferences();
-        }
+        };
 
         $scope.scrollDelegateTop = function (id) {
             $ionicScrollDelegate.$getByHandle(id).scrollTop();

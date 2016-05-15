@@ -1,5 +1,5 @@
 angular.module('ionicApp')
-    .controller('TaggedVerseCtrl', function ($scope, $timeout, Restangular, $location, $ionicModal) {
+    .controller('TaggedVerseCtrl', function ($scope, $timeout, Restangular, $location, $ionicModal, $ionicScrollDelegate) {
 
         $scope.taggedVerseCircles = [];
         $scope.taggedVerseUsers = [];
@@ -21,7 +21,15 @@ angular.module('ionicApp')
                 $scope.targetVerseForTagContent = verseId;
                 $scope.verseTagContents = verseTagContent;
                 $scope.scopeApply();
-                $scope.hideProgress("loadVerseTagContent")
+                $scope.hideProgress("loadVerseTagContent");
+                if (config_data.isMobile){
+                    $timeout(function() {
+                        var delegate = _.filter($ionicScrollDelegate._instances, function(item){
+                            return item.element.innerHTML.indexOf('tagged_verse_content') > -1;
+                        })[0];
+                        delegate.scrollTop();
+                    });
+                }
             });
         };
 
@@ -74,8 +82,7 @@ angular.module('ionicApp')
                 verses: "",
                 circles: Base64.encode(JSON.stringify($scope.taggedVerseCircles)),
                 users: Base64.encode(JSON.stringify($scope.taggedVerseUsers))
-
-            }
+            };
             $location.path("/annotations/", false).search(parameters);
         };
 
@@ -106,9 +113,9 @@ angular.module('ionicApp')
             if (item == 'tagged_verse'){
                 $scope.tagged_verse_modal.hide();
             }else if (item == 'tagged_verse_detailed_search'){
-
                 $scope.tagged_verse_detailed_search.hide();
             }else if (item == 'friendsearch'){
+                $scope.taggedVerseUsersForMobileSearch = $scope.query_users;
                 $scope.modal_friend_search.hide();
             }
         };

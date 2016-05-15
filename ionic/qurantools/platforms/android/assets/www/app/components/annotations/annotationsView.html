@@ -1,6 +1,5 @@
 <body>
 <div ng-include="'app/components/partials/off_canvas_menu.html'"></div>
-<div ng-include="'app/components/partials/delete_annotation_alert.html'"></div>
 
 <div class="container">
     <div ng-include="'app/components/partials/navigation.html'"></div>
@@ -43,7 +42,7 @@
                 <button ng-click="showVerseData.annotationId=-1" class="btn btn-xs"
                         ng-if="showVerseData.annotationId==annotation.annotationId"><i
                         class="fa fa-cog "></i></button>
-                <div style="float:right;">{{annotation.userName | limitTo: 25}}</div>
+                <div style="float:right;"><a ng-href="#/profile/user/{{annotation.userId}}/" style="color: darkblue;">{{annotation.userName | limitTo: 25}}</a></div>
             </div>
             <show-verse data="showVerseData.data"
                         ng-if="showVerseData.annotationId==annotation.annotationId"></show-verse>
@@ -87,7 +86,6 @@
     </div>
 
     <div ng-include="'app/components/partials/authors_modal.html'"></div>
-    <div ng-include="'app/components/partials/editor_modal.html'"></div>
 
 
     <div class="modal" id="annotationsFilterModal">
