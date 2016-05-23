@@ -76,6 +76,20 @@ module.exports = [
         "clobbers": [
             "Connection"
         ]
+    },
+    {
+        "file": "plugins/cordova-plugin-customurlscheme/www/android/LaunchMyApp.js",
+        "id": "cordova-plugin-customurlscheme.LaunchMyApp",
+        "clobbers": [
+            "window.plugins.launchmyapp"
+        ]
+    },
+    {
+        "file": "plugins/cordova-plugin-device/www/device.js",
+        "id": "cordova-plugin-device.device",
+        "clobbers": [
+            "device"
+        ]
     }
 ];
 module.exports.metadata = 
@@ -91,7 +105,9 @@ module.exports.metadata =
     "me.rahul.plugins.sqlDB": "1.0.3",
     "cordova-sqlite-storage": "0.8.4-dev",
     "cordova-plugin-x-socialsharing": "5.0.12-dev",
-    "cordova-plugin-network-information": "1.2.1"
+    "cordova-plugin-network-information": "1.2.1",
+    "cordova-plugin-customurlscheme": "4.1.5",
+    "cordova-plugin-device": "1.1.2"
 }
 // BOTTOM OF METADATA
 });

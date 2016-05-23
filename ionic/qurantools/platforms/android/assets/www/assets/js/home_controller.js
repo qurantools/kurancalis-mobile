@@ -475,7 +475,10 @@ angular.module('ionicApp')
         };
 
         $scope.showEditor = function (annotation, position) {
-            $scope.showEditorModal(annotation, position, $scope.submitEditor);
+            $scope.showEditorModal(annotation, position, $scope.submitEditor, function(){
+                annotator.publish('annotationEditorCancel');
+                annotator.onEditorHide();
+            });
         };
 
         $scope.annotate_it = function () {
@@ -565,19 +568,6 @@ angular.module('ionicApp')
             }
 
         };
-
-
-//Volkan Ekledi.
-
-
-//        function cevregoster() {
-//            var cevregosterRestangular = Restangular.all("circles");
-//            cevregosterRestangular.customGET("", {}, {'access_token': $scope.access_token}).then(function (cevreliste) {
-//                $scope.cevreadlar = cevreliste;
-//            });
-//        };
-
-//
 
         $scope.setAuthorViewAccordingToDetailedSearchAuthorSelection = function(){
             //switch to singleAuthor View in case of single author
@@ -684,7 +674,8 @@ angular.module('ionicApp')
                         var verseId = parseInt($scope.query_chapter_id * 1000) + parseInt($scope.verse.number);
                         $timeout(function () {
                             $scope.scrollToVerse(verseId);
-                        });
+
+                        },400);
                     }
                 }
             });
@@ -750,7 +741,6 @@ angular.module('ionicApp')
                 index = $scope.getAnnotationIndexFromFilteredAnnotationIndex(index);
             }
             annotator.deleteAnnotation($scope.annotations[index]);
-            $scope.closeAnnotationModal();
         };
 
         //remove annotation from scope
@@ -1317,6 +1307,13 @@ angular.module('ionicApp')
                     $timeout(function () {
                         $scope.scrollDelegateTop(modal.id);
                     });
+                    if (!config_data.isNative){
+                        if ($scope.showBanner){
+                            $('.modal-backdrop').addClass('showBanner');
+                        }else{
+                            $('.modal-backdrop').addClass('hideBanner');
+                        }
+                    }
                 }
             });
 
@@ -1332,17 +1329,19 @@ angular.module('ionicApp')
             $scope.actionSheetButtons = [];
             var butonCeviri = {  text: '<i class="icon ion-person"></i> Çeviri Seç'  };
             var butonSureAyet = {text: '<i class="icon ion-arrow-right-b"></i> Sure/Ayete Git' };
-            var butonFiltre = {text: '<i class="icon icon fa fa-search"></i> Notları Filtrele' };
+            var butonFiltre = {text: '<i class="icon fa fa-search"></i> Notları Filtrele' };
             var butonAyraclar = {text: '<i class="icon ion-android-bookmark"></i> Ayraçlar' };
+            var buttonVerseHistory = {text: '<i class="icon fa fa-history"></i> Ayet Geçmişi' };
             $scope.actionSheetButtons.push(butonCeviri);
             $scope.actionSheetButtons.push(butonSureAyet);
             if($scope.loggedIn) {
                 if($scope.user){
                     $scope.actionSheetButtons.push(butonFiltre);
                     $scope.actionSheetButtons.push(butonAyraclar);
+                    $scope.actionSheetButtons.push(buttonVerseHistory);
                 }
             }
-        }
+        };
 
         $scope.selectDropdownCircle = function (item) {
 
@@ -1363,6 +1362,8 @@ angular.module('ionicApp')
         };
 
         $scope.verseActionSheet = function (chapter,verse,verseId) {
+            if ($scope.user == null)
+                return;
             $timeout(function() {
                 $ionicActionSheet.show({
                     buttons: [
@@ -1396,6 +1397,7 @@ angular.module('ionicApp')
         };
 
         $scope.openMenuModal = function () {
+            $scope.initializeActionSheetButtons();
             $timeout(function() {
                 $ionicActionSheet.show({
                     buttons: $scope.actionSheetButtons,
@@ -1408,7 +1410,6 @@ angular.module('ionicApp')
                     buttonClicked: function (index) {
                         if (index == 0) {
                             $scope.openModal('authors_list');
-
                         } else if (index == 1) {
                             $scope.openModal('chapter_selection');
                         }else if (index == 2) {
@@ -1416,6 +1417,8 @@ angular.module('ionicApp')
                         } else if (index == 3) {
                             $scope.searchBookMarkModal();
                             $scope.naviBookmarkModal.show();
+                        } else if (index == 4){
+                            $scope.openVerseHistory();
                         }
                         return true;
                     }

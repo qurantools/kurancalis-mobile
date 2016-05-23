@@ -160,6 +160,28 @@ var app = angular.module('ionicApp', requiredModules)
                 cordova.plugins.Keyboard.disableScroll(true);
                 ionic.keyboard.disable();
             }
+            if(config_data.isMobile && config_data.isNative ){
+
+                /*var type = $cordovaNetwork.getNetwork();
+
+
+                var isOnline = $cordovaNetwork.isOnline();
+
+                var isOffline = $cordovaNetwork.isOffline();
+*/
+
+                // listen for Online event
+                $rootScope.$on('$cordovaNetwork:online', function(event, networkState){
+                    $rootScope.$broadcast('onlineNetworkConnection');
+                });
+
+                // listen for Offline event
+                $rootScope.$on('$cordovaNetwork:offline', function(event, networkState){
+                    $rootScope.$broadcast('offlineNetworkConnection', networkState);
+                });
+
+            }
+
             if (window.StatusBar) {
                 // org.apache.cordova.statusbar required
                 StatusBar.styleLightContent();
@@ -172,6 +194,15 @@ var app = angular.module('ionicApp', requiredModules)
                 console.log(" 2 : redirected url : "+ $rootScope.redirectUrl + ", date : " + new Date().getTime());
                 window.localStorage.removeItem("external_load");
             };
+
+            if (config_data.isMobile && !config_data.isNative){
+                if (document.getElementById('l').style.display == 'none'){
+                    $rootScope.redirect_app_button_name = "AÇ";
+                }else{
+                    $rootScope.redirect_app_button_name = "AÇ";
+                }
+            }
+
         });
 
         $rootScope.$on('$routeChangeSuccess', function (event, current, previous) {
@@ -393,7 +424,7 @@ if (config_data.isMobile == false) { //false
                 RestangularProvider.setBaseUrl(config_data.webServiceUrl);
                 localStorageServiceProvider.setStorageCookie(0, '/');
                 //route
-
+/*
                 $httpProvider.interceptors.push(function ($q, $injector, $rootScope) {
                     var isConfirmPopupCalledBefore = false;
                     var isDisplay = false;
@@ -410,6 +441,7 @@ if (config_data.isMobile == false) { //false
                         'responseError': function (rejection) {
                             var $route = $injector.get('$route');
                             var $ionicPopup = $injector.get('$ionicPopup');
+                            alert(rejection.config.url);
                             if (rejection.status == 0 && !isConfirmPopupCalledBefore) {
                                 isConfirmPopupCalledBefore = true;
                                 var confirmPop = $ionicPopup.confirm({
@@ -433,7 +465,7 @@ if (config_data.isMobile == false) { //false
                         }
                     };
                 });
-
+*/
                 //route
                 $routeProvider
                     .when('/translations/', {
@@ -624,7 +656,7 @@ app.factory('ChapterVerses', function ($resource) {
             }
         }
     );
-}).controller('MainCtrl', function ($scope, $q, $routeParams, $ionicSideMenuDelegate, $location, $timeout, ChapterVerses, User, Footnotes, Facebook, Restangular, localStorageService, $document, $filter, $rootScope, $state, $stateParams, $ionicModal, $ionicScrollDelegate, $ionicPosition, $ionicLoading, authorization,$rootScope, $ionicPopup, dataProvider) {
+}).controller('MainCtrl', function ($scope, $q, $routeParams, $ionicSideMenuDelegate, $location, $timeout, ChapterVerses, User, Footnotes, Facebook, Restangular, localStorageService, $document, $filter, $rootScope, $state, $stateParams, $ionicModal, $ionicScrollDelegate, $ionicPosition, $ionicLoading, authorization,$rootScope, $ionicPopup, dataProvider, $cordovaAppAvailability) {
     console.log("MainCtrl");
 
     //all root scope parameters should be defined and documented here
@@ -666,7 +698,7 @@ app.factory('ChapterVerses', function ($resource) {
     $scope.shareTitle = "";
 
     //    $scope.user = null;
-
+    $scope.isConnected= true;
     $scope.modal_editor = null;
     $scope.author_mask = 8208;
     $scope.author_hakki_yilmaz = 262144;
@@ -752,6 +784,10 @@ app.factory('ChapterVerses', function ($resource) {
     $scope.currentPageUrl = "";
     $scope.app_id = "app-id=1032659897";
     $scope.apple_itunes_content = "app-id=1032659897";
+    //$scope.redirect_app_button_name = "İndir";
+    $scope.appText = "Android";
+    $scope.appStoreURL = "";
+    $scope.showBanner = false;
 
     $scope.checkAPIVersion = function(){
         var versionRestangular = Restangular.all("apiversioncompatibility");
@@ -887,6 +923,8 @@ app.factory('ChapterVerses', function ($resource) {
             $scope.loggedIn = false;
             //do some cleaning
         }
+
+        console.log("checkUserLoginStatus:"+status);
         return status;
     };
 
@@ -906,8 +944,9 @@ app.factory('ChapterVerses', function ($resource) {
                 $scope.$broadcast('userInfoReady');
             },
             function(response) {
-                console.log("Could not get user info");
-                console.log("isNative:"+config_data.isNative +" conn:"+navigator.network.connection.type);
+                console.error("Could not get user info");
+                //var message =JSON.stringify(response, null, 4);
+                //console.error(message);
                 if( config_data.isNative){
                     if(navigator.network.connection.type == Connection.NONE) {
                         $ionicPopup.confirm({
@@ -917,7 +956,9 @@ app.factory('ChapterVerses', function ($resource) {
 
                     }
                     else{
-                        if(response.data.code == "201"){
+                        console.error("There is connection but could not get user info");
+
+                        if(response.status != 0 && response.data != null && response.data.code == "201"){
                             var infoPopup = $ionicPopup.alert({
                                 title: 'Var olan oturumuzun süresi dolmuştur. Çıkış yapılıyor.',
                                 template: '',
@@ -927,6 +968,12 @@ app.factory('ChapterVerses', function ($resource) {
                                 infoPopup.close();
                                 $scope.logOut();
                             }, 1700);
+                        }
+                        else{ //there is connection, it is logged in, retry every 2 secs.
+                            $timeout(function () {
+                                $scope.get_user_info();
+                            }, 2000);
+
                         }
                     }
                 }
@@ -1027,9 +1074,9 @@ app.factory('ChapterVerses', function ($resource) {
         return tagParameters;
     };
 
-    $scope.showEditorModal = function (annotation, position, postCallback) {
+    $scope.showEditorModal = function (annotation, position, postCallback, cancelPostBack) {
         $timeout(function(){
-            $scope.$broadcast("show_editor",{annotation: annotation, position:position, postCallback: postCallback});
+            $scope.$broadcast("show_editor",{annotation: annotation, position:position, postCallback: postCallback, cancelPostBack : cancelPostBack});
         });
     };
 
@@ -1223,7 +1270,7 @@ app.factory('ChapterVerses', function ($resource) {
             $scope.extendedCircles.push({'id': '-1', 'name': 'Herkes'});
 
             $scope.extendedCirclesForSearch = [];
-            $scope.extendedCirclesForSearch.push({'id': '-2', 'name': 'Tüm Çevrelerim'});
+            $scope.extendedCirclesForSearch.push({'id': -2, 'name': 'Tüm Çevrelerim'});
 
 
             $scope.circleDropdownArray = [];
@@ -1277,6 +1324,12 @@ app.factory('ChapterVerses', function ($resource) {
             }
             $scope.$broadcast("circleLists ready");
 
+        },function(response){
+            if(response.data==null) {
+                $timeout(function () {
+                    $scope.initializeCircleLists();
+                }, 2000);
+            }
         });
     };
 
@@ -1391,15 +1444,19 @@ app.factory('ChapterVerses', function ($resource) {
             $scope.internet_display_show = true;
             $scope.internet_display_style = {"background-color": "green"};
             $scope.internet_display_message = "Internet bağlantınız sağlandı.";
+            $scope.isConnected= true;
             $timeout(function(){
+                $scope.checkUserLoginStatus();
                 $scope.internet_display_show = false;
             },2000);
         });
 
         $scope.$on('offlineNetworkConnection', function(message) {
+            $scope.user = null;
             $scope.internet_display_show = true;
             $scope.internet_display_style = {"background-color": "orange"};
-            $scope.internet_display_message = "Internet bağlantınız kesildi. Yapabileceğiniz işlemler kısıtlıdır.";
+            $scope.internet_display_message = "Bağlantınız yok. Yapabileceğiniz işlemler kısıtlıdır.";
+            $scope.isConnected= false;
         });
 
         if (config_data.isMobile) {
@@ -1457,6 +1514,18 @@ app.factory('ChapterVerses', function ($resource) {
             $scope.showTutorial = 1;
         }
 
+        if (config_data.isMobile && !config_data.isNative){
+            $scope.showBanner = true;
+            if (config_data.isAndroid) {
+                $scope.appText = "Android";
+                $scope.appStoreURL = "https://play.google.com/store/apps/details?id=org.quran.qurantools";
+            } else if (config_data.isIOS) {
+                $scope.appText = "IOS";
+                $scope.appStoreURL = "https://itunes.apple.com/tr/app/kuran-cal-s/id1032659897?mt=8";
+            }
+
+        }
+
         //list the authors on page load
         $scope.list_authors(); //prepare map
 
@@ -1469,15 +1538,16 @@ app.factory('ChapterVerses', function ($resource) {
         $scope.chapters = [];
 
         var localChaptersVersion = localStorageService.get('chaptersVersion');
+        var localChapters = localStorageService.get('chapters');
 
-        if (localChaptersVersion == null || localChaptersVersion < chaptersVersion) {
+        if (localChaptersVersion == null || localChaptersVersion < chaptersVersion || localChapters == null) {
             dataProvider.listChapters(function (data) {
                 $scope.chapters = data;
                 localStorageService.set('chapters', data);
                 localStorageService.set('chaptersVersion', chaptersVersion);
             });
         } else {
-            $scope.chapters = localStorageService.get('chapters');
+            $scope.chapters = localChapters;
         }
 
 
@@ -1503,7 +1573,9 @@ app.factory('ChapterVerses', function ($resource) {
         });
 
         if (!$scope.checkUserLoginStatus() && !$scope.isAllowUrlWithoutLogin()){
-            $location.path('/login/');
+            console.log("go to login path");
+            //deferred for later.
+            //$location.path('/login/');
         }
 
         if (config_data.isNative && typeof $scope.redirectUrl !== 'undefined'){
@@ -1519,11 +1591,11 @@ app.factory('ChapterVerses', function ($resource) {
             return true;
         }
         return false;
-    }
+    };
 
     $scope.navigateTo = function (target) {
         $location.path(target);
-    }
+    };
 
     $scope.showProgress = function(operationName) {
 
@@ -1544,6 +1616,7 @@ app.factory('ChapterVerses', function ($resource) {
             //}
         }
     };
+
     $scope.hideProgress = function(operationName){
         //hide only for started operation
         if(operationName == $scope.progressOperation) {
@@ -1571,7 +1644,16 @@ app.factory('ChapterVerses', function ($resource) {
     };
 
     $scope.forward2NativeApp = function(){
+        localStorageService.set("appInstalled", "true");
+        setTimeout(function () {
+            document.location.href = $scope.appStoreURL;
+            localStorageService.remove("appInstalled");
+        }, 500);
+        document.location.href = "qurantools:/"+ $location.$$url;
+    };
 
+    $scope.hideBanner = function(){
+        $scope.showBanner = false;
     };
 
     $scope.initRoute();

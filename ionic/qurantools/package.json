@@ -15,7 +15,6 @@
     "shelljs": "^0.3.0"
   },
   "cordovaPlugins": [
-    "cordova-plugin-device",
     "cordova-plugin-console",
     "cordova-plugin-whitelist",
     "cordova-plugin-splashscreen",
@@ -29,7 +28,7 @@
     },
     {
       "variables": {
-        "APP_ID": "400142910165594",
+        "APP_ID": "295857580594128",
         "APP_NAME": "Kuran Calis"
       },
       "locator": "https://github.com/Wizcorp/phonegap-facebook-plugin.git",
@@ -47,7 +46,9 @@
       "locator": "https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin.git",
       "id": "cordova-plugin-x-socialsharing"
     },
-    "cordova-plugin-network-information"
+    "cordova-plugin-network-information",
+    "cordova-plugin-customurlscheme",
+    "cordova-plugin-device"
   ],
   "cordovaPlatforms": [
     "ios",

@@ -61,6 +61,7 @@
 		C47F5C0AFD424D03A5B9DC87 /* CDVReachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 191B3CA4E6F14E1C9C12EC62 /* CDVReachability.m */; };
 		9946F33D59C948E58F149FC5 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A0963BA115D4C90A66D6999 /* SystemConfiguration.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		66CD384D303E4C77967A5DFF /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8FECF931386F41CE8AB45697 /* CoreTelephony.framework */; };
+		C21B858E5AE14BCC841BFD7B /* CDVDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = E67BC2F5623B4D5593649211 /* CDVDevice.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -158,6 +159,8 @@
 		952C462CDF1A42AD965E50AC /* CDVReachability.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "CDVReachability.h"; path = "cordova-plugin-network-information/CDVReachability.h"; sourceTree = "<group>"; fileEncoding = 4; };
 		4A0963BA115D4C90A66D6999 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "SystemConfiguration.framework"; path = "System/Library/Frameworks/SystemConfiguration.framework"; sourceTree = SDKROOT; fileEncoding = 4; };
 		8FECF931386F41CE8AB45697 /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "CoreTelephony.framework"; path = "System/Library/Frameworks/CoreTelephony.framework"; sourceTree = SDKROOT; fileEncoding = 4; };
+		E67BC2F5623B4D5593649211 /* CDVDevice.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "CDVDevice.m"; path = "cordova-plugin-device/CDVDevice.m"; sourceTree = "<group>"; fileEncoding = 4; };
+		FF777F200C0848879C482196 /* CDVDevice.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "CDVDevice.h"; path = "cordova-plugin-device/CDVDevice.h"; sourceTree = "<group>"; fileEncoding = 4; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -298,6 +301,8 @@
 				191B3CA4E6F14E1C9C12EC62 /* CDVReachability.m */,
 				B1568C0B22494D6C8C42C501 /* CDVConnection.h */,
 				952C462CDF1A42AD965E50AC /* CDVReachability.h */,
+				E67BC2F5623B4D5593649211 /* CDVDevice.m */,
+				FF777F200C0848879C482196 /* CDVDevice.h */,
 			);
 			name = Plugins;
 			path = qurantools/Plugins;
@@ -501,6 +506,7 @@
 				3D21D81E554546C38F42ADC4 /* SocialSharing.m in Sources */,
 				73D1C4A508234F4CA0558908 /* CDVConnection.m in Sources */,
 				C47F5C0AFD424D03A5B9DC87 /* CDVReachability.m in Sources */,
+				C21B858E5AE14BCC841BFD7B /* CDVDevice.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -16,7 +16,20 @@
     <string>icon.png</string>
     <key>LSApplicationQueriesSchemes</key>
     <array>
+      <string>fbapi</string>
+      <string>fbapi20130214</string>
+      <string>fbapi20130410</string>
+      <string>fbapi20130702</string>
+      <string>fbapi20131010</string>
+      <string>fbapi20131219</string>
+      <string>fbapi20140410</string>
+      <string>fbapi20140116</string>
+      <string>fbapi20150313</string>
+      <string>fbapi20150629</string>
+      <string>fbapi20160328</string>
       <string>fbauth</string>
+      <string>fbauth2</string>
+      <string>fb-messenger-api20140430</string>
     </array>
     <key>NSAppTransportSecurity</key>
     <dict>
@@ -27,7 +40,10 @@
         <key>m.facebook.com</key>
         <dict/>
         <key>graph.facebook.com</key>
-        <dict/>
+        <dict>
+          <key>NSTemporaryExceptionAllowsInsecureHTTPLoads</key>
+          <true/>
+        </dict>
         <key>api.facebook.com</key>
         <dict/>
         <key>fbcdn.net</key>
@@ -93,11 +109,11 @@
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleShortVersionString</key>
-    <string>1.6.0</string>
+    <string>1.7.0</string>
     <key>CFBundleSignature</key>
     <string>????</string>
     <key>CFBundleVersion</key>
-    <string>1.6.0.1</string>
+    <string>1.7.1</string>
     <key>LSApplicationCategoryType</key>
     <string></string>
     <key>LSRequiresIPhoneOS</key>
@@ -212,7 +228,7 @@
     <key>UIStatusBarStyle</key>
     <string>UIStatusBarStyleDefault</string>
     <key>FacebookAppID</key>
-    <string>400142910165594</string>
+    <string>295857580594128</string>
     <key>FacebookDisplayName</key>
     <string>Kuran Çalış</string>
     <key>CFBundleURLTypes</key>
@@ -220,31 +236,19 @@
       <dict>
         <key>CFBundleURLSchemes</key>
         <array>
-          <string>fb295857580594128</string>
+          <string>qurantools</string>
         </array>
       </dict>
       <dict>
         <key>CFBundleURLSchemes</key>
         <array>
-          <string>fb295857580594128</string>
+          <string>fb400142910165594</string>
         </array>
       </dict>
       <dict>
         <key>CFBundleURLSchemes</key>
         <array>
-          <string>fb295857580594128</string>
-        </array>
-      </dict>
-      <dict>
-        <key>CFBundleURLSchemes</key>
-        <array>
-          <string>fb295857580594128</string>
-        </array>
-      </dict>
-      <dict>
-        <key>CFBundleURLSchemes</key>
-        <array>
-          <string>fb295857580594128</string>
+          <string>qurantools</string>
         </array>
       </dict>
       <dict>
@@ -256,55 +260,7 @@
       <dict>
         <key>CFBundleURLSchemes</key>
         <array>
-          <string>fb400142910165594</string>
-        </array>
-      </dict>
-      <dict>
-        <key>CFBundleURLSchemes</key>
-        <array>
-          <string>fb400142910165594</string>
-        </array>
-      </dict>
-      <dict>
-        <key>CFBundleURLSchemes</key>
-        <array>
-          <string>fb400142910165594</string>
-        </array>
-      </dict>
-      <dict>
-        <key>CFBundleURLSchemes</key>
-        <array>
-          <string>fb400142910165594</string>
-        </array>
-      </dict>
-      <dict>
-        <key>CFBundleURLSchemes</key>
-        <array>
-          <string>fb400142910165594</string>
-        </array>
-      </dict>
-      <dict>
-        <key>CFBundleURLSchemes</key>
-        <array>
-          <string>fb400142910165594</string>
-        </array>
-      </dict>
-      <dict>
-        <key>CFBundleURLSchemes</key>
-        <array>
-          <string>fb400142910165594</string>
-        </array>
-      </dict>
-      <dict>
-        <key>CFBundleURLSchemes</key>
-        <array>
-          <string>fb400142910165594</string>
-        </array>
-      </dict>
-      <dict>
-        <key>CFBundleURLSchemes</key>
-        <array>
-          <string>fb400142910165594</string>
+          <string>qurantools</string>
         </array>
       </dict>
       <dict>
@@ -316,7 +272,7 @@
       <dict>
         <key>CFBundleURLSchemes</key>
         <array>
-          <string>fb295857580594128</string>
+          <string>qurantools</string>
         </array>
       </dict>
       <dict>
@@ -328,7 +284,7 @@
       <dict>
         <key>CFBundleURLSchemes</key>
         <array>
-          <string>fb295857580594128</string>
+          <string>qurantools</string>
         </array>
       </dict>
       <dict>
@@ -340,7 +296,7 @@
       <dict>
         <key>CFBundleURLSchemes</key>
         <array>
-          <string>fb295857580594128</string>
+          <string>qurantools</string>
         </array>
       </dict>
       <dict>
@@ -352,13 +308,7 @@
       <dict>
         <key>CFBundleURLSchemes</key>
         <array>
-          <string>fb295857580594128</string>
-        </array>
-      </dict>
-      <dict>
-        <key>CFBundleURLSchemes</key>
-        <array>
-          <string>fb295857580594128</string>
+          <string>qurantools</string>
         </array>
       </dict>
       <dict>
@@ -370,7 +320,7 @@
       <dict>
         <key>CFBundleURLSchemes</key>
         <array>
-          <string>fb400142910165594</string>
+          <string>qurantools</string>
         </array>
       </dict>
       <dict>
@@ -382,7 +332,7 @@
       <dict>
         <key>CFBundleURLSchemes</key>
         <array>
-          <string>fb400142910165594</string>
+          <string>qurantools</string>
         </array>
       </dict>
       <dict>
@@ -394,7 +344,7 @@
       <dict>
         <key>CFBundleURLSchemes</key>
         <array>
-          <string>fb400142910165594</string>
+          <string>qurantools</string>
         </array>
       </dict>
       <dict>
@@ -406,73 +356,7 @@
       <dict>
         <key>CFBundleURLSchemes</key>
         <array>
-          <string>fb400142910165594</string>
-        </array>
-      </dict>
-      <dict>
-        <key>CFBundleURLSchemes</key>
-        <array>
-          <string>fb400142910165594</string>
-        </array>
-      </dict>
-      <dict>
-        <key>CFBundleURLSchemes</key>
-        <array>
-          <string>fb400142910165594</string>
-        </array>
-      </dict>
-      <dict>
-        <key>CFBundleURLSchemes</key>
-        <array>
-          <string>fb400142910165594</string>
-        </array>
-      </dict>
-      <dict>
-        <key>CFBundleURLSchemes</key>
-        <array>
-          <string>fb400142910165594</string>
-        </array>
-      </dict>
-      <dict>
-        <key>CFBundleURLSchemes</key>
-        <array>
-          <string>fb400142910165594</string>
-        </array>
-      </dict>
-      <dict>
-        <key>CFBundleURLSchemes</key>
-        <array>
-          <string>fb400142910165594</string>
-        </array>
-      </dict>
-      <dict>
-        <key>CFBundleURLSchemes</key>
-        <array>
-          <string>fb400142910165594</string>
-        </array>
-      </dict>
-      <dict>
-        <key>CFBundleURLSchemes</key>
-        <array>
-          <string>fb400142910165594</string>
-        </array>
-      </dict>
-      <dict>
-        <key>CFBundleURLSchemes</key>
-        <array>
-          <string>fb400142910165594</string>
-        </array>
-      </dict>
-      <dict>
-        <key>CFBundleURLSchemes</key>
-        <array>
-          <string>fb400142910165594</string>
-        </array>
-      </dict>
-      <dict>
-        <key>CFBundleURLSchemes</key>
-        <array>
-          <string>fb400142910165594</string>
+          <string>qurantools</string>
         </array>
       </dict>
       <dict>
@@ -484,7 +368,7 @@
       <dict>
         <key>CFBundleURLSchemes</key>
         <array>
-          <string>fb295857580594128</string>
+          <string>qurantools</string>
         </array>
       </dict>
       <dict>
@@ -496,7 +380,7 @@
       <dict>
         <key>CFBundleURLSchemes</key>
         <array>
-          <string>fb295857580594128</string>
+          <string>qurantools</string>
         </array>
       </dict>
       <dict>
@@ -508,25 +392,7 @@
       <dict>
         <key>CFBundleURLSchemes</key>
         <array>
-          <string>fb295857580594128</string>
-        </array>
-      </dict>
-      <dict>
-        <key>CFBundleURLSchemes</key>
-        <array>
-          <string>fb400142910165594</string>
-        </array>
-      </dict>
-      <dict>
-        <key>CFBundleURLSchemes</key>
-        <array>
-          <string>fb400142910165594</string>
-        </array>
-      </dict>
-      <dict>
-        <key>CFBundleURLSchemes</key>
-        <array>
-          <string>fb400142910165594</string>
+          <string>qurantools</string>
         </array>
       </dict>
       <dict>
@@ -538,7 +404,7 @@
       <dict>
         <key>CFBundleURLSchemes</key>
         <array>
-          <string>fb295857580594128</string>
+          <string>qurantools</string>
         </array>
       </dict>
       <dict>
@@ -550,7 +416,7 @@
       <dict>
         <key>CFBundleURLSchemes</key>
         <array>
-          <string>fb295857580594128</string>
+          <string>qurantools</string>
         </array>
       </dict>
       <dict>
@@ -562,133 +428,43 @@
       <dict>
         <key>CFBundleURLSchemes</key>
         <array>
-          <string>fb400142910165594</string>
+          <string>qurantools</string>
         </array>
       </dict>
       <dict>
         <key>CFBundleURLSchemes</key>
         <array>
-          <string>fb400142910165594</string>
+          <string>fb295857580594128</string>
         </array>
       </dict>
       <dict>
         <key>CFBundleURLSchemes</key>
         <array>
-          <string>fb400142910165594</string>
+          <string>qurantools</string>
         </array>
       </dict>
       <dict>
         <key>CFBundleURLSchemes</key>
         <array>
-          <string>fb400142910165594</string>
+          <string>fb295857580594128</string>
         </array>
       </dict>
       <dict>
         <key>CFBundleURLSchemes</key>
         <array>
-          <string>fb400142910165594</string>
+          <string>qurantools</string>
         </array>
       </dict>
       <dict>
         <key>CFBundleURLSchemes</key>
         <array>
-          <string>fb400142910165594</string>
+          <string>fb295857580594128</string>
         </array>
       </dict>
       <dict>
         <key>CFBundleURLSchemes</key>
         <array>
-          <string>fb400142910165594</string>
-        </array>
-      </dict>
-      <dict>
-        <key>CFBundleURLSchemes</key>
-        <array>
-          <string>fb400142910165594</string>
-        </array>
-      </dict>
-      <dict>
-        <key>CFBundleURLSchemes</key>
-        <array>
-          <string>fb400142910165594</string>
-        </array>
-      </dict>
-      <dict>
-        <key>CFBundleURLSchemes</key>
-        <array>
-          <string>fb400142910165594</string>
-        </array>
-      </dict>
-      <dict>
-        <key>CFBundleURLSchemes</key>
-        <array>
-          <string>fb400142910165594</string>
-        </array>
-      </dict>
-      <dict>
-        <key>CFBundleURLSchemes</key>
-        <array>
-          <string>fb400142910165594</string>
-        </array>
-      </dict>
-      <dict>
-        <key>CFBundleURLSchemes</key>
-        <array>
-          <string>fb400142910165594</string>
-        </array>
-      </dict>
-      <dict>
-        <key>CFBundleURLSchemes</key>
-        <array>
-          <string>fb400142910165594</string>
-        </array>
-      </dict>
-      <dict>
-        <key>CFBundleURLSchemes</key>
-        <array>
-          <string>fb400142910165594</string>
-        </array>
-      </dict>
-      <dict>
-        <key>CFBundleURLSchemes</key>
-        <array>
-          <string>fb400142910165594</string>
-        </array>
-      </dict>
-      <dict>
-        <key>CFBundleURLSchemes</key>
-        <array>
-          <string>fb400142910165594</string>
-        </array>
-      </dict>
-      <dict>
-        <key>CFBundleURLSchemes</key>
-        <array>
-          <string>fb400142910165594</string>
-        </array>
-      </dict>
-      <dict>
-        <key>CFBundleURLSchemes</key>
-        <array>
-          <string>fb400142910165594</string>
-        </array>
-      </dict>
-      <dict>
-        <key>CFBundleURLSchemes</key>
-        <array>
-          <string>fb400142910165594</string>
-        </array>
-      </dict>
-      <dict>
-        <key>CFBundleURLSchemes</key>
-        <array>
-          <string>fb400142910165594</string>
-        </array>
-      </dict>
-      <dict>
-        <key>CFBundleURLSchemes</key>
-        <array>
-          <string>fb400142910165594</string>
+          <string>qurantools</string>
         </array>
       </dict>
     </array>

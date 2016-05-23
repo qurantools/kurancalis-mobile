@@ -79,6 +79,10 @@
                         {
                             "xml": "<feature name=\"NetworkStatus\"><param name=\"ios-package\" value=\"CDVConnection\" /></feature>",
                             "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"Device\"><param name=\"ios-package\" value=\"CDVDevice\" /></feature>",
+                            "count": 1
                         }
                     ]
                 }
@@ -139,7 +143,7 @@
                 "parents": {
                     "FacebookAppID": [
                         {
-                            "xml": "<string>400142910165594</string>",
+                            "xml": "<string>295857580594128</string>",
                             "count": 1
                         }
                     ],
@@ -151,7 +155,11 @@
                     ],
                     "CFBundleURLTypes": [
                         {
-                            "xml": "<array><dict><key>CFBundleURLSchemes</key><array><string>fb400142910165594</string></array></dict></array>",
+                            "xml": "<array><dict><key>CFBundleURLSchemes</key><array><string>fb295857580594128</string></array></dict></array>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<array><dict><key>CFBundleURLSchemes</key><array><string>qurantools</string></array></dict></array>",
                             "count": 1
                         }
                     ]
@@ -176,7 +184,7 @@
             "PACKAGE_NAME": "org.quran.qurantools"
         },
         "phonegap-facebook-plugin": {
-            "APP_ID": "400142910165594",
+            "APP_ID": "295857580594128",
             "APP_NAME": "Kuran Çalış",
             "PACKAGE_NAME": "org.quran.qurantools"
         },

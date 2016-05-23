@@ -39,10 +39,7 @@ angular.module('ionicApp')
         var buttonAddToList = {text: 'Listeye Ekle' };
         var buttonGotoVerse = {text: 'Sure İçerisinde Gör' };
         var buttonBookmark = {text: 'Burada Kaldım' };
-        $scope.footerMenuButtons.push(buttonSelectTranslation);
-        $scope.footerMenuButtons.push(buttonAddToList);
-        $scope.footerMenuButtons.push(buttonGotoVerse);
-        $scope.footerMenuButtons.push(buttonBookmark);
+        var buttonVerseHistory = {text: 'Ayet Geçmişi' };
 
         $scope.goToVerseDetail = function(){
             $scope.goToVerseParameters.chapter = $scope.detailedChapters[Math.floor($scope.verseId/1000) -1];
@@ -188,7 +185,10 @@ angular.module('ionicApp')
         };
 
         $scope.showEditor = function (annotation, position) {
-            $scope.showEditorModal(annotation, position, $scope.submitEditor);
+            $scope.showEditorModal(annotation, position, $scope.submitEditor, function(){
+                annotator.publish('annotationEditorCancel');
+                annotator.onEditorHide();
+            });
         };
 
         $scope.editAnnotation = function (index){
@@ -414,6 +414,14 @@ angular.module('ionicApp')
         };
 
         $scope.openFooterMenu = function (){
+            $scope.footerMenuButtons = [];
+            $scope.footerMenuButtons.push(buttonSelectTranslation);
+            $scope.footerMenuButtons.push(buttonGotoVerse);
+            if ($scope.user){
+                $scope.footerMenuButtons.push(buttonAddToList);
+                $scope.footerMenuButtons.push(buttonBookmark);
+                $scope.footerMenuButtons.push(buttonVerseHistory);
+            }
             $ionicActionSheet.show({
                 buttons: $scope.footerMenuButtons,
                 destructiveText: '',
@@ -430,6 +438,9 @@ angular.module('ionicApp')
                         $scope.openModal('go_to_verse');
                     } else if (index == 3) {
                         $scope.openModal('bookmark');
+                    } else if (index == 4){
+                        $scope.openVerseHistory();
+                        $scope.closeModal('detailed_verse_modal');
                     }
                     return true;
                 }

@@ -2,6 +2,7 @@ angular.module('ionicApp')
     .controller('annotationEditorController', function ($scope, $q, $routeParams, $location, $timeout, Restangular, $ionicModal) {
 
         $scope.callback = function (){};
+        $scope.cancel = function(){};
         $scope.index = -1;
 
         $scope.showEditor = function(annotation, position){
@@ -118,6 +119,15 @@ angular.module('ionicApp')
         $scope.submitEditor = function () {
             $scope.showProgress("submitEditor");
             $timeout(function () {
+                if (config_data.isMobile) { //convert mobile selection to viewCircles
+                    //prepare canView circle list
+                    $scope.ViewCircles = [];
+                    for (var index = 0; index < $scope.mobileAnnotationEditorCircleListForSelection.length; ++index) {
+                        if ($scope.mobileAnnotationEditorCircleListForSelection[index].selected == true) {
+                            $scope.ViewCircles.push($scope.mobileAnnotationEditorCircleListForSelection[index]);
+                        }
+                    }
+                }
                 var tagParameters = $scope.getTagParametersForAnnotatorStore($scope.ViewCircles, $scope.yrmcevres, $scope.ViewUsers, $scope.yrmkisis, $scope.annotationModalDataTagsInput);
                 $scope.annotationModalData.canViewCircles = tagParameters.canViewCircles;
                 $scope.annotationModalData.canCommentCircles = tagParameters.canCommentCircles;
@@ -136,8 +146,8 @@ angular.module('ionicApp')
         };
 
         $scope.mdeleteAnnotation = function(){
-            $scope.callback($scope.index);
             $("#deleteAnnotationModal").modal("hide");
+            $scope.callback($scope.index);
         };
 
         $scope.openModal = function(id){
@@ -161,9 +171,21 @@ angular.module('ionicApp')
             }
         };
 
+        $scope.cancelNewAnnotationCreation = function(){
+            if (config_data.isMobile){
+                $scope.closeModal('editor');
+            }else{
+                $('#annotationModal').modal('hide');
+            }
+            $scope.cancel();
+        };
+
         $scope.init = function(){
             $scope.$on('show_editor', function(event, args) {
                 $scope.callback = args.postCallback;
+                if (isDefined(args.cancelPostBack)){
+                    $scope.cancel = args.cancelPostBack;
+                }
                 $scope.showEditor(args.annotation, args.position);
             });
 

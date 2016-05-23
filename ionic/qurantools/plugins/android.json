@@ -67,6 +67,14 @@
                         {
                             "xml": "<feature name=\"NetworkStatus\"><param name=\"android-package\" value=\"org.apache.cordova.networkinformation.NetworkManager\" /></feature>",
                             "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"LaunchMyApp\"><param name=\"android-package\" value=\"nl.xservices.plugins.LaunchMyApp\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"Device\"><param name=\"android-package\" value=\"org.apache.cordova.device.Device\" /></feature>",
+                            "count": 1
                         }
                     ]
                 }
@@ -75,7 +83,7 @@
                 "parents": {
                     "/*": [
                         {
-                            "xml": "<string name=\"fb_app_id\">400142910165594</string>",
+                            "xml": "<string name=\"fb_app_id\">295857580594128</string>",
                             "count": 1
                         },
                         {
@@ -112,6 +120,12 @@
                             "xml": "<uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\" />",
                             "count": 1
                         }
+                    ],
+                    "/manifest/application/activity": [
+                        {
+                            "xml": "<intent-filter><data android:scheme=\"qurantools\" /><action android:name=\"android.intent.action.VIEW\" /><category android:name=\"android.intent.category.DEFAULT\" /><category android:name=\"android.intent.category.BROWSABLE\" /></intent-filter>",
+                            "count": 1
+                        }
                     ]
                 }
             }
@@ -137,7 +151,7 @@
             "PACKAGE_NAME": "org.quran.qurantools"
         },
         "phonegap-facebook-plugin": {
-            "APP_ID": "400142910165594",
+            "APP_ID": "295857580594128",
             "APP_NAME": "Kuran Çalış",
             "PACKAGE_NAME": "org.quran.qurantools"
         },
