@@ -1,5 +1,5 @@
 angular.module('ionicApp')
-    .controller('HomeCtrl', function ($scope, $compile, $q, $routeParams, $location, $timeout, ChapterVerses, User, Facebook, Restangular, localStorageService, $document, $filter, $rootScope, $state, $stateParams, $ionicModal, $ionicScrollDelegate, $ionicPosition, authorization,$ionicActionSheet,$ionicPopup, $sce, dataProvider, $ionicPlatform) {
+    .controller('HomeCtrl', function ($scope, $compile, $q, $routeParams, $location, $timeout, ChapterVerses, User, Facebook, Restangular, localStorageService, $document, $filter, $rootScope, $state, $stateParams, $ionicModal, $ionicScrollDelegate, $ionicPosition, authorization,$ionicActionSheet,$ionicPopup, $sce, dataProvider, $ionicPlatform, navigationManager) {
 
 
         $scope.linkno="";
@@ -137,10 +137,11 @@ angular.module('ionicApp')
             else {
                 $scope.detailedSearchAuthorSelection.push(author_id);
             }
-            $scope.query_author_mask = 0;
+            $scope.query_author_mask = bigInt(0);
             for (var index in $scope.detailedSearchAuthorSelection) {
-                $scope.query_author_mask = $scope.query_author_mask | $scope.detailedSearchAuthorSelection[index];
+                $scope.query_author_mask = $scope.query_author_mask.or( $scope.detailedSearchAuthorSelection[index]);
             }
+            $scope.query_author_mask = $scope.query_author_mask.value;
         };
 
 
@@ -409,7 +410,7 @@ angular.module('ionicApp')
             var orderBy = $filter('orderBy');
             $scope.annotations = orderBy($scope.annotations, predicate);
             //filtered annotations index bug fix
-            $scope.filteredAnnotations = $scope.annotations;
+            //$scope.filteredAnnotations = $scope.annotations;
         };
 
         $scope.scrollToElmnt = function (elementId) {
@@ -638,6 +639,7 @@ angular.module('ionicApp')
         //list translations
         $scope.list_translations = function () {
 
+            $scope.showProgress("homeInitialize");
             $scope.setAuthorViewAccordingToDetailedSearchAuthorSelection();
 
             $scope.translationDivMap = [];
@@ -666,10 +668,16 @@ angular.module('ionicApp')
             dataProvider.listTranslations(translationParams, function(data){
                 $scope.prepareTranslationDivMap(data);
                 //mark annotations
-                $scope.annotate_it();
+
+                if($scope.access_token == null){
+                    $scope.$on("userInfoReady",$scope.annotate_it);
+                }
+                else{
+                    $scope.annotate_it();
+                }
                 //scroll to verse if user is not logged in.
                 //if user is logged in, they will scroll on tag generation.
-                if ($scope.user == null) {
+                if ($scope.user == null && authorization.getAccessToken() == null) {
                     if (typeof $scope.verse.number != 'undefined') {
                         var verseId = parseInt($scope.query_chapter_id * 1000) + parseInt($scope.verse.number);
                         $timeout(function () {
@@ -691,6 +699,7 @@ angular.module('ionicApp')
             $timeout(function () {
                 $scope.scrollToElmnt(verseElement);
                 $scope.hideProgress("goToChapter");
+                $scope.hideProgress("homeInitialize");
             });
         };
 
@@ -1146,6 +1155,7 @@ angular.module('ionicApp')
             var verseNumber = 1;
             var ownAnnotations = true;
             var circles = []; //id array
+            circles.push($scope.CIRCLE_ALL_CIRCLES);// All Circles by default
             var users = []; //id array
             var chapterFromRoute = false;
             var authorFromRoute = false;
@@ -1206,7 +1216,7 @@ angular.module('ionicApp')
                 localParameterData.author_mask = authorMask;
                 localParameterData.verse_number = verseNumber;
                 localParameterData.ownAnnotations = ownAnnotations;
-                localParameterData.circles = []; //process later
+                localParameterData.circles = circles; //process later
                 localParameterData.users = []; //process later
 
             }
@@ -1281,9 +1291,9 @@ angular.module('ionicApp')
 
         $scope.initializeHomeController = function () {
 
+            $scope.checkUserLoginStatus();
             $scope.initChapterViewParameters();
             $scope.list_translations();
-            $scope.checkUserLoginStatus();
 
             $scope.$on('login', function handler() {
                 $scope.list_translations();
@@ -1291,6 +1301,7 @@ angular.module('ionicApp')
 
             $scope.$on('userInfoReady', function handler() {
                 $scope.initializeActionSheetButtons();
+
             });
 
             $scope.$on('logout', function handler() {
@@ -1307,21 +1318,13 @@ angular.module('ionicApp')
                     $timeout(function () {
                         $scope.scrollDelegateTop(modal.id);
                     });
-                    if (!config_data.isNative){
-                        if ($scope.showBanner){
-                            $('.modal-backdrop').addClass('showBanner');
-                        }else{
-                            $('.modal-backdrop').addClass('hideBanner');
-                        }
-                    }
                 }
             });
 
+            navigationManager.reset();
             $scope.initializeActionSheetButtons();
+            $scope.displayTutorial("chapter");
 
-            $timeout(function() {
-                $scope.$broadcast("displayTutorial",{id:"chapter"})
-            },2000);
         };
 
         $scope.initializeActionSheetButtons = function(){
@@ -1332,6 +1335,7 @@ angular.module('ionicApp')
             var butonFiltre = {text: '<i class="icon fa fa-search"></i> Notları Filtrele' };
             var butonAyraclar = {text: '<i class="icon ion-android-bookmark"></i> Ayraçlar' };
             var buttonVerseHistory = {text: '<i class="icon fa fa-history"></i> Ayet Geçmişi' };
+
             $scope.actionSheetButtons.push(butonCeviri);
             $scope.actionSheetButtons.push(butonSureAyet);
             if($scope.loggedIn) {
@@ -1365,6 +1369,9 @@ angular.module('ionicApp')
             if ($scope.user == null)
                 return;
             $timeout(function() {
+                //TODO: initialize action sheet according to login status
+                //var buttonDetailedVerse = {text: '<i class="icon fa fa-history"></i> Ayet İnceleme' };
+                //var buttonVerseAnnotations = {text: '<i class="icon fa fa-history"></i> Ayete Ait Notlar' };
                 $ionicActionSheet.show({
                     buttons: [
                         {text: 'Burada Kaldım'},
@@ -1388,7 +1395,6 @@ angular.module('ionicApp')
                     }
                 });
             },350);
-
         };
 
         $scope.closeBookmarkModal =function () {

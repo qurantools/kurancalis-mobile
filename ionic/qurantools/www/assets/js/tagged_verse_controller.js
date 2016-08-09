@@ -1,5 +1,5 @@
 angular.module('ionicApp')
-    .controller('TaggedVerseCtrl', function ($scope, $timeout, Restangular, $location, $ionicModal, $ionicScrollDelegate) {
+    .controller('TaggedVerseCtrl', function ($scope, $timeout, Restangular, $location, $ionicModal, $ionicScrollDelegate,localStorageService, navigationManager) {
 
         $scope.taggedVerseCircles = [];
         $scope.taggedVerseUsers = [];
@@ -13,6 +13,21 @@ angular.module('ionicApp')
         $scope.taggedVerseCirclesForMobileSearch = [];
         $scope.taggedVerseUsersForMobileSearch = [];
 
+        $scope.localStorageManager = new LocalStorageManager("tagged_verses",localStorageService,
+            [
+                {
+                    name:"verseTagContentAuthor",
+                    getter: null,
+                    setter: null,
+                    isExistInURL: false,
+                    isBase64: false,
+                    default: DIYANET_AUTHOR_ID
+
+                }
+            ]
+        );
+
+        console.log("TaggedVerseCtrl init");
         //Get verses of the tag from server
         $scope.loadVerseTagContent = function (verseTagContentParams, verseId) {
             $scope.showProgress("loadVerseTagContent");
@@ -21,13 +36,14 @@ angular.module('ionicApp')
                 $scope.targetVerseForTagContent = verseId;
                 $scope.verseTagContents = verseTagContent;
                 $scope.scopeApply();
-                $scope.hideProgress("loadVerseTagContent");
+
                 if (config_data.isMobile){
                     $timeout(function() {
                         var delegate = _.filter($ionicScrollDelegate._instances, function(item){
                             return item.element.innerHTML.indexOf('tagged_verse_content') > -1;
                         })[0];
                         delegate.scrollTop();
+                        $scope.hideProgress("loadVerseTagContent");
                     });
                 }
             });
@@ -67,6 +83,7 @@ angular.module('ionicApp')
         $scope.verseTagContentAuthorUpdate = function (item) {
             $scope.verseTagContentAuthor = item;
             $scope.updateVerseTagContent();
+            $scope.localStorageManager.storeVariables($scope);
         };
 
         //reflects the scope parameters to URL
@@ -111,7 +128,7 @@ angular.module('ionicApp')
 
         $scope.closeModal = function (item){
             if (item == 'tagged_verse'){
-                $scope.tagged_verse_modal.hide();
+                navigationManager.closeModal($scope.tagged_verse_modal);
             }else if (item == 'tagged_verse_detailed_search'){
                 $scope.tagged_verse_detailed_search.hide();
             }else if (item == 'friendsearch'){
@@ -168,7 +185,10 @@ angular.module('ionicApp')
                 }).then(function (modal) {
                     $scope.modal_friend_search = modal
                 });
-            };
+            }
+
+
+            $scope.localStorageManager.initializeScopeVariables($scope,{});
 
             $scope.$on('tagged_verse_modal', function(event, args) {
                 if (isDefined(args.users) && args.users.length >= 0){
@@ -184,7 +204,7 @@ angular.module('ionicApp')
                 $scope.taggedVerseCirclesForMobileSearch = $scope.extendedCirclesForSearch;
                 for (var i =0; i< $scope.taggedVerseCirclesForMobileSearch.length; i++){
                     $scope.taggedVerseCirclesForMobileSearch[i].selected = false;
-                    for (var j = 0; j < $scope.taggedVerseCircles.length; j++){
+                    for (var j = 0; $scope.taggedVerseCircles != null && j < $scope.taggedVerseCircles.length; j++){
                         if ($scope.taggedVerseCirclesForMobileSearch[i].id == $scope.taggedVerseCircles[j].id){
                             $scope.taggedVerseCirclesForMobileSearch[i].selected = true;
                             break;
@@ -197,16 +217,21 @@ angular.module('ionicApp')
                 }
                 $scope.query_users = $scope.taggedVerseUsersForMobileSearch;
 
-                if ($scope.verseTagContentAuthor == MAX_AUTHOR_MASK){
-                    if (isDefined(args.author)){
-                        $scope.verseTagContentAuthor = args.author;
-                    }else{
-                        $scope.verseTagContentAuthor = $scope.authors[0].id;
-                    }
+                if (isDefined(args.author)){
+                    $scope.verseTagContentAuthor = args.author;
+                    $scope.localStorageManager.storeVariables($scope);
+
                 }
+
                 $scope.goToVerseTag(args.verseId, args.tag);
                 if (config_data.isMobile){
-                    $scope.tagged_verse_modal.show();
+                    if (config_data.isMobile) {
+                        navigationManager.openModal({
+                            broadcastFunction : "tagged_verse_modal",
+                            args : args,
+                            modal: $scope.tagged_verse_modal
+                        });
+                    }
                 }
             });
         };

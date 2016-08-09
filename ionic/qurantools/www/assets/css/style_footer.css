@@ -20,7 +20,7 @@
     left: 0;
     width: 100%;
     font-size: 14px;
-    line-height: 50px;
+    line-height: 30px;
     text-align: center;
     background: rgba(0, 0, 0, 0.9);
     border-bottom: 4px solid #d4d4d4;
@@ -47,123 +47,64 @@
     text-align: justify;
 }
 
-.smart-app-banner {
-    zoom:1;position: fixed;
-    width: 100%;
-    top: 0;
-    height: 60px;
-    background-color: #d2d2d2;
-    z-index: 500;
-    display: none
+.smartbanner-show .view, .smartbanner-show .modal-wrapper .modal.active{
+    top: 80px
 }
 
-.smart-app-banner:before,.smart-app-banner:after {
-    display: table;
-    content: "";
-    zoom:1
+.voted-like{
+    color : dodgerblue;
+    cursor: pointer;
 }
 
-.smart-app-banner:after {
-    clear: both
+.voted-dislike{
+    color: black;
+    cursor: pointer;
 }
 
-.smart-app-banner.visible {
-    display: block
-}
-
-.smart-app-banner h3 {
-    line-height: 60px;
-    display: inline-block;
-    padding: 0;
-    margin: 0;
-    padding-left: 68px
-}
-
-.smart-app-banner h3:before {
-    background-image: url('../img/kurancalis_logo_57.png');
-    background-size: auto;
-    background-position: -116px -110px;
-    width: 57px;
-    height: 57px;
-    content: '';
-    display: inline-block;
-    vertical-align: middle;
-    position: absolute;
-    left: 27px;
-    top: 1px;
-    border-radius: 12px;
-}
-
-@media(min--moz-device-pixel-ratio:1.5),(-o-min-device-pixel-ratio: 3/2),(-webkit-min-device-pixel-ratio:1.5),(min-resolution:1.5dppx) {
-    .smart-app-banner h3:before {
-        background-image:url('../img/kurancalis_logo_57.png');
-        background-position: -116px -110px;
-        background-size: auto;
-        -webkit-background-size: auto;
-        -moz-background-size: auto;
-    }
-}
-
-.smart-app-banner h3 span {
-    color: #333;
-    font-size: 15px;
-    position: relative;
-    display: block;
-    line-height: 44px
-}
-
-.smart-app-banner h3 span i {
-    position: absolute;
-    top: 18px;
-    left: 0;
-    right: 0;
+.unvoted{
     color: #888;
-    font-size: 11px;
-    font-style: normal;
-    width: 130px;
+    cursor: pointer;
 }
 
-.smart-app-banner a.app-button {
-    float: right;
-    margin-right: 10px;
-    margin-top: 14px;
-    padding: 6px 10px;
-    font-size: 12px;
-    background-color: #437db9;
-    color: #fff;
-    border-radius: 5px;
+.icon-over-img{
+    position: absolute;
+    top: 80%;
+    right: 23%;
+    transform: translate(-45%, -45%);
 }
 
-.smart-app-banner a.app-button:hover {
-    color: #fff
+.selected-vote-group {
+    border-bottom: 1px solid deepskyblue;
 }
 
-.smart-app-banner a.close-button {
-    line-height: 50px;
-    padding: 0px 5px;
-    border: 1px solid #AEAEAE;
-    border-radius: 30px;
-    margin-left: 5px;
+.editable_textarea{
+    -moz-appearance: textfield-multiline;
+    -webkit-appearance: textarea;
+    border: 1px solid gray;
+    font: medium -moz-fixed;
+    font: -webkit-small-control;
+    height: 28px;
+    overflow: auto;
+    padding: 2px;
+    resize: both;
+    width: 400px;
 }
 
-.smart-app-banner a.close-button:before {
-    content: 'x';
-    display: inline-block;
-    padding-bottom: 4px;
+a.disabled{
+    pointer-events: none;
+    cursor: default;
+}
+.make_comment{
+    cursor: pointer;
 }
 
-@media(min--moz-device-pixel-ratio:1.5),(-o-min-device-pixel-ratio: 3/2),(-webkit-min-device-pixel-ratio:1.5),(min-resolution:1.5dppx) {
-    .smart-app-banner a.close-button:before {
-        content: 'x';
-        vertical-align: middle;
-    }
+.fit-content{
+    display: -webkit-flex;
+    -webkit-justify-content: space-around;
+    display: flex;
+    justify-content: space-around;
 }
 
-.showBanner .view, .showBanner .modal-wrapper .modal.active{
-    top: 60px
+#comment_area div.scroll{
+    height: 85%;
 }
-
-.hideBanner .modal-wrapper .modal.active{
-    top : 0px;
-}
-
