@@ -1,0 +1,72 @@
+<!-- start of side menu part 1-->
+<ion-side-menus>
+    <ion-side-menu-content drag-content="false">
+        <ion-nav-bar animation="nav-title-slide-ios7" class="bar-balanced" align-title="center">
+            <ion-nav-buttons side="left">
+                <button menu-toggle="left" class="button button-icon icon ion-navicon"></button>
+            </ion-nav-buttons>
+            <ion-nav-title>Kelime ile Ayet Arama</ion-nav-title>
+        </ion-nav-bar>
+        <!-- end of side menu part 1 -->
+        <ion-nav-view id="content" cache-view="true">
+            <ion-content style="margin-top:65px;">
+                <div class="row" scroll-event-interval="5">
+                    <div class="col-xs-12 bb" id="translations" style="display: block;width: 100%;">
+                        <div class="item item-input button-block" style="margin-top: 20px;border-width: 1px;border-style: solid;font-size: large">
+                            <input style="font-size: medium" type="text" placeholder="Meallerde ara"
+                                   ng-model="verseSearchText" ng-enter="searchTranslations()"
+                                   ng-change="searchTextChange(verseSearchText)"
+                                   min-length="3">
+                        </div>
+                        <div class="item item-input item-select" style="margin-top: 5px;border-width: 1px;border-style: solid;font-size: larger">
+                            <div class="input-label">
+                                Dil
+                            </div>
+                            <select ng-model="searchTranslationsAuthor"
+                                    ng-options="author.value as author.text for author in searchAuthorMap"
+                                    ng-change="searchTranslationsAuthorChanged(searchTranslationsAuthor)"
+                                    class="form-control">
+                                <option style="display:none" value="">Meal Seç</option>
+                            </select>
+                        </div>
+                        <button style="font-size: large" class="button button-block button-positive" ng-click="searchTranslations()">
+                            <i class="icon ion-search"></i>
+                            Ara
+                        </button>
+                        <div ng-repeat="verse in verses">
+                            <div class="list" id="v_{{verse.id}}">
+                                <div ng-repeat="translation in verse.translations">
+                                    <div ng-show="$first" class="item item-divider" ion-affix data-affix-within-parent-with-class="list">
+                                        <h3>
+                                            <a href style="text-decoration: none !important;" ng-click='showVerseDetail({{verse.id}})'>{{translation.chapter}}:{{translation.verse}}</a>
+                                        </h3>
+                                    </div>
+                                    <div id="t_{{translation.id}}" class="item item-text-wrap" ng-show="verse.selectedSingleAuthor==translation.authorId || !verse.showSingleAuthor">
+                                        <div class="col-xs-12 col-sm-3 authorDiv_{{authorMap[translation.authorId].color}}" ng-show="!verse.showSingleAuthor">
+                                            {{authorMap[translation.authorId].name}}
+                                        </div>
+                                        <div class="col-xs-12 col-sm-3 authorDiv_{{authorMap[translation.authorId].color}}" ng-show="verse.selectedSingleAuthor==translation.authorId">
+                                            {{authorMap[translation.authorId].name}}
+                                        </div>
+                                        <div id="tt_{{translation.id}}" ng-class="{translation_rtl: authorMap[translation.authorId].language=='ar', translation_content: authorMap[translation.authorId].language!='ar'}"
+                                             class="col-xs-12 col-sm-9 translation_content selectable"
+                                             ng-show="verse.selectedSingleAuthor==translation.authorId || !verse.showSingleAuthor">
+                                            <span ng-bind-html="translation.content | with_search_text:verseSearchedText | to_trusted" class="selectable"></span>
+                                        </div>
+                                        <div class="col-xs-1" ng-show="verse.selectedSingleAuthor==translation.authorId && verse.translations.length>1" ng-click="multipleAuthorsView($parent.$index)"
+                                            style="text-align: center;background-color:#F4E288;border-color: black;border-width: 1px;border-style: solid;margin:5px 12px 0 12px;">
+                                            <img src="../../assets/img/expand.png" width="18" height="18" style="vertical-align: middle;">
+                                            Diğer mealleri göster
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div style="height:50px;">&nbsp;</div>
+            </ion-content>
+        </ion-nav-view>
+    </ion-side-menu-content>
+    <div ng-include="'components/navigation/left_menu.html'"></div>
+</ion-side-menus>

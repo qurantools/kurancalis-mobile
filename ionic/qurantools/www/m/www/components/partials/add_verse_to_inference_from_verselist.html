@@ -1,0 +1,62 @@
+<div class="modal modal-fullscreen" ng-controller="VerseListController">
+    <ion-nav-bar animation="nav-title-slide-ios7" class="bar-balanced">
+        <ion-nav-buttons side="left">
+            <a class="button button-icon icon ion-arrow-left-b" ng-click="closeModal('add_verse_to_inference_from_verselist')"></a>
+        </ion-nav-buttons>
+        <ion-nav-title>Ayete Referans Ver</ion-nav-title>
+        <ion-nav-buttons side="right">
+            <a class="button button-icon icon ion-checkmark" ng-click="selectSelectedVerses()"></a>
+        </ion-nav-buttons>
+    </ion-nav-bar>
+    <ion-content overflow-scroll="true" delegate-handle="content"  class="scroll_content" style="margin-top:30px;">
+        <div style="margin-top:50px;"></div>
+        <div align="left">
+            <div class="list">
+                <label class="item item-input item-select">
+                    <div class="input-label">
+                        Ayet Listelerim
+                    </div>
+                    <select ng-model="verselistItem" ng-change="verseListsToggleSelection(verselistItem)">
+                        <option ng-repeat="item in verselists" value="{{item.id}}" ng-selected="item.id==localVerseListSelection[0]">{{item.name}}</option>
+                    </select>
+                </label>
+                <label class="item item-input item-select">
+                    <div class="input-label">
+                        Çeviri/Yazar
+                    </div>
+                    <select ng-options="author.id as author.name for author in authors"
+                            ng-model="verseListAuthor"
+                            ng-change="verseListsAuthorChanged(verseListAuthor)">
+                    </select>
+
+                </label>
+            </div>
+            <ion-list>
+                <ion-item ng-repeat="verse in verses" item="item item-avatar"
+                          ng-click="selectVerse($index)"
+                          style="padding: 5px 0px 5px 5px;margin-left: -10px;"
+                          ng-style="verse.selected && {'background-color': 'rgba(0, 255, 0, 0.3)'} ">
+                    <div class="row">
+                        <div class="item-checkbox" style="width: 10px;border-width: 0;padding-left: 30px;">
+                            <label class="checkbox">
+                                <input type="checkbox" ng-checked="verse.selected == true">
+                            </label>
+                        </div>
+                        <div class="col">
+                            <div class="chapter_verse_number"
+                                 ng-style="verse.selected && {'background-color': 'rgba(0, 255, 0, 0.3)'} ||
+                                 !verse.selected && {'background-color': '#DDD'}"
+                                 style="width: 100%">
+                                <strong>{{verse.chapter}}:{{verse.verse}}</strong>
+                            </div>
+                            <div ng-class="{translation_rtl: authorMap[verse.authorId].language=='ar', translation_content: authorMap[verse.authorId].language!='ar'}"
+                                 style="white-space: initial;text-align: left">
+                                <span ng-bind-html="verse.content | to_trusted" style="text-align: justify"></span>
+                            </div>
+                        </div>
+                    </div>
+                </ion-item>
+            </ion-list>
+        </div>
+    </ion-content>
+</div>
