@@ -1,25 +1,25 @@
 var config_module = angular.module('myConfig', []);
 
-//var domain = "http://test.kurancalis.com";
-//var domain = "http://test.kurancalis.com";
-var domain = "http://test.kurancalis.com";
-//var domain = "http://test.kurancalis.com";
+//var domain = "http://kurancalis.com";
+//var domain = "http://kurancalis.com";
+var domain = "http://kurancalis.com";
+//var domain = "http://kurancalis.com";
 
 var config_data = {
-    'webServiceUrl': 'https://securewebserver.net/jetty/qttest/rest',
-    //'webServiceUrl': 'https://securewebserver.net/jetty/qttest/rest',
+    'webServiceUrl': 'https://securewebserver.net/jetty/qt/rest',
+    //'webServiceUrl': 'https://securewebserver.net/jetty/qt/rest',
     'webAddress': domain,
     'mobileAddress': domain+'/m/www',
     'mobileLoginCallbackAddress': domain +'/m/www/components/mobile_auth/login_callback.html',
-    'FBAppID': '400142910165594',
+    'FBAppID': '295857580594128',
     //'FBAppID': '506964319483452',
-    'clientSecret':'e1c0f664bd3e803fce38a8d6399dba2d',
-    'version':"1.5",
+    'clientSecret':'8387ff88dfd5c632d6c64059ab3fcebb',
+    'version':"2.0",
     'isMobile':isMobile(),
     'isNative':isNative(),
     'isAndroid':isAndroid(),
     'isIOS':isIOS(),
-    'translationTableCount': 132830
+    'translationTableCount': 139055
 }
 
 var MAX_AUTHOR_MASK = "18446744073709551615"; //64 authors

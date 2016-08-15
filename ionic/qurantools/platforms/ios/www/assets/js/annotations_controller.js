@@ -1,7 +1,7 @@
 angular.module('ionicApp')
-    .controller('AnnotationsCtrl', function ($scope, $routeParams, Facebook, Restangular, $location, authorization, localStorageService, $ionicModal,$ionicPopup, $timeout, $ionicScrollDelegate) {
+    .controller('AnnotationsCtrl', function ($scope, $routeParams, Facebook, Restangular, $location, authorization, localStorageService, $ionicModal, $ionicPopup, $timeout, $ionicScrollDelegate) {
         console.log("annotations ctrl");
-        $scope.allAnnotationsOrderBy='verse';
+        $scope.allAnnotationsOrderBy = 'verse';
 
         /* facebook login */
 
@@ -9,8 +9,8 @@ angular.module('ionicApp')
         $scope.facebookIsReady = false;
         //    $scope.user = null;
 
-        $scope.usersForSearch=[];
-        $scope.circlesForSearch=[];
+        $scope.usersForSearch = [];
+        $scope.circlesForSearch = [];
 
         // all annotations
         $scope.annotations = [];
@@ -20,11 +20,39 @@ angular.module('ionicApp')
         $scope.allAnnotationsOpts.limit = 10;
         $scope.allAnnotationsOpts.own_annotations = true;
         $scope.allAnnotationsOpts.keyword = "";
-        $scope.sureler="";
-        $scope.ayetler="";
+        $scope.sureler = "";
+        $scope.ayetler = "";
         $scope.pagePurpose = "annotations"; //may be annotations or inferences
 
         $scope.annotationSearchAuthorSelection = $scope.selection;
+
+        $scope.localStorageManager = new LocalStorageManager("annotations", localStorageService,
+            [
+                {
+                    name: "allAnnotationsOrderBy",
+                    getter: null,
+                    setter: null,
+                    isExistInURL: true,
+                    isBase64: false,
+                    default: 250
+
+                },
+                {
+                    name: "annotationSearchAuthorSelection",
+                    getter: function () {
+                        return $scope.getAnnotationSearchAuthorMask();
+                    },
+                    setter: function (data) {
+                        return $scope.setAnnotationSearchAuthorSelection(data);
+                    },
+                    isExistInURL: true,
+                    isBase64: false,
+                    default: 16
+
+                }
+
+            ]
+        );
 
 
         $scope.restoreAnnotationsViewParameters = function (localParameterData) {
@@ -41,14 +69,14 @@ angular.module('ionicApp')
 
         };
 
-        $scope.storeAnnotationsViewParameters  = function () {
+        $scope.storeAnnotationsViewParameters = function () {
 
             var localParameterData = {};
 
             localParameterData.ownAnnotations = $scope.allAnnotationsOpts.own_annotations;
             localParameterData.orderby = $scope.allAnnotationsOrderBy;
 
-            localParameterData.authorMask=$scope.getAnnotationSearchAuthorMask();
+            localParameterData.authorMask = $scope.getAnnotationSearchAuthorMask();
             localParameterData.verseKeyword = $scope.allAnnotationsOpts.keyword;
             localParameterData.verseTags = $scope.getAnnotationSearchTags();
 
@@ -58,6 +86,10 @@ angular.module('ionicApp')
             localParameterData.verses = $scope.ayetler;
 
             localStorageService.set('annotations_view_parameters', localParameterData);
+
+
+            $scope.localStorageManager.storeVariables($scope);
+
         };
 
 
@@ -76,10 +108,8 @@ angular.module('ionicApp')
                 users: Base64.encode(JSON.stringify($scope.usersForSearch))
 
             }
-            $location.path("/"+$scope.pagePurpose+"/", false).search(parameters);
+            $location.path("/" + $scope.pagePurpose + "/", false).search(parameters);
         };
-
-
 
 
         $scope.login = function () { //new
@@ -103,9 +133,9 @@ angular.module('ionicApp')
         /* end of facebook login */
         /* end of auth */
 
-        $scope.setAnnotationSearchTags = function(tagsString){
+        $scope.setAnnotationSearchTags = function (tagsString) {
             $scope.filterTags = [];
-            if(tagsString!=""){
+            if (tagsString != "") {
                 var tagNames = tagsString.split(",");
 
                 for (var i = 0; i < tagNames.length; i++) {
@@ -115,13 +145,13 @@ angular.module('ionicApp')
             }
         };
 
-        $scope.getAnnotationSearchTags = function(){
+        $scope.getAnnotationSearchTags = function () {
             var verse_tags = "";
-            if(typeof $scope.filterTags =='undefined'){
-                $scope.filterTags=[];
+            if (typeof $scope.filterTags == 'undefined') {
+                $scope.filterTags = [];
             }
             for (var i = 0; i < $scope.filterTags.length; i++) {
-                if (i != 0){
+                if (i != 0) {
                     verse_tags += ",";
                 }
                 verse_tags += $scope.filterTags[i].name;
@@ -147,7 +177,7 @@ angular.module('ionicApp')
                 authorMask = authorMask | $scope.annotationSearchAuthorSelection[index];
             }
 
-            if(authorMask == 0) { //no author filter
+            if (authorMask == 0) { //no author filter
                 authorMask = "67108863";
             }
 
@@ -156,9 +186,8 @@ angular.module('ionicApp')
         };
 
 
-
-        $scope.toggleAnnotationSearchOwnAnnotations = function(){
-            $scope.allAnnotationsOpts.own_annotations =! $scope.allAnnotationsOpts.own_annotations;
+        $scope.toggleAnnotationSearchOwnAnnotations = function () {
+            $scope.allAnnotationsOpts.own_annotations = !$scope.allAnnotationsOpts.own_annotations;
         }
 
         $scope.get_all_annotations = function () {
@@ -175,8 +204,8 @@ angular.module('ionicApp')
 
             var newTags = "";
 
-            if(typeof $scope.filterTags =='undefined'){
-                $scope.filterTags=[];
+            if (typeof $scope.filterTags == 'undefined') {
+                $scope.filterTags = [];
             }
             for (var i = 0; i < $scope.filterTags.length; i++) {
                 if (i != 0)newTags += ",";
@@ -185,8 +214,8 @@ angular.module('ionicApp')
             $scope.allAnnotationsParams.verse_tags = newTags;
 
             //Volkan Ekledi.
-             var kisiTags = "";
-             var cevreTags = "";
+            var kisiTags = "";
+            var cevreTags = "";
 
             for (var i = 0; i < $scope.usersForSearch.length; i++) {
                 if (i != 0)kisiTags += ",";
@@ -204,12 +233,13 @@ angular.module('ionicApp')
             $scope.allAnnotationsParams.chapters = $scope.sureler;
             $scope.allAnnotationsParams.verse = $scope.ayetler;
 
-               
-
 
             $scope.allAnnotationsParams.orderby = $scope.allAnnotationsOrderBy;
 
+            $scope.showProgress("get_all_annotations");
+
             usersRestangular.customGET("", $scope.allAnnotationsParams, {'access_token': authorization.getAccessToken()}).then(function (annotations) {
+
                     if ($scope.allAnnotationsParams.start == 0) {
                         $scope.annotations = [];
                     }
@@ -225,6 +255,8 @@ angular.module('ionicApp')
                     } else {
                         $scope.allAnnotationsOpts.hasMore = false;
                     }
+
+                    $scope.showProgress("get_all_annotations");
                 }
             );
 
@@ -234,14 +266,13 @@ angular.module('ionicApp')
 
         //go to chapter / verse from navigation header
         $scope.goToVerse = function () {
-            $scope.goToChapterWithParameters($scope.goToVerseParameters.chapter.id,"1040",$scope.goToVerseParameters.verse);
+            $scope.goToChapterWithParameters($scope.goToVerseParameters.chapter.id, "1040", $scope.goToVerseParameters.verse);
         };
 
 
-        $scope.toggleAnnotationSearchOwnAnnotations = function(){
+        $scope.toggleAnnotationSearchOwnAnnotations = function () {
             $scope.allAnnotationsOpts.own_annotations = !$scope.allAnnotationsOpts.own_annotations;
         }
-
 
 
         //
@@ -261,10 +292,10 @@ angular.module('ionicApp')
 
         $scope.search_all_annotations = function () {
 
-            if(isMobile()){ //set query_circles from mobile selection
-                $scope.circlesForSearch=[];
+            if (isMobile()) { //set query_circles from mobile selection
+                $scope.circlesForSearch = [];
                 for (var index = 0; index < $scope.mobileAllAnnotationsSearchCircleListForSelection.length; ++index) {
-                    if($scope.mobileAllAnnotationsSearchCircleListForSelection[index].selected==true){
+                    if ($scope.mobileAllAnnotationsSearchCircleListForSelection[index].selected == true) {
                         $scope.circlesForSearch.push($scope.mobileAllAnnotationsSearchCircleListForSelection[index]);
                     }
                 }
@@ -285,43 +316,43 @@ angular.module('ionicApp')
 
             var annotationRestangular = Restangular.one("annotations", annotation.annotationId);
 
-                   if (config_data.isMobile) {
+            if (config_data.isMobile) {
                 var confirmPopup = $ionicPopup.confirm({
-                     title: 'Ayet Notu Sil',
-                     template: 'Ayet notu silinecektir, onaylıyor musunuz?',
-                     cancelText: 'VAZGEC',
-                     okText: 'TAMAM',
-                     okType: 'button-assertive'
-                   });
-                   confirmPopup.then(function(res) {
-                     if(res) {
+                    title: 'Ayet Notu Sil',
+                    template: 'Ayet notu silinecektir, onaylıyor musunuz?',
+                    cancelText: 'VAZGEC',
+                    okText: 'TAMAM',
+                    okType: 'button-assertive'
+                });
+                confirmPopup.then(function (res) {
+                    if (res) {
                         annotationRestangular.customDELETE("", {}, {'access_token': $scope.access_token}).then(function (result) {
 
-                if (result.code == '200') {
-                    var annotationIndex = $scope.getIndexOfArrayByElement($scope.annotations, 'annotationId', annotation.annotationId);
-                         if (annotationIndex > -1) {
-                         $scope.annotations.splice(annotationIndex, 1);
-                         }
-                 }
-                    });
-                     } else {
-                     }
-                   });
-            }else{
-                 $scope.showAnnotationDeleteModal(annotation, $scope.mdeleteAnnotation);
+                            if (result.code == '200') {
+                                var annotationIndex = $scope.getIndexOfArrayByElement($scope.annotations, 'annotationId', annotation.annotationId);
+                                if (annotationIndex > -1) {
+                                    $scope.annotations.splice(annotationIndex, 1);
+                                }
+                            }
+                        });
+                    } else {
+                    }
+                });
+            } else {
+                $scope.showAnnotationDeleteModal(annotation, $scope.mdeleteAnnotation);
             }
         };
 
-        $scope.mdeleteAnnotation = function(annotation){
-             var annotationRestangular = Restangular.one("annotations", annotation.annotationId);
-             annotationRestangular.customDELETE("", {}, {'access_token': $scope.access_token}).then(function (result) {
+        $scope.mdeleteAnnotation = function (annotation) {
+            var annotationRestangular = Restangular.one("annotations", annotation.annotationId);
+            annotationRestangular.customDELETE("", {}, {'access_token': $scope.access_token}).then(function (result) {
                 if (result.code == '200') {
                     var annotationIndex = $scope.getIndexOfArrayByElement($scope.annotations, 'annotationId', $scope.tempAnnotation.annotationId);
-                         if (annotationIndex > -1) {
-                         $scope.annotations.splice(annotationIndex, 1);
-                         }
-                 }
-             });
+                    if (annotationIndex > -1) {
+                        $scope.annotations.splice(annotationIndex, 1);
+                    }
+                }
+            });
         };
 
 
@@ -329,9 +360,9 @@ angular.module('ionicApp')
 
             if (config_data.isMobile) {
                 //prepare canView circle list
-                $scope.ViewCircles=[];
+                $scope.ViewCircles = [];
                 for (var index = 0; index < $scope.mobileAnnotationEditorCircleListForSelection.length; ++index) {
-                    if($scope.mobileAnnotationEditorCircleListForSelection[index].selected==true){
+                    if ($scope.mobileAnnotationEditorCircleListForSelection[index].selected == true) {
                         $scope.ViewCircles.push($scope.mobileAnnotationEditorCircleListForSelection[index]);
                     }
                 }
@@ -386,16 +417,17 @@ angular.module('ionicApp')
             var data = postData.join("&");
             var annotationRestangular = Restangular.one("annotations", jsonData.annotationId);
             return annotationRestangular.customPUT(data, '', '', headers);
-        }
+        };
 
-        $scope.initAnnotationsParameters = function(){
+        $scope.initAnnotationsParameters = function () {
             var orderby = "verse";
             var authorMask = 67108863;
-            var chapters="";
+            var chapters = "";
             var verseKeyword = "";
             var verses = "";
             var ownAnnotations = true;
             var circles = []; //id array
+            circles.push($scope.CIRCLE_ALL_CIRCLES);
             var users = []; //id array
             var verseTags = [];
 
@@ -410,14 +442,13 @@ angular.module('ionicApp')
             var verseTagsFromRoute = false;
 
 
-
-            if($location.path() == "/annotations/"){
+            if ($location.path() == "/annotations/") {
                 $scope.pagePurpose = "annotations";
             }
-            else if($location.path() == "/inferences/"){
+            else if ($location.path() == "/inferences/") {
                 $scope.pagePurpose = "inferences";
             }
-            else{
+            else {
                 alert("pagePurpose undefined");
             }
 
@@ -487,7 +518,7 @@ angular.module('ionicApp')
                 localParameterData.verseKeyword = verseKeyword;
                 localParameterData.verses = verses;
                 localParameterData.ownAnnotations = ownAnnotations;
-                localParameterData.circles = [];
+                localParameterData.circles = circles;
                 localParameterData.users = [];
                 localParameterData.verseTags = verseTags;
 
@@ -530,7 +561,7 @@ angular.module('ionicApp')
             $scope.setAnnotationsPageURL();
 
             $scope.checkUserLoginStatus();
-            
+
             $scope.get_all_annotations();
 
             if (config_data.isMobile) {
@@ -593,26 +624,26 @@ angular.module('ionicApp')
                 $scope.openModal = function (id) {
                     if (id == 'all_annotations_filter') {
                         $scope.modal_all_annotations_filter.show();
-                    }else if (id == 'all_annotations_sort') {
+                    } else if (id == 'all_annotations_sort') {
                         $scope.modal_all_annotations_sort.show();
-                    } else  if (id == 'editor') {
+                    } else if (id == 'editor') {
                         $scope.getModalEditor().show();
-                    } else  if (id == 'viewusersearch') {
+                    } else if (id == 'viewusersearch') {
                         $scope.modal_add_canviewuser.show();
-                        focusToInput('mobil_peoples')
-                    } else  if (id == 'addUserToAllAnnotationsSearch') {
+                        focusToInput('mobil_peoples');
+                    } else if (id == 'addUserToAllAnnotationsSearch') {
                         $scope.modal_addUserToAllAnnotationsSearch.show();
                         focusToInput('add_view_user_toAllAnnotationsSearch_people');
-                    } else  if (id == 'tagsearch') {
+                    } else if (id == 'tagsearch') {
                         $scope.modal_tag_search.show();
                         focusToInput('addtagtoannotation_input');
-                    } else  if (id == 'addtagtosearch') {
+                    } else if (id == 'addtagtosearch') {
                         $scope.modal_addtagtosearch.show();
                         focusToInput('addtagtosearch_input');
                     }
                 };
                 $scope.closeModal = function (id) {
-                    $timeout(function() {
+                    $timeout(function () {
 
                         if (id == 'all_annotations_filter') {
                             $scope.modal_all_annotations_filter.hide();
@@ -630,22 +661,15 @@ angular.module('ionicApp')
                         } else if (id == 'addtagtosearch') {
                             $scope.modal_addtagtosearch.hide();
                         }
-                    },300);
+                    }, 300);
                 }
             }
 
-            $scope.$on('modal.shown', function(event, modal) {
-                if(config_data.isMobile) {
+            $scope.$on('modal.shown', function (event, modal) {
+                if (config_data.isMobile) {
                     $timeout(function () {
                         $scope.scrollDelegateTop(modal.id);
                     });
-                    if (!config_data.isNative){
-                        if ($scope.showBanner){
-                            $('.modal-backdrop').addClass('showBanner');
-                        }else{
-                            $('.modal-backdrop').addClass('hideBanner');
-                        }
-                    }
                 }
             });
 
@@ -655,18 +679,15 @@ angular.module('ionicApp')
             $scope.showEditorModal(annotation, position, $scope.submitEditor);
         };
 
-        $scope.editAnnotation= function (annotation){
+        $scope.editAnnotation = function (annotation) {
             $scope.showEditor(annotation);
         };
 
-        $scope.scrollDelegateTop = function(id){
+        $scope.scrollDelegateTop = function (id) {
             $ionicScrollDelegate.$getByHandle(id).scrollTop();
         };
 
         $scope.initAnnotationsParameters();
-        $timeout(function(){
-            $scope.$broadcast("displayTutorial",{id:"annotations"})
-
-        },2000);
+        $scope.displayTutorial("annotations");
 
     });

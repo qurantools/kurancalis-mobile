@@ -14,15 +14,17 @@ var config_data = {
     'FBAppID': '295857580594128',
     //'FBAppID': '506964319483452',
     'clientSecret':'8387ff88dfd5c632d6c64059ab3fcebb',
-    'version':"1.5",
+    'version':"2.0",
     'isMobile':isMobile(),
     'isNative':isNative(),
     'isAndroid':isAndroid(),
-    'isIOS':isIOS()
+    'isIOS':isIOS(),
+    'translationTableCount': 139055
 }
 
-var MAX_AUTHOR_MASK = "2147483647"; //32 authors
-var DEFAULT_TURKISH_AUTHOR_MASK = "523794";
+var MAX_AUTHOR_MASK = "18446744073709551615"; //64 authors
+var DEFAULT_TURKISH_AUTHOR_MASK = "412317382160";
+var DIYANET_AUTHOR_ID = "8192";
 
 function isMobile() {
     //test for mobile

@@ -36,12 +36,13 @@
         <div ng-repeat="annotation in annotations" class="box">
             <div class="s_a_header">
                 <a href='' ng-click="showVerseDetail(annotation.verseId, usersForSearch, circlesForSearch)" data-target='#detailedVerseModal' data-dismiss='modal' data-toggle='modal'>{{annotation.verseId / 1000 | number:0}}:{{annotation.verseId % 1000}}</a>
-                <button ng-click="showVerse(annotation)" class="btn btn-primary btn-xs"
+                ({{authorMap[annotation.author_id].name}})
+                <!--button ng-click="showVerse(annotation)" class="btn btn-primary btn-xs"
                         ng-if="showVerseData.annotationId!=annotation.annotationId"><i
                         class="fa fa-cog"></i></button>
                 <button ng-click="showVerseData.annotationId=-1" class="btn btn-xs"
                         ng-if="showVerseData.annotationId==annotation.annotationId"><i
-                        class="fa fa-cog "></i></button>
+                        class="fa fa-cog "></i></button-->
                 <div style="float:right;"><a  href="" ng-click="navigateTo('/profile/user/{{annotation.userId}}/')" style="color: darkblue;">{{annotation.userName | limitTo: 25}}</a></div>
             </div>
             <show-verse data="showVerseData.data"
@@ -66,8 +67,24 @@
             </button>
             <div class="small_space">&nbsp;</div>
             <div class="row" style="padding:0 15px">
-                <div style="float: left">{{annotation.updated | date: 'dd/MM/yyyy HH:mm:ss'}}</div>
+                <div style="float: left"> <span ng-bind-html="annotation.updated | time_in_string | to_trusted"></span></div>
                 <div style="float: right">
+                    <span ng-click="addToStorageForFocus2Comment();navigateTo('/annotation/display/{{annotation.id}}/')" style="margin-right: 10px;" class="make_comment">
+                        <span style="color: #00f;margin-right: 10px;">Yorum Yaz</span><i class="fa fa-comment"></i> {{annotation.commentCount}}
+                    </span>
+                    <span ng-class="{'voted-like': (annotation.vote != null && annotation.vote.content == 1), 'unvoted' : !(annotation.vote != null && annotation.vote.content == 1)}"
+                          ng-click="doVote(annotation,'annotations', 1)">
+                        <i class="fa fa-thumbs-up"></i> {{annotation.voteRates.like}}
+                    </span>
+                    <span ng-class="{'voted-dislike': (annotation.vote != null && annotation.vote.content == 0), 'unvoted' : !(annotation.vote != null && annotation.vote.content == 0)}"
+                          ng-click="doVote(annotation,'annotations', 0)">
+                        <i class="fa fa-thumbs-down"></i> {{annotation.voteRates.dislike}}
+                    </span>
+                    <button type="button" class="btn btn-primary btn-xs"
+                            ng-disabled="(annotation.voteRates.dislike + annotation.voteRates.like) == 0"
+                            ng-click="showVoteResults(annotation, 'annotations')">
+                        Değerlendirenler
+                    </button>
                     <button type="button" class="btn btn-primary btn-xs" ng-click="showEditor(annotation)"
                             ng-if="annotation.userId==user.id"><i
                             class="fa fa-pencil-square-o "></i>

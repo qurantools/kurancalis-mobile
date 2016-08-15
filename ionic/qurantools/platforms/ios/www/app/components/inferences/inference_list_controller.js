@@ -1,6 +1,6 @@
 angular.module('ionicApp')
 
-    .controller('InferenceListController', function ($scope, $routeParams, Facebook, Restangular, $location, authorization, localStorageService, $ionicModal, $timeout, $ionicScrollDelegate) {
+    .controller('InferenceListController', function ($scope, $routeParams, Facebook, Restangular, $location, authorization, localStorageService, $ionicModal, $timeout, $ionicScrollDelegate, navigationManager) {
         console.log("Inference List Controller");
         /* facebook login */
         $scope.fbLoginStatus = 'disconnected';
@@ -520,15 +520,10 @@ angular.module('ionicApp')
                     $timeout(function () {
                         $scope.scrollDelegateTop(modal.id);
                     });
-                    if (!config_data.isNative){
-                        if ($scope.showBanner){
-                            $('.modal-backdrop').addClass('showBanner');
-                        }else{
-                            $('.modal-backdrop').addClass('hideBanner');
-                        }
-                    }
                 }
             });
+
+            navigationManager.reset();
 
         };
 

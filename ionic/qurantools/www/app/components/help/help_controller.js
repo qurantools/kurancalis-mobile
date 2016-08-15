@@ -4,6 +4,8 @@ angular.module('ionicApp')
         $scope.title = "Yardım";
         $scope.helpController = this;
         $scope.helpController.API = null;
+        $scope.appVersion = config_data.version;
+        $scope.generatTurorialID="leftmenu";
 
         $scope.menuList = [
             {
@@ -14,8 +16,7 @@ angular.module('ionicApp')
                         id: 21,
                         title: "Sol Menü",
                         source: [{
-                            //src: $sce.trustAsResourceUrl("../../assets/img/help/mobile/menu_icerigi.mp4"),
-                            src: $sce.trustAsResourceUrl("../../assets/img/help/mobile/videogular.mp4"),
+                            src: "../../assets/img/help/mobile/menu_icerigi.mp4",
                             type: "video/mp4"
                         }]
                     },
@@ -27,6 +28,7 @@ angular.module('ionicApp')
                             type: "video/mp4"
                         }]
                     },
+
                 ]
             },
             {
@@ -38,7 +40,7 @@ angular.module('ionicApp')
                         id: 12,
                         title: "Intro-2",
                         source: [{
-                            src: $sce.trustAsResourceUrl("../../assets/img/help/mobile/sure_alt_menu.mp4"),
+                            src: "../../assets/img/help/mobile/sure_alt_menu.mp4",
                             type: "video/mp4"
                         }]
                     },
@@ -55,6 +57,22 @@ angular.module('ionicApp')
                         title: "Intro-4",
                         source: [{
                             src: $sce.trustAsResourceUrl("../../assets/img/help/mobile/suredeki_ayet_notlari.mp4"),
+                            type: "video/mp4"
+                        }]
+                    },
+                    {
+                        id: 15,
+                        title: "Intro-5",
+                        source: [{
+                            src: $sce.trustAsResourceUrl("../../assets/img/help/mobile/ayet_gecmisi.mp4"),
+                            type: "video/mp4"
+                        }]
+                    },
+                    {
+                        id: 15,
+                        title: "Intro-6",
+                        source: [{
+                            src: $sce.trustAsResourceUrl("../../assets/img/help/mobile/burada_kaldim.mp4"),
                             type: "video/mp4"
                         }]
                     }
@@ -124,10 +142,22 @@ angular.module('ionicApp')
 
         $scope.runHelpModal = function (id, isCallFromHelpMenu) {
 
-            if (!config_data.isNative && !isCallFromHelpMenu) {
+            //if (!config_data.isNative && !isCallFromHelpMenu) {
+            //    return;
+            //}
+
+            //do not overlap
+            if(this.help_modal.isShown()){
                 return;
             }
+
             if (!isCallFromHelpMenu) {
+                if($scope.checkGeneralTutorial()){
+                    $scope.runHelpModal($scope.generatTurorialID,true);
+                    return;
+                }
+
+
                 var isRunBefore = localStorageService.get('help_modal_tutorial_' + id);
                 if (isRunBefore === null) {
                     localStorageService.set('help_modal_tutorial_' + id, "true");
@@ -145,10 +175,12 @@ angular.module('ionicApp')
             if ($scope.selectedMenu == -1) {
                 return;
             }
-            $scope.selectedIndex = 0;
+            $scope.selectedIndex = -1;
             $scope.scopeApply();
             $scope.help_modal.show();
-
+            $timeout(function(){
+                $scope.selectedIndex++;
+            },900);
         };
 
         $scope.closeModal = function () {
@@ -198,7 +230,9 @@ angular.module('ionicApp')
         };
 
         $scope.onPlayerReady = function (API) {
+            console.log("onPlayerReady");
             $scope.helpController.API = API;
+            $scope.vgChangeSource();
         };
 
         $scope.vgChangeSource = function (source) {

@@ -4,7 +4,6 @@
         <ion-nav-bar animation="nav-title-slide-ios7" class="bar-balanced">
             <ion-nav-buttons side="left">
                 <button menu-toggle="left" class="button button-icon icon ion-navicon"></button>
-                <button class="button button-icon icon ion-android-arrow-dropdown-circle"  ng-click="openMenuModal()"></button>
                 <input type="hidden" ng-model="chapter_id"/>
                 <input type="hidden" ng-model="author_mask"/>
                 <!--author_mask:{{author_mask}}-->
@@ -17,6 +16,7 @@
                 <button class="button button-positive" ng-click="login()" ng-if="user==null && isConnected==true">Facebook ile Giriş</button>
                 <a href ng-click="openVerseHistory()" class="button button-icon icon fa fa-history" ng-if="user!=null"></a>
                 <a href ng-click="openModal('annotations_on_page')" class="button button-icon icon ion-clipboard" ng-if="user!=null"></a>
+                <button class="button button-icon icon ion-more"  ng-click="openMenuModal()"></button>
             </ion-nav-buttons>
         </ion-nav-bar>
         <ion-nav-buttons side="left">
@@ -30,7 +30,7 @@
                          style="margin-top:30px;">
                 <div class="row" delegate-handle="content">
                     <div class="col-xs-12 bb" id="translations" style="min-height: 1200px">
-                    <h4 style="text-align: center">{{chapter_title}}</h4>
+                        <h4 style="text-align: center">{{chapter_title}}</h4>
                         <div ng-repeat="verse in verses">
                             <div class="well translations col-xs-12" id="v_{{verse.id}}">
                                 <div ng-repeat="translation in verse.translations" class="selectable">
@@ -56,12 +56,12 @@
                                        &nbsp;
                                     </div>
                                 </div>
+                                <hr style="height:1px;border:none;color:#333;background-color:#333;margin-top: 3px !important;margin-bottom: 3px !important;width: 90% !important" />
                                 <div ng-if="verseTagsJSON[verse.id].tags.length>0" style="text-align: right;width: 100% !important">
-                                    <hr style="height:1px;border:none;color:#333;background-color:#333;margin-top: 3px !important;margin-bottom: 3px !important;width: 90% !important" />
                                     <button ng-repeat="verseTag in verseTagsJSON[verse.id].tags"
                                             class="tag label label-info s_a_tag btn btn-xs btn-info verse_tag"
                                             style="border:0;"
-                                            ng-click="goToVerseTag(verse.translations[0].authorId,verse.id,verseTag.tag, query_users, query_circles)">
+                                            ng-click="goToVerseTag(0,verse.id,verseTag.tag, query_users, query_circles)">
                                         {{verseTag.tag}}
                                     </button>
                                 </div>

@@ -169,14 +169,6 @@ var app = angular.module('ionicApp', requiredModules)
             }
             if(config_data.isMobile && config_data.isNative ){
 
-                /*var type = $cordovaNetwork.getNetwork();
-
-
-                var isOnline = $cordovaNetwork.isOnline();
-
-                var isOffline = $cordovaNetwork.isOffline();
-*/
-
                 // listen for Online event
                 $rootScope.$on('$cordovaNetwork:online', function(event, networkState){
                     $rootScope.$broadcast('onlineNetworkConnection');
@@ -244,47 +236,7 @@ if (config_data.isMobile == false) { //false
     app.config(function ($routeProvider, FacebookProvider, RestangularProvider, localStorageServiceProvider, $httpProvider) {
         RestangularProvider.setBaseUrl(config_data.webServiceUrl);
         localStorageServiceProvider.setStorageCookie(0, '/');
-        /*
-        $httpProvider.interceptors.push(function ($q, $injector, $rootScope) {
-            var isConfirmPopupCalledBefore = false;
-            var isDisplay = false;
-            var regex = /.*(html?|js|css|png|je?pg|video|audio)$/;
-            return {
-                'response' : function (response){
-                    if (isDisplay && !regex.test(response.config.url)){
-                        $rootScope.$broadcast('onlineNetworkConnection');
-                        isConfirmPopupCalledBefore = !isConfirmPopupCalledBefore;
-                        isDisplay = false;
-                    }
-                    return response;
-                },
-                'responseError': function (rejection) {
-                    var $route = $injector.get('$route');
-                    var $modal = $injector.get('$modal');
-                    if (rejection.status == 0 && !isConfirmPopupCalledBefore) {
-                        isConfirmPopupCalledBefore = true;
-                        $modal.open({
-                            templateUrl: 'app/components/templates/no_internet_connection_modal.html',
-                            controller: function($scope, $modalInstance){
-                                $scope.retry = function() {
-                                    $modalInstance.close();
-                                    $route.reload();
-                                };
-                                $scope.cancel = function() {
-                                    $modalInstance.dismiss();
-                                };
-                            }
-                        });
-                    }
-                    if (rejection.status == 0 ){
-                        $rootScope.$broadcast('offlineNetworkConnection', rejection);
-                        isDisplay = true;
-                    }
-                    return $q.reject(rejection);
-                }
-            }
-        });
-*/
+
         //route
         $routeProvider
             .when('/translations/', {
@@ -401,6 +353,12 @@ if (config_data.isMobile == false) { //false
                 pageTitle: 'Kuran Çalış - Yardım'
 
             })
+            .when('/help/about/',{
+                controller:'HelpController',
+                templateUrl:'app/components/help/about.html',
+                pageTitle: 'Kuran Çalış - Hakkında'
+
+            })
             //.when('/:chapter/:verse', {
             //    redirectTo: '/translations?chapter=:chapter&verse=:verse&author=1040'
             //})
@@ -434,49 +392,7 @@ if (config_data.isMobile == false) { //false
             }else {
                 RestangularProvider.setBaseUrl(config_data.webServiceUrl);
                 localStorageServiceProvider.setStorageCookie(0, '/');
-                //route
-/*
-                $httpProvider.interceptors.push(function ($q, $injector, $rootScope) {
-                    var isConfirmPopupCalledBefore = false;
-                    var isDisplay = false;
-                    var regex = /.*\.(html?|js|css|png|jpg|jepg|video|audio|mp4)$/;
-                    return {
-                        'response' : function (response){
-                            if (isDisplay && !regex.test(response.config.url)){
-                                $rootScope.$broadcast('onlineNetworkConnection');
-                                isConfirmPopupCalledBefore = !isConfirmPopupCalledBefore;
-                                isDisplay = false;
-                            }
-                            return response;
-                        },
-                        'responseError': function (rejection) {
-                            var $route = $injector.get('$route');
-                            var $ionicPopup = $injector.get('$ionicPopup');
-                            alert(rejection.config.url);
-                            if (rejection.status == 0 && !isConfirmPopupCalledBefore) {
-                                isConfirmPopupCalledBefore = true;
-                                var confirmPop = $ionicPopup.confirm({
-                                    title: 'Internet Bağlantı Problemi!',
-                                    template: 'İnternet bağlantınız bulunmamaktadır. Yapabileceğiniz İşlemler kısıtlıdır.',
-                                    cancelText: 'DEVAM',
-                                    okText: 'YENİDEN DENE'
-                                });
 
-                                confirmPop.then(function (res) {
-                                    if (res) {
-                                        $route.reload();
-                                    }
-                                });
-                            }
-                            if (rejection.status == 0 ){
-                                $rootScope.$broadcast('offlineNetworkConnection', rejection);
-                                isDisplay = true;
-                            }
-                            return $q.reject(rejection);
-                        }
-                    };
-                });
-*/
                 //route
                 $routeProvider
                     .when('/translations/', {
@@ -529,6 +445,12 @@ if (config_data.isMobile == false) { //false
                         controller:'HelpController',
                         templateUrl:'components/help/index.html',
                         pageTitle: 'Kuran Çalış - Yardım'
+                    })
+                    .when('/help/about/',{
+                        controller:'HelpController',
+                        templateUrl:'components/help/about.html',
+                        pageTitle: 'Kuran Çalış - Hakkında'
+
                     })
                     .when('/login/',{
                         controller:'LoginController',
@@ -881,6 +803,10 @@ app.factory('ChapterVerses', function ($resource) {
 
             $scope.$broadcast('login', responseData);
             $scope.$broadcast('userInfoReady');
+            console.log("location:"+$location.path() );
+            if($location.path() == "/login/"){
+                $location.path('/');
+            }
         }
     };
 
@@ -1511,14 +1437,12 @@ app.factory('ChapterVerses', function ($resource) {
                 $scope.chapters = data;
                 localStorageService.set('chapters', data);
                 localStorageService.set('chaptersVersion', chaptersVersion);
-                console.log("retiieve chapters: "+$scope.chapters);
                 if(callbackFunction != null){
                     callbackFunction();
                 }
             });
         } else {
             $scope.chapters = localChapters;
-            console.log($scope.chapters);
             if(callbackFunction != null){
                 callbackFunction();
             }
@@ -1648,6 +1572,20 @@ app.factory('ChapterVerses', function ($resource) {
 
     };//end of init controller
 
+
+    $scope.checkGeneralTutorial = function () {
+        var oldVersion=localStorageService.get("appVersion");
+        var currentVersion = config_data.version;
+        if(oldVersion!=currentVersion){
+            localStorageService.set("appVersion",currentVersion);
+            return true;
+        }
+        else{
+            return false;
+        }
+    };
+
+
     $scope.isAllowUrlWithoutLogin = function(){
         var url = $location.path();
         if (url.indexOf('/inference/display/')>-1){
@@ -1774,9 +1712,11 @@ app.factory('ChapterVerses', function ($resource) {
     };
     
     $scope.displayTutorial = function (id){
+        console.log("Display tutorial called");
         $timeout(function(){
+            console.log("Display tutorial broadcaast");
             $scope.$broadcast("displayTutorial",{id:id})
-        },2000);  
+        },4000);
     };
 
     $scope.initRoute();

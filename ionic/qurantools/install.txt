@@ -39,3 +39,41 @@ ionic plugin add org.apache.cordova.inappbrowser
     </dict>
 
 
+Bitcode derleme hatasi
+FYI I fixed/worked-arround this by disabling bitcode, (xcode > build settings > bitcode).
+
+
+facebook 
+<key>LSApplicationQueriesSchemes</key>
+<array>
+    <string>fbapi</string>
+    <string>fbapi20130214</string>
+    <string>fbapi20130410</string>
+    <string>fbapi20130702</string>
+    <string>fbapi20131010</string>
+    <string>fbapi20131219</string>    
+    <string>fbapi20140410</string>
+    <string>fbapi20140116</string>
+    <string>fbapi20150313</string>
+    <string>fbapi20150629</string>
+    <string>fbauth</string>
+    <string>fbauth2</string>
+    <string>fb-messenger-api20140430</string>
+</array>
+
+
+
+Base localization
+First, you need to go to your storyboard file, open the bar on the right side, 
+and go to Show the File Inspector, the furthest tab to the left. Then, scroll down 
+and click localize. After this, when you check Use Base Localization, you should see 
+the storyboard appear.
+
+Localize dedikten sonra Project > Info > Localization bolumunden base olarak kullanilabilecek
+dilleri secip eklemelisin.
+
+
+
+
+ANDROID:
+xml dosyasindan uygulama ismi duzeltilmeli
