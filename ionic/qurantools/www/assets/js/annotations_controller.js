@@ -1,5 +1,5 @@
 angular.module('ionicApp')
-    .controller('AnnotationsCtrl', function ($scope, $routeParams, Facebook, Restangular, $location, authorization, localStorageService, $ionicModal, $ionicPopup, $timeout, $ionicScrollDelegate) {
+    .controller('AnnotationsCtrl', function ($scope, $routeParams, Facebook, Restangular, $location, authorization, localStorageService, $ionicModal, $ionicPopup, $timeout, $ionicScrollDelegate, $translate) {
         console.log("annotations ctrl");
         $scope.allAnnotationsOrderBy = 'verse';
 
@@ -318,10 +318,10 @@ angular.module('ionicApp')
 
             if (config_data.isMobile) {
                 var confirmPopup = $ionicPopup.confirm({
-                    title: 'Ayet Notu Sil',
-                    template: 'Ayet notu silinecektir, onaylıyor musunuz?',
-                    cancelText: 'VAZGEC',
-                    okText: 'TAMAM',
+                    title: $translate.instant('Ayet Notu Sil'),
+                    template: $translate.instant('Ayet notu silinecektir, onaylıyor musunuz?'),
+                    cancelText: $translate.instant('VAZGEC'),
+                    okText: $translate.instant('TAMAM'),
                     okType: 'button-assertive'
                 });
                 confirmPopup.then(function (res) {
@@ -688,6 +688,6 @@ angular.module('ionicApp')
         };
 
         $scope.initAnnotationsParameters();
-        $scope.displayTutorial("annotations");
+        //$scope.displayTutorial("annotations");
 
     });

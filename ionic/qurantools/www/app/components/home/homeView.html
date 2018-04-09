@@ -21,51 +21,68 @@
                                     <div class="translation_nav_col1" style="font-size:20px;">
                                         {{translation.chapter}}:{{translation.verse}}
                                     </div>
-                                    <div><img src="assets/img/sticky-note.png" width="20" height="20" ng-if="verseHasAnnotation(verse.id)" ng-click="showVerseAnnotations({{verse.id}})"></div>
+                                    <div>
+                                        <div ng-if="loadingVerse == verse.id" style="text-align: center"><img src="assets/img/loading.gif" width="20" height="20"></div>
+                                        <img src="assets/img/sticky-note.png" width="20" height="20" ng-if="user!=null && !show_verse_annotations || verseHasAnnotation(verse.id)" ng-show="loadingVerse != verse.id" ng-click="showVerseAnnotations({{verse.id}})">
+                                    </div>
                                 </div>
                                 <div class="row">
                                     <div class="translation_nav_col1">
                                         <a href ng-click="scrollToVerse('{{verse.id+1}}')"><i class="fa fa-caret-down fa-2x"></i></a>
                                     </div>
                                   <div>
-                                    <a ng-click="popoveropen()" tabindex="0" role="button" data-toggle="popover"  data-content="
+                                    <a ng-click="popoveropen()" tabindex="0" role="button" data-toggle="popover" data-content="
                                     <div class='form-control' style='width:220px; height:auto'>
-                                        <a href><div style='width:100%; height: 40px; padding-top:8px;' ng-click='linkcreate({{translation.chapter}},{{translation.verse}})' data-target='#openlink' data-toggle='modal'><i class='fa fa-crosshairs' style='font-size: 1.3em'></i>&nbsp;&nbsp;&nbsp;&nbsp;Kelime Meali</div></a>
-                                        <hr style='padding: 0; margin-top:0 !important; margin-bottom:0 !important; height:1px; width:100%'/>
-                                        <a ng-if='user!=null' href><div style='width:100%; height: 40px; padding-top:8px;' data-target='#bookmark' data-toggle='modal' ng-click='openAddBookMarkModal({{verse.id}})'><i class='fa fa-bookmark' style='font-size: 1.3em'></i>&nbsp;&nbsp;&nbsp;&nbsp;Burada Kaldım</div></a>
+                                        <a ng-if='user!=null' href><div style='width:100%; height: 40px; padding-top:8px;' ng-click='onCustomAdderClick({{verse.id}})' data-target='#annotationModal' data-toggle='modal'><i class='fa fa-pencil-square-o' style='font-size: 1.3em'></i>&nbsp;&nbsp;&nbsp;&nbsp;{{'Not Ekle' | translate}}</div></a>
                                         <hr ng-if='user!=null' style='padding: 0; margin-top:0 !important; margin-bottom:0 !important; height:1px; width:100%' />
-                                        <a href><div style='width:100%; height: 40px; padding-top:8px;' data-target='#detailedVerseModal' data-toggle='modal' ng-click='showVerseDetail({{verse.id}}, {{query_users}}, {{query_circles}})'><i class='fa fa-eye' style='font-size: 1.3em'></i>&nbsp;&nbsp;&nbsp;&nbsp;Ayet İnceleme</div></a>
+                                        <a ng-if='user!=null' href><div style='width:100%; height: 40px; padding-top:8px;' ng-click='showVerseAnnotations({{verse.id}})'><i class='fa fa-edit' style='font-size: 1.3em'></i>&nbsp;&nbsp;&nbsp;&nbsp;{{'Ayete Ait Notlar' | translate}}</div></a>
+                                        <hr ng-if='user!=null' style='padding: 0; margin-top:0 !important; margin-bottom:0 !important; height:1px; width:100%' />
+                                        <a href><div style='width:100%; height: 40px; padding-top:8px;' ng-click='linkcreate({{translation.chapter}},{{translation.verse}})' data-target='#openlink' data-toggle='modal'><i class='fa fa-crosshairs' style='font-size: 1.3em'></i>&nbsp;&nbsp;&nbsp;&nbsp;{{'Kelime Meali' | translate}}</div></a>
+                                        <hr style='padding: 0; margin-top:0 !important; margin-bottom:0 !important; height:1px; width:100%'/>
+                                        <a ng-if='user!=null' href><div style='width:100%; height: 40px; padding-top:8px;' data-target='#bookmark' data-toggle='modal' ng-click='openAddBookMarkModal({{verse.id}})'><i class='fa fa-bookmark' style='font-size: 1.3em'></i>&nbsp;&nbsp;&nbsp;&nbsp;{{'Burada Kaldım' | translate}}</div></a>
+                                        <hr ng-if='user!=null' style='padding: 0; margin-top:0 !important; margin-bottom:0 !important; height:1px; width:100%' />
+                                        <a href><div style='width:100%; height: 40px; padding-top:8px;' data-target='#detailedVerseModal' data-toggle='modal' ng-click='showVerseDetail({{verse.id}}, {{query_users}}, {{query_circles}})'><i class='fa fa-eye' style='font-size: 1.3em'></i>&nbsp;&nbsp;&nbsp;&nbsp;{{'Ayet İnceleme' | translate}}</div></a>
                                         <hr style='padding: 0; margin-top:0 !important; margin-bottom:0 !important; height:1px; width:100%' />
-                                        <a ng-if='user!=null' href><div style='width:100%; height: 40px; padding-top:8px;' data-target='#addVerseToVerseListModal' data-toggle='modal' ng-click='addVerseToVerseList({{verse.id}})'><i class='fa fa-plus-circle' style='font-size: 1.3em'></i>&nbsp;&nbsp;&nbsp;&nbsp;Ayeti Listeye Ekle</div></a>
-                                        <hr ng-if='user!=null' style='display: none; padding: 0; margin-top:0 !important; margin-bottom:0 !important; height:1px; width:100%' />
+                                        <a ng-if='user!=null' href><div style='width:100%; height: 40px; padding-top:8px;' data-target='#addVerseToVerseListModal' data-toggle='modal' ng-click='addVerseToVerseList({{verse.id}})'><i class='fa fa-plus-circle' style='font-size: 1.3em'></i>&nbsp;&nbsp;&nbsp;&nbsp;{{'Ayeti Listeye Ekle' | translate}}</div></a>
+                                        <hr ng-if='user!=null' style='padding: 0; margin-top:0 !important; margin-bottom:0 !important; height:1px; width:100%' />
+                                        <a ng-if='user!=null' href><div style='width:100%; height: 40px; padding-top:8px;' ng-click='openPopover({{verse.id}})' data-toggle='modal' data-target='#social_share_modal' ><i class='fa fa-share-alt' style='font-size: 1.3em'></i>&nbsp;&nbsp;&nbsp;&nbsp;{{'Ayeti Paylaş' | translate}}</div></a>
                                     </div>
-                                    " data-html="true"><i data-toggle="popover"  class="fa fa-ellipsis-h large_icon" ></i></a>
+                                        " data-html="true"><i data-toggle="popover"  class="fa fa-ellipsis-h large_icon" ></i></a>
+
                                     </div>
                                    
                                 </div>
                             </div>
                             
                             <div class="col-xs-1" ng-if="$first" style="text-align: center" ng-show="showSingleAuthor">
-                                <div class="chapter_verse_number">{{translation.chapter}}:{{translation.verse}} <img src="assets/img/sticky-note.png" width="25" height="25" ng-if="verseHasAnnotation(verse.id)" ng-click="showVerseAnnotations({{verse.id}})"></div>
+                                <div class="chapter_verse_number">
+                                    {{translation.chapter}}:{{translation.verse}}
+                                    <div ng-if="loadingVerse == verse.id" style="text-align: center"><img src="assets/img/loading.gif" width="25" height="25"></div>
+                                    <img src="assets/img/sticky-note.png" width="25" height="25" ng-if="user!=null && !show_verse_annotations || verseHasAnnotation(verse.id)" ng-show="loadingVerse != verse.id" ng-click="showVerseAnnotations({{verse.id}})">
+                                </div>
                             </div>
                             <div class="col-xs-11" id="t_{{translation.id}}" style="float: right">
                                 <div class="col-xs-3 authorDiv_{{authorMap[translation.authorId].color}}"
                                      ng-show="!showSingleAuthor">
-                                    <span class="author"><a href ng-click="singleAuthorView({{translation.authorId}},{{verse.id}})">(-)</a></span>{{authorMap[translation.authorId].name}}
+                                    <span class="author"><a href ng-click="singleAuthorView({{translation.authorId}},{{verse.id}})">(-)</a></span> {{authorMap[translation.authorId].name}}
                                 </div>
                                 <div class="col-xs-3 authorDiv_{{authorMap[translation.authorId].color}}"
                                      ng-show="selectedSingleAuthor==translation.authorId">
-                                    <span class="author"><a href ng-click="multipleAuthorsView({{verse.id}})">(+)</a></span>{{authorMap[translation.authorId].name}}
+                                    <span class="author"><a href ng-click="multipleAuthorsView({{verse.id}})">(+)</a></span> {{authorMap[translation.authorId].name}}
                                     | 
                                     <a ng-click="popoveropen()" tabindex="0" role="button" data-toggle="popover"  data-content="
                                     <div class='form-control' style='width:220px; height:auto'>
-                                        <a href><div style='width:100%' ng-click='linkcreate({{translation.chapter}},{{translation.verse}})' data-target='#openlink' data-toggle='modal'>Kelime Meali</div></a>
-                                        <hr style='width:100%' />
-                                        <a ng-if='user!=null' href><div style='width:100%' data-target='#bookmark' data-toggle='modal' ng-click='openAddBookMarkModal({{verse.id}})'>Burada Kaldım</div></a>
+                                        <a ng-if='user!=null' href><div style='width:100%' ng-click='onCustomAdderClick({{verse.id}})' data-target='#annotationModal' translate>Not Ekle</div></a>
                                         <hr ng-if='user!=null' style='width:100%' />
-                                        <a href><div style='width:100%;' data-target='#detailedVerseModal' data-toggle='modal' ng-click='showVerseDetail({{verse.id}}, {{query_users}}, {{query_circles}})'>Ayet İnceleme</div></a>
+                                        <a ng-if='user!=null' href><div style='width:100%' ng-click='showVerseAnnotations({{verse.id}})' translate>Ayete Ait Notlar</div></a>
+                                        <hr ng-if='user!=null' style='width:100%' />
+                                        <a href><div style='width:100%' ng-click='linkcreate({{translation.chapter}},{{translation.verse}})' data-target='#openlink' data-toggle='modal' translate>Kelime Meali</div></a>
+                                        <hr style='width:100%' />
+                                        <a ng-if='user!=null' href><div style='width:100%' data-target='#bookmark' data-toggle='modal' ng-click='openAddBookMarkModal({{verse.id}})' translate>Burada Kaldım</div></a>
+                                        <hr ng-if='user!=null' style='width:100%' />
+                                        <a href><div style='width:100%;' data-target='#detailedVerseModal' data-toggle='modal' ng-click='showVerseDetail({{verse.id}}, {{query_users}}, {{query_circles}})' translate>Ayet İnceleme</div></a>
                                         <hr style='width:100%'/>
-                                        <a ng-if='user!=null' href><div style='width:100%;' data-target='#addVerseToVerseListModal' data-toggle='modal' ng-click='addVerseToVerseList({{verse.id}})'>Ayeti Listeye Ekle</div></a>
+                                        <a ng-if='user!=null' href><div style='width:100%;' data-target='#addVerseToVerseListModal' data-toggle='modal' ng-click='addVerseToVerseList({{verse.id}})' translate>Ayeti Listeye Ekle</div></a>
                                     </div>" data-html="true"><i data-toggle="popover" class="fa fa-ellipsis-h large_icon" ></i></a>
                                   
                                 </div>
@@ -104,8 +121,10 @@
 
 </div>
 <!-- /container-->
-
-
+<div ng-include="'app/components/user/login_modal.html'"></div>
+<div ng-include="'app/components/user/create_account_modal.html'"></div>
+<div ng-include="'app/components/user/reset_password_request_modal.html'"></div>
+<div ng-include="'app/components/user/set_password_modal.html'"></div>
 <div ng-include="'app/components/partials/authors_modal.html'"></div>
 <div ng-include="'app/components/partials/detailed_search.html'"></div>
 <div class="cd-panel from-right" id="cd-panel-right">
@@ -122,15 +141,15 @@
                         ng-show='filterSingleAnnotation || searchText!=""' style="float: right; height: 30px;">
                     <i
                             class="fa fa-trash-o"></i>
-                    Filtreyi kaldır</button>
+                    {{'Filtreyi kaldır' | translate}}</button>
                 <div style="display: block;">
                     <!--    <input ng-model="searchText" />-->
-                    <input style="width: 150px; height: 30px;" type="text" placeholder="ara" ng-model="searchText"
+                    <input style="width: 150px; height: 30px;" type="text" placeholder="{{'ara' | translate}}" ng-model="searchText"
                            ng-change="resetFilteredAnnotations()">
                     <select ng-model="filterOrderSelect" ng-init="filterOrderSelect='verseId'"
                             ng-change="annotationFilterOrder(filterOrderSelect)" style="height: 30px;">
-                        <option value="verseId">Ayet</option>
-                        <option value="-updated">Zaman</option>
+                        <option value="verseId" translate>Ayet</option>
+                        <option value="-updated" translate>Zaman</option>
                     </select>
                 </div>
 
@@ -140,8 +159,8 @@
                  class="sidebar_annotation box"
                  ng-click="scrollToElmnt('t_'+annotation.translationId)">
                 <!-- s_a -->
-                <div class="s_a_header">
-                    {{annotation.verseId / 1000 | number:0}}:{{annotation.verseId % 1000}}
+                <div class="s_a_header flexbox-container">
+                    <div><a  href="" ng-click="showVerseDetail(annotation.verseId, [], [])" data-target="#detailedVerseModal" data-dismiss="modal" data-toggle="modal" style="float:left; color: darkblue;">{{annotation.verseId / 1000 | number:0}}:{{annotation.verseId % 1000}}</a></div>
                     <div style="float:right;"><a  href="" ng-click="navigateTo('/profile/user/{{annotation.userId}}/')" style="color: darkblue;">{{annotation.userName | limitTo: 25}}</a></div>
                 </div>
                 <div>
@@ -150,14 +169,19 @@
                 <div class="s_a_text">
                     <span ng-bind-html="annotation.text | newLineAllowed | to_trusted"></span>
                 </div>
-                <div ng-repeat="annotationTag in annotation.tags" class="tag label label-info s_a_tag">
-                    {{annotationTag}}
+                <div ng-repeat="annotationTag in annotation.tags" class="tag label label-info s_a_tag" style="white-space: normal">
+                    <a  href="" ng-click="goToVerseTag(0, annotation.verseId, annotationTag, query_users, query_circles)" data-target="#taggedVerseModal" data-dismiss="modal" data-toggle="modal" style="background-color: #3498DB; color: white">{{annotationTag}}</a>
                 </div>
                 <div class="row" style="padding:0 15px">
                     <div style="float: left"><span ng-bind-html="annotation.updated | time_in_string | to_trusted"></span></div>
                     <div style="float: right">
+                        <!--
                         <span ng-click="addToStorageForFocus2Comment();navigateTo('/annotation/display/{{annotation.id}}/')" style="margin-right: 10px;" class="make_comment">
-                            <span style="color: #00f;margin-right: 10px;">Yorum Yaz</span><i class="fa fa-comment"></i> {{annotation.commentCount}}
+                            <span style="color: #00f;margin-right: 10px;" translate>Yorum Yaz</span><i class="fa fa-comment"></i> {{annotation.commentCount}}
+                        </span>
+                        -->
+                        <span>
+                            <a  href="" ng-click="navigateTo('/annotation/display/{{annotation.annotationId}}/')" style="margin-right: 10px; color: darkblue;" translate>Nota Git</a>
                         </span>
                         <span ng-class="{'voted-like': (annotation.vote != null && annotation.vote.content == 1), 'unvoted' : !(annotation.vote != null && annotation.vote.content == 1)}"
                               ng-click="doVote(annotation,'annotations', 1)">
@@ -170,7 +194,7 @@
                         <button type="button" class="btn btn-primary btn-xs"
                                 ng-disabled="(annotation.voteRates.dislike + annotation.voteRates.like) == 0"
                                 ng-click="showVoteResults(annotation, 'annotations')">
-                            Değerlendirenler
+                            {{'Değerlendirenler' | translate}}
                         </button>
                         <button type="button" class="btn btn-primary btn-xs" ng-click="editAnnotation($index)"
                                 ng-if="annotation.userId==user.id"><i
@@ -190,5 +214,5 @@
 </div>
 <!-- cd-panel -->
 <div ng-include="'app/components/partials/off_canvas_menu.html'"></div>
-<div ng-include="'app/components/partials/tutorial_modal.html'"></div>
+<div ng-if="isTutorialActive" ng-include="'app/components/partials/tutorial_modal.html'"></div>
 </body>

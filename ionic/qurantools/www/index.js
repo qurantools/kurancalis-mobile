@@ -1,4 +1,4 @@
-var requiredModules = ['ionic', 'ngResource', 'ngRoute', 'facebook', 'restangular', 'LocalStorageModule', 'ngTagsInput', 'duScroll', 'directives.showVerse', 'directives.repeatCompleted', 'ui.select', 'myConfig', 'authorizationModule','djds4rce.angular-socialshare', 'ngSanitize', 'com.2fdevs.videogular','com.2fdevs.videogular.plugins.controls','com.2fdevs.videogular.plugins.overlayplay','com.2fdevs.videogular.plugins.poster', 'ngCordova','ui.tinymce', 'ui.bootstrap', 'ion-affix', 'infinite-scroll', 'ngCordova.plugins.appAvailability'];
+var requiredModules = ['ionic', 'ngResource', 'ngRoute', 'facebook', 'restangular', 'LocalStorageModule', 'ngTagsInput', 'duScroll', 'directives.showVerse', 'directives.repeatCompleted', 'ui.select', 'myConfig', 'authorizationModule','djds4rce.angular-socialshare', 'ngSanitize', 'com.2fdevs.videogular','com.2fdevs.videogular.plugins.controls','com.2fdevs.videogular.plugins.overlayplay','com.2fdevs.videogular.plugins.poster', 'ngCordova','ui.tinymce', 'ui.bootstrap', 'ion-affix', 'infinite-scroll', 'ngCordova.plugins.appAvailability', 'pascalprecht.translate', 'ngCookies', 'ui-notification', 'ngFileUpload'];
 
 if (config_data.isMobile) {
     var mobileModules = [];//'ionic'
@@ -26,13 +26,31 @@ var app = angular.module('ionicApp', requiredModules)
     .filter('with_footnote_link', [
         function () {
             return function (text, translation_id, author_id) {
-                return text.replace(/\*+/g, "<button style='border:0;' class='label label-dipnot btn  btn-xs' onclick='angular.element(document.getElementById(\"theView\")).scope().list_footnotes(" + translation_id + "," + author_id + ")'>dipnot</button>");
+                var phase = "";
+                if (localStorage.getItem("NG_TRANSLATE_LANG_KEY") === null ||
+                    localStorage.getItem("NG_TRANSLATE_LANG_KEY") === undefined ||
+                    localStorage.getItem("NG_TRANSLATE_LANG_KEY") === "tr") {
+                    phase = "dipnot";
+                } else {
+                    phase = "footnote";
+                }
+
+                return text.replace(/\*+/g, "<button style='border:0;' class='label label-dipnot btn  btn-xs' onclick='angular.element(document.getElementById(\"theView\")).scope().list_footnotes(" + translation_id + "," + author_id + ")'>" + phase + "</button>");
             };
         }])
     .filter('with_detailed_footnote_link', [  //filter for footnotes on detailed verse page
         function () {
             return function (text, translation_id, author_id) {
-                return text.replace(/\*+/g, "<button style='border:0;' class='label label-dipnot btn  btn-xs' onclick='angular.element(document.getElementById(\"detailedVerseModal\")).scope().list_detailed_footnotes(" + translation_id + "," + author_id + ")'>dipnot</button>");
+                var phase = "";
+                if (localStorage.getItem("NG_TRANSLATE_LANG_KEY") === null ||
+                    localStorage.getItem("NG_TRANSLATE_LANG_KEY") === undefined ||
+                    localStorage.getItem("NG_TRANSLATE_LANG_KEY") === "tr") {
+                    phase = "dipnot";
+                } else {
+                    phase = "footnote";
+                }
+
+                return text.replace(/\*+/g, "<button style='border:0;' class='label label-dipnot btn  btn-xs' onclick='angular.element(document.getElementById(\"detailedVerseModal\")).scope().list_detailed_footnotes(" + translation_id + "," + author_id + ")'>" + phase + "</button>");
             };
         }])
     .filter('with_next_link', [
@@ -41,7 +59,16 @@ var app = angular.module('ionicApp', requiredModules)
                 if(author_id!=262144){// if author isn't Hakkı Yılmaz
                     return text;
                 }else { // Hakkı Yılmaz
-                    var searchText='(Sonraki ';
+                    var phase = "";
+                    if (localStorage.getItem("NG_TRANSLATE_LANG_KEY") === null ||
+                        localStorage.getItem("NG_TRANSLATE_LANG_KEY") === undefined ||
+                        localStorage.getItem("NG_TRANSLATE_LANG_KEY") === "tr") {
+                        phase = '(Sonraki ';
+                    } else {
+                        phase = '(Next ';
+                    }
+
+                    var searchText=phase;
                     var nextLinkPosition = text.indexOf(searchText);
                     if (nextLinkPosition == -1) {// translation doesn't have next link
                         return text;
@@ -58,7 +85,7 @@ var app = angular.module('ionicApp', requiredModules)
                         }else{
                             linkHref='javascript: angular.element(document.getElementById(\'theView\')).scope().showVerseFromFootnote(\''+chapterVerse+'\','+author_id+','+translation_id+');';
                         }
-                        return text.substring(0,nextLinkPosition)+ ' (Sonraki ' + '<a href="'+linkHref+'">'+chapterVerse+'</a>)';
+                        return text.substring(0,nextLinkPosition)+ phase + '<a href="'+linkHref+'">'+chapterVerse+'</a>)';
                     }
                 }
             };
@@ -134,6 +161,14 @@ var app = angular.module('ionicApp', requiredModules)
     .filter('time_in_string',[
         function(){
             return function (milis){
+                var currentLanguage = "";
+                if (localStorage.getItem("NG_TRANSLATE_LANG_KEY") === null ||
+                    localStorage.getItem("NG_TRANSLATE_LANG_KEY") === undefined) {
+                    currentLanguage = "tr";
+                } else {
+                    currentLanguage = localStorage.getItem("NG_TRANSLATE_LANG_KEY");
+                }
+
                 var difference = new Date().getTime() - milis;
                 if(difference < 0) {
                     difference = 0;
@@ -141,16 +176,22 @@ var app = angular.module('ionicApp', requiredModules)
                 var minutes = Math.floor(difference / (1000 * 60));
                 var hours = Math.floor(difference / (1000 * 60 * 60));
                 var days = Math.floor(difference / (1000 * 60 * 60 * 24));
+                var yearText = currentLanguage == "tr" ? " yıl" : " year";
+                var monthText = currentLanguage == "tr" ? " ay" : " mo";
+                var dayText = currentLanguage == "tr" ? " gün" : " day";
+                var hourText = currentLanguage == "tr" ? " sa" : " ho";
+                var minuteText = currentLanguage == "tr" ? " dk" : " min";
+
                 if(days > 364){
-                    return Math.floor(days/364 ) + " yıl";
+                    return Math.floor(days/364 ) + yearText;
                 }else if (days > 30){
-                    return Math.floor(days/30) + " ay";
+                    return Math.floor(days/30) + monthText;
                 }else if (days >= 1){
-                    return (days) + " gün";
+                    return (days) + dayText;
                 }else if (hours >= 1){
-                    return (hours) + " sa";
+                    return (hours) + hourText;
                 }else {
-                    return minutes + " dk";
+                    return minutes + minuteText;
                 }
             }
         }
@@ -233,7 +274,7 @@ var app = angular.module('ionicApp', requiredModules)
 
 if (config_data.isMobile == false) { //false
     //desktop version
-    app.config(function ($routeProvider, FacebookProvider, RestangularProvider, localStorageServiceProvider, $httpProvider) {
+    app.config(function ($routeProvider, $locationProvider, FacebookProvider, RestangularProvider, localStorageServiceProvider, $httpProvider, $translateProvider, NotificationProvider) {
         RestangularProvider.setBaseUrl(config_data.webServiceUrl);
         localStorageServiceProvider.setStorageCookie(0, '/');
 
@@ -317,6 +358,12 @@ if (config_data.isMobile == false) { //false
                 reloadOnSearch: false,
                 pageTitle: 'Ayet Listelerim'
             })
+            .when('/verse/display/:verseId/', {
+                controller: 'VerseDisplayCtrl',
+                templateUrl: 'app/components/partials/verse_display.html',
+                reloadOnSearch: false,
+                pageTitle: 'Kuran Çalış - Ayet İnceleme'
+            })
             .when('/profile/user/', {
                 controller: 'ProfileController',
                 templateUrl: 'app/components/profile/friend.html',
@@ -340,6 +387,24 @@ if (config_data.isMobile == false) { //false
                 templateUrl: 'app/components/profile/circle.html',
                 reloadOnSearch: false,
                 pageTitle: 'Kuran Çalış - Çevre Zaman Tüneli'
+            })
+            .when('/user/account/reset_password/', {
+                 controller: 'AccountCtrl',
+                 templateUrl: 'app/components/user/set_password_modal.html',
+                 reloadOnSearch: false,
+                 pageTitle: 'Kuran Çalış - Şifre Sıfırlama'
+             })
+             .when('/user/account/settings/', {
+                controller: 'UserSettingsCtrl',
+                templateUrl: 'app/components/user/settings.html',
+                reloadOnSearch: false,
+                pageTitle: 'Kuran Çalış - Kullanıcı Ayarları'
+            })
+            .when('/user/account/edit_batch_notes/', {
+                controller: 'BulkEditCtrl',
+                templateUrl: 'app/components/user/edit_batch_notes.html',
+                reloadOnSearch: false,
+                pageTitle: 'Kuran Çalış - Toplu Not Düzenleme'
             })
             .when('/', {
                 redirectTo: '/translations/'
@@ -366,14 +431,67 @@ if (config_data.isMobile == false) { //false
                 redirectTo: '/translations/'
             });
 
+        //$locationProvider.html5Mode(true).hashPrefix('!');
+        //$locationProvider.html5Mode(true);
+        $locationProvider.hashPrefix('!');
+
 //        var $route = $routeProvider.$get[$routeProvider.$get.length-1]({$on:function(){}});
 //        $route.routes['/:chapter/:verse'].regexp = /^\/(?:artist\/(\d+))$/
 
         //facebook
         FacebookProvider.init(config_data.FBAppID);
+
+        NotificationProvider.setOptions({
+            delay: 10000,
+            startTop: 20,
+            startRight: 10,
+            verticalSpacing: 20,
+            horizontalSpacing: 20,
+            positionX: 'right',
+            positionY: 'top',
+            closeOnClick: true
+        });
+
+       // TRANSLATION ISSUES
+
+        var language = "";
+
+        // Get browser language
+        var language = window.navigator.language.split('-')[0]; // use navigator lang if available
+
+        if (language == null || language === undefined || language == "") {
+            language = "tr";  // as default language assignment
+        } else {
+            language = /(tr|en)/gi.test(language) ? language : 'tr'; // add new language as |de|fr|...
+        }
+
+        //if first load, we check language also with ip adress at below
+        if (localStorage.getItem("NG_TRANSLATE_LANG_KEY") === null ||
+            localStorage.getItem("NG_TRANSLATE_LANG_KEY") === undefined) {
+            localStorage.setItem("FIRST_LOAD", "true");
+        } else {
+            language = localStorage.getItem("NG_TRANSLATE_LANG_KEY");
+        }
+
+        console.warn("Selected language for Desktop:: ",language);
+
+        //Translate
+        $translateProvider
+            .useStaticFilesLoader({
+                prefix: 'assets/translations/',
+                suffix: '.json'
+            })
+            .preferredLanguage(language)
+            //.useMissingTranslationHandlerLog()
+            .useSanitizeValueStrategy('escapeParameters')
+            .useLocalStorage()
+            //.useCookieStorage()
+            //.useLoaderCache(true) // default is false which means disable
+            .fallbackLanguage('tr');
+
     });
 } else {
-    app.config(function ($routeProvider, FacebookProvider, RestangularProvider, localStorageServiceProvider, $stateProvider, $urlRouterProvider, $httpProvider, $compileProvider) {
+    app.config(function ($routeProvider, $locationProvider, FacebookProvider, RestangularProvider, localStorageServiceProvider, $stateProvider, $urlRouterProvider, $httpProvider, $compileProvider, $translateProvider, NotificationProvider) {
             console.log("mobile version");
             $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|chrome-extension|qurantools):/);
             //redirect / to /m/www/
@@ -534,6 +652,24 @@ if (config_data.isMobile == false) { //false
                         reloadOnSearch: false,
                         pageTitle: 'Kuran Çalış - Çevre Zaman Tüneli'
                     })
+                    .when('/user/account/reset_password/', {
+                        controller: 'AccountCtrl',
+                        templateUrl: 'components/user/set_password_modal.html',
+                        reloadOnSearch: false,
+                        pageTitle: 'Kuran Çalış - Şifre Sıfırlama'
+                    })
+                    .when('/user/account/settings/', {
+                        controller: 'UserSettingsCtrl',
+                        templateUrl: 'components/user/settings.html',
+                        reloadOnSearch: false,
+                        pageTitle: 'Kuran Çalış - Kullanıcı Ayarları'
+                    })
+                    .when('/user/account/edit_batch_notes/', {
+                        controller: 'BulkEditCtrl',
+                        templateUrl: 'components/user/edit_batch_notes.html',
+                        reloadOnSearch: false,
+                        pageTitle: 'Kuran Çalış - Toplu Not Düzenleme'
+                    })
                     .when('/', {
                         redirectTo: '/translations/',
                         pageTitle: 'Kuran Çalış'
@@ -553,7 +689,60 @@ if (config_data.isMobile == false) { //false
              // gcm_id: 'YOUR_GCM_ID'
              });
              */
-            FacebookProvider.init(config_data.FBAppID);
+
+        $locationProvider.hashPrefix('!');
+
+        FacebookProvider.init(config_data.FBAppID);
+
+        NotificationProvider.setOptions({
+            delay: 10000,
+            startTop: 20,
+            startRight: 10,
+            verticalSpacing: 20,
+            horizontalSpacing: 20,
+            positionX: 'right',
+            positionY: 'top',
+            closeOnClick: true
+        });
+
+        // TRANSLATION ISSUES
+
+        var language = "";
+
+        // Get browser language
+        var language = window.navigator.language.split('-')[0]; // use navigator lang if available
+
+        if (language == null || language === undefined || language == "") {
+            language = "tr";  // as default language assignment
+        } else {
+            language = /(tr|en)/gi.test(language) ? language : 'tr'; // add new language as |de|fr|...
+        }
+
+
+        //if first load, we check language also with ip adress at below
+        if (localStorage.getItem("NG_TRANSLATE_LANG_KEY") === null ||
+            localStorage.getItem("NG_TRANSLATE_LANG_KEY") === undefined) {
+            localStorage.setItem("FIRST_LOAD", "true");
+        } else {
+            language = localStorage.getItem("NG_TRANSLATE_LANG_KEY");
+        }
+
+        console.warn("Selected language for Mobil:: ",language);
+
+        //Translate
+        $translateProvider
+            .useStaticFilesLoader({
+                prefix: '../../assets/translations/',
+                suffix: '.json'
+            })
+            .preferredLanguage(language)
+            //.useMissingTranslationHandlerLog()
+            .useSanitizeValueStrategy('escapeParameters')
+            .useLocalStorage()
+            //.useCookieStorage()
+            //.useLoaderCache(true) // default is false which means disable
+            .fallbackLanguage('tr');
+
         }
     );
 }
@@ -595,7 +784,7 @@ app.factory('ChapterVerses', function ($resource) {
             }
         }
     );
-}).controller('MainCtrl', function ($scope, $q, $routeParams, $ionicSideMenuDelegate, $location, $timeout, ChapterVerses, User, Footnotes, Facebook, Restangular, localStorageService, $document, $filter, $rootScope, $state, $stateParams, $ionicModal, $ionicScrollDelegate, $ionicPosition, $ionicLoading, authorization,$rootScope, $ionicPopup, dataProvider, $cordovaAppAvailability) {
+}).controller('MainCtrl', function ($scope, $q, $routeParams, $ionicSideMenuDelegate, $location, $timeout, ChapterVerses, User, Footnotes, Facebook, Restangular, localStorageService, $document, $filter, $rootScope, $state, $stateParams, $ionicModal, $ionicScrollDelegate, $ionicPosition, $ionicLoading, authorization,$rootScope, $ionicPopup, dataProvider, $cordovaAppAvailability, $translate, Notification, Upload) {
     console.log("MainCtrl");
 
     //all root scope parameters should be defined and documented here
@@ -728,6 +917,63 @@ app.factory('ChapterVerses', function ($resource) {
     $scope.CIRCLE_ALL_CIRCLES = {'id': '-2', 'name': 'Tüm Çevrelerim'};
     $scope.CIRCLE_PUBLIC={'id': '-1', 'name': 'Herkes'};
 
+    //DEFAULT LANNGUAGE SETTINGS
+    var activeLanguage = $translate.use() ||
+        $translate.storage().get($translate.storageKey()) ||
+        $translate.preferredLanguage();
+
+    console.warn("activeLanguage ", activeLanguage);
+
+    $scope.selectedLanguage = activeLanguage;
+    $scope.languages = [{
+        name: "tr",
+        label: "TR"
+    }, {
+        name: "en",
+        label: "EN"
+    }];
+
+    if (localStorage.getItem("FIRST_LOAD") !== null &&
+        localStorage.getItem("FIRST_LOAD") === "true"){
+        //GET IP BASED LANGUAGE AND CHECK INITIAL ONE
+        //use http://freegeoip.net/json/ as more free service
+
+        $.get("http://ipinfo.io/json", function (response) {
+            console.warn("Select Language from Visitor IP Location :: ", response.country);
+
+            if(response.country == "TR" || response.country == "Turkey")
+            {
+                language = "tr";
+            } else {
+                language = "en";
+            }
+
+            //Set new language if different current one
+            if($translate.use() != language) {
+                $translate.use(language);
+                $scope.selectedLanguage = language;
+            }
+
+            //remove unnecessary localstorage item
+            localStorage.removeItem("FIRST_LOAD");
+        }, "jsonp");
+
+    }
+
+    //select language from user interface
+    $scope.changeLanguage = function (langKey) {
+        $translate.use(langKey);
+        console.warn("Selected Language :: ", langKey);
+        $rootScope.$broadcast('languageChanged', langKey);
+
+        setTimeout(function () {
+            window.location.reload();
+        }, 400)
+    };
+
+    $scope.showWordDetail = function (selectedItem) {
+        $scope.$broadcast("showWord", selectedItem);
+    };
 
     $scope.checkAPIVersion = function(){
         var versionRestangular = Restangular.all("apiversioncompatibility");
@@ -764,6 +1010,7 @@ app.factory('ChapterVerses', function ($resource) {
         var retcp = "";
 
         url = $location.path();
+        console.warn("URL: ",url);
         if ( url == '/annotations/') {
             retcp = 'annotations';
         } else if ( url == "/people/circles/"){
@@ -772,15 +1019,17 @@ app.factory('ChapterVerses', function ($resource) {
             retcp = "people_have_you";
         } else if ( url == "/people/find_people/"){
             retcp = "people_find";
-        } else if ( url == "/people/explore/"){
+        } else if ( url == "/people/explore/") {
             retcp = "people_explore";
         } else if ( url == "/search_translations/"){
             retcp = "search_translations";
         } else if ( url == "/lists/verse"){
             retcp = "verse_lists";
-        } else if ( url.indexOf("/profile/user/") > -1){
+        }
+        else if ( url.indexOf("/profile/user/") > -1){
             retcp = "profile_user";
-        } else if ( url.indexOf("/profile/circle/") > -1){
+        }
+        else if ( url.indexOf("/profile/circle/") > -1){
             retcp = "profile_circle";
         } else {
             retcp = 'home';
@@ -793,6 +1042,7 @@ app.factory('ChapterVerses', function ($resource) {
     /* auth */
     //general login.
     $scope.onFacebookLoginSuccess = function (responseData) {
+        console.log("responseData",responseData)
         if (responseData.loggedIn == false) {
             $scope.loggedIn = false;
             $scope.logOut();
@@ -800,6 +1050,8 @@ app.factory('ChapterVerses', function ($resource) {
             $scope.access_token = responseData.token;
             $scope.user = responseData.user;
             $scope.loggedIn = true;
+
+            console.log("access_token::", $scope.access_token);
 
             $scope.$broadcast('login', responseData);
             $scope.$broadcast('userInfoReady');
@@ -835,15 +1087,19 @@ app.factory('ChapterVerses', function ($resource) {
 
 
             $scope.$broadcast('logout', responseData);
-            $location.path('/login');
+            $location.path('/');
         }
     };
 
 
+    $scope.openPopover = function (verseId) {
+        $scope.$broadcast('social_share_verse_id', verseId);
+    };
+
     //sub page should write the its function if it needs custom login.
     $scope.login = function () { //new
         authorization.login($scope.onFacebookLoginSuccess);
-    }
+    };
 
     $scope.logOut = function () { //new
         if($ionicSideMenuDelegate.isOpenLeft()){
@@ -868,7 +1124,7 @@ app.factory('ChapterVerses', function ($resource) {
 
             }
             $scope.get_user_info(access_token);
-
+           //console.warn("access token", access_token);
 
         }
         else {
@@ -914,8 +1170,8 @@ app.factory('ChapterVerses', function ($resource) {
                 if( config_data.isNative){
                     if(navigator.network.connection.type == Connection.NONE) {
                         $ionicPopup.confirm({
-                            title: "Internet Bağlantısı Yok",
-                            content: "Internet baglantısı olmadığı için kullanıcı işlemleri yapılamayacaktır"
+                            title: $translate.instant("Internet Bağlantısı Yok"),
+                            content: $translate.instant("Internet baglantısı olmadığı için kullanıcı işlemleri yapılamayacaktır")
                         });
 
                     }
@@ -924,7 +1180,7 @@ app.factory('ChapterVerses', function ($resource) {
 
                         if(response.status != 0 && response.data != null && response.data.code == "201"){
                             var infoPopup = $ionicPopup.alert({
-                                title: 'Var olan oturumuzun süresi dolmuştur. Çıkış yapılıyor.',
+                                title: $translate.instant('Var olan oturumuzun süresi dolmuştur. Çıkış yapılıyor.'),
                                 template: '',
                                 buttons: []
                             });
@@ -944,7 +1200,7 @@ app.factory('ChapterVerses', function ($resource) {
                 else {
                     console.log("Error occured while validating user login with status code", response.status);
                     var infoPopup = $ionicPopup.alert({
-                        title: 'Var olan oturumuzun süresi dolmuştur. Çıkış yapılıyor.',
+                        title: $translate.instant('Var olan oturumuzun süresi dolmuştur. Çıkış yapılıyor.'),
                         template: '',
                         buttons: []
                     });
@@ -1220,7 +1476,6 @@ app.factory('ChapterVerses', function ($resource) {
 
     //tags input auto complete
     $scope.cevrelisteleForSearch = function () {
-
         return $scope.extendedCirclesForSearch;
     };
 
@@ -1234,19 +1489,22 @@ app.factory('ChapterVerses', function ($resource) {
             $scope.extendedCircles.push($scope.CIRCLE_PUBLIC);
 
             $scope.extendedCirclesForSearch = [];
+            $scope.extendedCirclesForSearch.push($scope.CIRCLE_PUBLIC);
             $scope.extendedCirclesForSearch.push($scope.CIRCLE_ALL_CIRCLES);
 
-
             $scope.circleDropdownArray = [];
+            $scope.circleDropdownArray.push($scope.CIRCLE_PUBLIC);
             $scope.circleDropdownArray.push($scope.CIRCLE_ALL_CIRCLES);
             $scope.circleDropdownArray.push({'id': '', 'name': 'Sadece Ben'});
 
-            $scope.query_circle_dropdown = $scope.circleDropdownArray[1];
+            $scope.query_circle_dropdown = $scope.circleDropdownArray[0];
             Array.prototype.push.apply($scope.circleDropdownArray, circleList);
 
             //also initialize extended circles
             Array.prototype.push.apply($scope.extendedCircles, circleList);
             Array.prototype.push.apply($scope.extendedCirclesForSearch, circleList);
+
+            $scope.translateExtendedCircles();
 
             // initialize mobileAnnotationEditorCircleListForSelection
             $scope.mobileAnnotationEditorCircleListForSelection=[];
@@ -1256,6 +1514,8 @@ app.factory('ChapterVerses', function ($resource) {
                 $scope.mobileAnnotationEditorCircleListForSelection[index].selected=false;
             }
 
+            $scope.mobileAnnotationEditorCircleListForSelection[1].selected=true;
+
             // initialize mobileDetailedSearchCircleListForSelection
             $scope.mobileDetailedSearchCircleListForSelection=[];
             Array.prototype.push.apply($scope.mobileDetailedSearchCircleListForSelection, $scope.extendedCirclesForSearch);
@@ -1263,6 +1523,8 @@ app.factory('ChapterVerses', function ($resource) {
             for (var index = 0; index < $scope.mobileDetailedSearchCircleListForSelection.length; ++index) {
                 $scope.mobileDetailedSearchCircleListForSelection[index].selected=false;
             }
+
+            $scope.mobileDetailedSearchCircleListForSelection[0].selected=true;
 
             // initialize mobileAllAnnotationsSearchCircleListForSelection
             $scope.mobileAllAnnotationsSearchCircleListForSelection=[];
@@ -1272,12 +1534,16 @@ app.factory('ChapterVerses', function ($resource) {
                 $scope.mobileAllAnnotationsSearchCircleListForSelection[index].selected=false;
             }
 
+            $scope.mobileAllAnnotationsSearchCircleListForSelection[0].selected=true;
+
             $scope.mobileInferencesEditorCircleListForSelection = [];
             Array.prototype.push.apply($scope.mobileInferencesEditorCircleListForSelection, $scope.extendedCircles);
             //add isSelected property for mobile.
             for (var index = 0; index < $scope.mobileInferencesEditorCircleListForSelection.length; ++index) {
                 $scope.mobileInferencesEditorCircleListForSelection[index].selected = false;
             }
+
+            $scope.mobileInferencesEditorCircleListForSelection[1].selected = true;
 
             // initialize mobileAllInferencessSearchCircleListForSelection
             $scope.mobileAllInferencesSearchCircleListForSelection = [];
@@ -1286,6 +1552,9 @@ app.factory('ChapterVerses', function ($resource) {
             for (var index = 0; index < $scope.mobileAllInferencesSearchCircleListForSelection.length; ++index) {
                 $scope.mobileAllInferencesSearchCircleListForSelection[index].selected = false;
             }
+
+            $scope.mobileAllInferencesSearchCircleListForSelection[0].selected = true;
+
             $scope.$broadcast("circleLists ready");
 
         },function(response){
@@ -1296,6 +1565,22 @@ app.factory('ChapterVerses', function ($resource) {
             }
         });
     };
+
+    $scope.translateExtendedCircles = function () {
+        //Translate instantly auto filled items
+        for(var i=0; i< $scope.extendedCirclesForSearch.length; i++){
+            if($scope.extendedCirclesForSearch[i].name == "Tüm Çevrelerim" ||
+                $scope.extendedCirclesForSearch[i].name == "Herkes" ||
+                $scope.extendedCirclesForSearch[i].name == "Referans"
+            ) {
+                $scope.extendedCirclesForSearch[i].name = $translate.instant($scope.extendedCirclesForSearch[i].name);
+            }
+        }
+    };
+
+    $rootScope.$on('languageChanged', function(){
+        $scope.translateExtendedCircles();
+    });
 
     $scope.initializeVerseLists = function(){
         Restangular.all("verselists").customGET("", {}, {'access_token': $scope.access_token}).then(function (verselists) {
@@ -1355,7 +1640,7 @@ app.factory('ChapterVerses', function ($resource) {
         var verse_number = $scope.goToVerseParameters.verse;
 
         //search array with id
-        var validationErrorMessage = "Geçerli ayet ve sure numarası giriniz";
+        var validationErrorMessage = $translate.instant("Geçerli ayet ve sure numarası giriniz");
         var index = chapters.map(function (el) {
             return el.id;
         }).indexOf(chapter_id);
@@ -1459,7 +1744,7 @@ app.factory('ChapterVerses', function ($resource) {
         $scope.$on('onlineNetworkConnection', function() {
             $scope.internet_display_show = true;
             $scope.internet_display_style = {"background-color": "green"};
-            $scope.internet_display_message = "Internet bağlantınız sağlandı.";
+            $scope.internet_display_message = $translate.instant("Internet bağlantınız sağlandı.");
             $scope.isConnected= true;
             $timeout(function(){
                 $scope.checkUserLoginStatus();
@@ -1496,11 +1781,50 @@ app.factory('ChapterVerses', function ($resource) {
                 $scope.hakki_yilmaz_modal = modal
             });
 
+            //User Account Modals
+            $ionicModal.fromTemplateUrl('components/user/create_account_modal.html', {
+                scope: $scope,
+                animation: 'slide-in-up',
+                id: 'user_create_account'
+            }).then(function (modal) {
+                $scope.modal_user_create_account = modal
+            });
+            $ionicModal.fromTemplateUrl('components/user/login_modal.html', {
+                scope: $scope,
+                animation: 'slide-in-up',
+                id: 'user_login'
+            }).then(function (modal) {
+                $scope.modal_user_login = modal
+            });
+            $ionicModal.fromTemplateUrl('components/user/reset_password_request_modal.html', {
+                scope: $scope,
+                animation: 'slide-in-up',
+                id: 'user_reset_password_request'
+            }).then(function (modal) {
+                $scope.modal_user_reset_password_request = modal
+            });
+            $ionicModal.fromTemplateUrl('components/user/set_password_modal.html', {
+                scope: $scope,
+                animation: 'slide-in-up',
+                id: 'user_set_password'
+            }).then(function (modal) {
+                $scope.modal_user_set_password = modal
+            });
+
+
             $scope.openModal = function (id) {
                 if (id == 'editor') {
                     $scope.modal_editor.show();
                 } else if (id === 'hakki_yilmaz_notes'){
                     $scope.hakki_yilmaz_modal.show();
+                } else if (id == 'user_create_account') {
+                    $scope.modal_user_create_account.show();
+                } else if (id == 'user_login') {
+                    $scope.modal_user_login.show();
+                } else if (id == 'user_reset_password_request') {
+                    $scope.modal_user_reset_password_request.show();
+                } else if (id == 'user_set_password') {
+                    $scope.modal_user_set_password.show();
                 }
             };
 
@@ -1512,6 +1836,17 @@ app.factory('ChapterVerses', function ($resource) {
                         $scope.modal_editor.hide();
                     } else if (id === 'hakki_yilmaz_notes'){
                         $scope.hakki_yilmaz_modal.hide();
+                    } else  if (id == 'user_create_account') {
+                        $scope.modal_user_create_account.hide();
+                    } else if (id == 'user_login') {
+                        $scope.modal_user_login.hide();
+                    } else if (id == 'user_reset_password_request') {
+                        $scope.modal_user_reset_password_request.hide();
+                    } else if (id == 'user_set_password') {
+                        $scope.modal_user_set_password.hide();
+                        $location.search('code', null);
+                        $location.path('/');
+                        //$scope.openModal("user_login")
                     }
                 },300);
             }
@@ -1599,8 +1934,6 @@ app.factory('ChapterVerses', function ($resource) {
     };
 
     $scope.showProgress = function(operationName) {
-
-
         $scope.progressOperation=operationName;
         if(config_data.isMobile){
             $scope.clickBlocking = true;

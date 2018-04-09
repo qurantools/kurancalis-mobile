@@ -1,5 +1,5 @@
 angular.module('ionicApp')
-    .controller('PeopleFindCtrl', function ($scope, $routeParams, Facebook, Restangular, localStorageService, $ionicModal) {
+    .controller('PeopleFindCtrl', function ($scope, $routeParams, Facebook, Restangular, localStorageService, $ionicModal, $translate) {
        
         var value = [];
         var select_circle;
@@ -41,11 +41,14 @@ angular.module('ionicApp')
         };
         
         //View circles
-           var view_circleRestangular = Restangular.all("circles");
+        $scope.cevregoster = function () {
+            var view_circleRestangular = Restangular.all("circles");
             view_circleRestangular.customGET("", {}, {'access_token': $scope.access_token}).then(function (circles) {
                 $scope.circle_name = circles;
                 $scope.cevreadlar = circles;
-           });
+            });
+        };
+
        
        //Peoples add    
            $scope.cevreadd = function (the_circle_select) 
@@ -86,6 +89,11 @@ angular.module('ionicApp')
         };
 
         $scope.kisilistele = function (kisiad) {
+            if (kisiad == ""  || kisiad.length < 2){
+                $scope.kisiliste = [];
+                return;
+            }
+
             var kisilisteRestangular = Restangular.all("users/search");
             $scope.usersParams = [];
             $scope.usersParams.search_query = kisiad;
@@ -96,9 +104,12 @@ angular.module('ionicApp')
         };
 
         $scope.inviteFriends= function(){
+            //init circles
+            $scope.view_circleRestangular();
+
             var options = {
                 method: "apprequests",
-                message: "Dosdoğru yolu BİRLİKTE bulmak için Kuran Çalışalım: http://kurancalis.com"
+                message: $translate.instant("Dosdoğru yolu BİRLİKTE bulmak için Kuran Çalışalım: http://kurancalis.com")
             };
             if (config_data.isNative){
                 facebookConnectPlugin.showDialog(options, function(resp){
@@ -168,6 +179,7 @@ angular.module('ionicApp')
 
 
         $scope.init = function () {
+            $scope.cevregoster();
 
             if (config_data.isMobile){
                 $ionicModal.fromTemplateUrl('components/partials/add_user_to_circle.html', {

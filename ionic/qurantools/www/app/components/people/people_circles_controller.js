@@ -1,5 +1,5 @@
 var mymodal = angular.module('ionicApp')
-    .controller('PeopleCirclesCtrl', function ($scope, $routeParams, Facebook, Restangular, localStorageService, $window, $timeout, $ionicModal, $ionicPopup, navigationManager) {
+    .controller('PeopleCirclesCtrl', function ($scope, $routeParams, Facebook, Restangular, localStorageService, $window, $timeout, $ionicModal, $ionicPopup, navigationManager, $translate) {
 
         $scope.testData = "circles";
         $scope.ackapakisi = true;
@@ -262,7 +262,7 @@ var mymodal = angular.module('ionicApp')
                 $scope.circlead = "";
             }
             else {
-                $scope.circlead = circlead + "  çevresindeki kişiler.";
+                $scope.circlead = circlead + "  " + $translate.instant("çevresindeki kişiler.");
             }
         };
 
@@ -388,10 +388,10 @@ var mymodal = angular.module('ionicApp')
             $scope.item.name = "";
             var promptPopup = $ionicPopup.prompt({
                 template: '<input type="text" ng-model="item.name">',
-                title: 'Yeni Çevre Oluştur',
+                title: $translate.instant('Yeni Çevre Oluştur'),
                 scope : $scope,
                 inputType: 'text',
-                inputPlaceholder: 'Çevre Tanımı',
+                inputPlaceholder: $translate.instant('Çevre Tanımı')
             });
 
             promptPopup.then(function(res) {
@@ -403,10 +403,10 @@ var mymodal = angular.module('ionicApp')
 
         $scope.deleteCircle = function(item){
             var confirmPop = $ionicPopup.confirm({
-                title: 'Çevre Silme',
-                template: '<b>'+ item.name + "</b> çevresini silmek istiyor musunuz?",
-                cancelText: 'Hayır',
-                okText: 'Sil',
+                title: $translate.instant('Çevre Silme'),
+                template: '<b>'+ item.name + '</b>' +  $translate.instant("çevresini silmek istiyor musunuz?"),
+                cancelText: $translate.instant('Hayır'),
+                okText: $translate.instant('Sil'),
                 okType : 'button-assertive'
             });
 
@@ -421,10 +421,10 @@ var mymodal = angular.module('ionicApp')
             $scope.item = $.extend( true, {}, item );
             var promptPopup = $ionicPopup.prompt({
                 template: '<input type="text" ng-model="item.name">',
-                title: 'İsim Değiştirme',
+                title: $translate.instant('İsim Değiştirme'),
                 scope : $scope,
                 inputType: 'text',
-                inputPlaceholder: 'Çevre Tanımı',
+                inputPlaceholder: $translate.instant('Çevre Tanımı')
             });
 
             promptPopup.then(function(res) {
@@ -438,7 +438,7 @@ var mymodal = angular.module('ionicApp')
             $scope.checkUserLoginStatus();
             if ($scope.loggedIn == false) {
                 //redirect to home page
-                window.location.href = '#/';
+                window.location.href = '#!/';
             }
             $scope.cevreadlar = cevrelisteac();
             if (config_data.isMobile){

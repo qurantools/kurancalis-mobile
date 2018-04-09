@@ -13,7 +13,7 @@
             </ion-nav-buttons>
             <h1 class="title"></h1>
             <ion-nav-buttons side="right">
-                <button class="button button-positive" ng-click="login()" ng-if="user==null && isConnected==true">Facebook ile Giriş</button>
+                <button class="button button-positive" ng-click="openModal('user_login')" ng-if="user==null && isConnected==true" translate>Giriş</button>
                 <a href ng-click="openVerseHistory()" class="button button-icon icon fa fa-history" ng-if="user!=null"></a>
                 <a href ng-click="openModal('annotations_on_page')" class="button button-icon icon ion-clipboard" ng-if="user!=null"></a>
                 <button class="button button-icon icon ion-more"  ng-click="openMenuModal()"></button>
@@ -36,8 +36,8 @@
                                 <div ng-repeat="translation in verse.translations" class="selectable">
                                     <div ng-if="$first">
                                             <a href style="margin-left:4px; font-weight:bold; font-size:20px; text-decoration: none !important;" ng-click='showVerseDetail({{verse.id}}, {{query_users}}, {{query_circles}})'>{{translation.chapter}}:{{translation.verse}}</a>
-                                            <img style="margin-left: 10px;" src="../../assets/img/sticky-note.png" width="20" height="20" ng-if="verseHasAnnotation(verse.id)" ng-click="showVerseAnnotations({{verse.id}})">
-                                            <button style="height: 100% !important;;width: 40px;" ng-if="user!=null" class="button button-balanced button-bookmark large_icon" ng-click="verseActionSheet({{translation.chapter}},{{translation.verse}},{{verse.id}})">
+                                            <img style="margin-left: 10px;" src="../../assets/img/sticky-note.png" width="25" height="23" ng-if="user!=null && !show_verse_annotations || verseHasAnnotation(verse.id)" ng-click="showVerseAnnotations({{verse.id}})">
+                                            <button style="height: 100% !important;;width: 40px;" ng-if="user!=null" class="button button-balanced button-bookmark large_icon" ng-click="verseActionSheet({{verse.translations[0].id}}, {{translation.chapter}},{{translation.verse}},{{verse.id}})">
                                                 <i class="icon ionicons ion-ios-more"></i>
                                             </button>
                                     </div>

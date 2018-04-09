@@ -1,31 +1,28 @@
-# PhoneGap Social Sharing plugin for Android, iOS and Windows Phone
+# PhoneGap / Cordova Social Sharing plugin
 
-by [@EddyVerbruggen](http://www.twitter.com/eddyverbruggen), [read my blog about this plugin](http://www.x-services.nl/phonegap-share-plugin-facebook-twitter-social-media/754)
+[![NPM version][npm-image]][npm-url]
+[![Downloads][downloads-image]][npm-url]
+[![Twitter Follow][twitter-image]][twitter-url]
+
+[npm-image]:http://img.shields.io/npm/v/cordova-plugin-x-socialsharing.svg
+[npm-url]:https://npmjs.org/package/cordova-plugin-x-socialsharing
+[downloads-image]:http://img.shields.io/npm/dm/cordova-plugin-x-socialsharing.svg
+[twitter-image]:https://img.shields.io/twitter/follow/eddyverbruggen.svg?style=social&label=Follow%20me
+[twitter-url]:https://twitter.com/eddyverbruggen
 
 [![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=eddyverbruggen%40gmail%2ecom&lc=US&item_name=cordova%2dplugin%2dsocialsharing&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted)
 Every now and then kind folks ask me how they can give me all their money. So if you want to contribute to my pension fund, then please go ahead :)
-
-<table width="100%">
-    <tr>
-        <td width="100"><a href="http://plugins.telerik.com/plugin/socialsharing"><img src="http://www.x-services.nl/github-images/telerik-verified-plugins-marketplace.png" width="97px" height="71px" alt="Marketplace logo"/></a></td>
-        <td>For a quick demo app and easy code samples, check out the plugin page at the Verified Plugins Marketplace: http://plugins.telerik.com/plugin/socialsharing</td>
-    </tr>
-</table>
 
 ## 0. Index
 
 1. [Description](#1-description)
 2. [Screenshots](#2-screenshots)
 3. [Installation](#3-installation)
-	3. [Automatically (CLI / Plugman)](#automatically-cli--plugman)
-	3. [Manually](#manually)
-	3. [PhoneGap Build](#phonegap-build)
-4. Usage
-  4. [iOS and Android](#4a-usage-on-ios-and-android)
-  4. [Windows Phone](#4b-usage-on-windows-phone)
-  4. [Share-popover on iPad](#4c-share-popover-on-ipad)
-5. [Credits](#5-credits)
-6. [License](#6-license)
+4. [Usage on iOS and Android](#4-usage-on-ios-and-android)
+5. [Web Share API](#5-web-share-api)
+6. [Usage on Windows Phone](#6-usage-on-windows-phone)
+7. [Share-popover on iPad](#7-share-popover-on-ipad)
+8. [Whitelisting on iOS 9](#8-whitelisting-on-ios-9)
 
 ## 1. Description
 
@@ -143,7 +140,7 @@ SocialSharing.js is brought in automatically. Make sure though you include a ref
 <script type="text/javascript" src="cordova.js"></script>
 ```
 
-## 4a. Usage on iOS and Android
+## 4. Usage on iOS and Android
 You can share text, a subject (in case the user selects the email application), (any type and location of) file (like an image), and a link.
 However, what exactly gets shared, depends on the application the user chooses to complete the action. A few examples:
 - Mail: message, subject, file.
@@ -154,6 +151,33 @@ However, what exactly gets shared, depends on the application the user chooses t
 - Facebook iOS: message, image (other filetypes are not supported), link. Beware that since a Fb update in April 2015 sharing a prefilled message is no longer possible when the Fb app is installed (like Android), see #344. Alternative: use `shareViaFacebookWithPasteMessageHint`.
 
 ### Using the share sheet
+Since version 5.1.0 (for iOS and Android) it's recommended to use `shareWithOptions` as it's the most feature rich way to share stuff cross-platform.
+
+It will also tell you if sharing to an app completed and which app that was (if that app plays nice, that is).
+
+```js
+// this is the complete list of currently supported params you can pass to the plugin (all optional)
+var options = {
+  message: 'share this', // not supported on some apps (Facebook, Instagram)
+  subject: 'the subject', // fi. for email
+  files: ['', ''], // an array of filenames either locally or remotely
+  url: 'https://www.website.com/foo/#bar?a=b',
+  chooserTitle: 'Pick an app' // Android only, you can override the default share sheet title
+}
+
+var onSuccess = function(result) {
+  console.log("Share completed? " + result.completed); // On Android apps mostly return false even while it's true
+  console.log("Shared to app: " + result.app); // On Android result.app is currently empty. On iOS it's empty when sharing is cancelled (result.completed=false)
+}
+
+var onError = function(msg) {
+  console.log("Sharing failed with message: " + msg);
+}
+
+window.plugins.socialsharing.shareWithOptions(options, onSuccess, onError);
+```
+
+#### You can still use the older `share` method as well
 Here are some examples you can copy-paste to test the various combinations:
 ```html
 <button onclick="window.plugins.socialsharing.share('Message only')">message only</button>
@@ -177,14 +201,14 @@ Example: share a PDF file from the local www folder:
 
 ### Sharing directly to..
 
-####Twitter
+#### Twitter
 ```html
 <!-- unlike most apps Twitter doesn't like it when you use an array to pass multiple files as the second param -->
 <button onclick="window.plugins.socialsharing.shareViaTwitter('Message via Twitter')">message via Twitter</button>
 <button onclick="window.plugins.socialsharing.shareViaTwitter('Message and link via Twitter', null /* img */, 'http://www.x-services.nl')">msg and link via Twitter</button>
 ```
 
-####Facebook
+#### Facebook
 ```html
 <button onclick="window.plugins.socialsharing.shareViaFacebook('Message via Facebook', null /* img */, null /* url */, function() {console.log('share ok')}, function(errormsg){alert(errormsg)})">msg via Facebook (with errcallback)</button>
 ```
@@ -206,7 +230,7 @@ Whitelisting Facebook in your app's .plist:
 </array>
 ```
 
-####Instagram
+#### Instagram
 ```html
 <button onclick="window.plugins.socialsharing.shareViaInstagram('Message via Instagram', 'https://www.google.nl/images/srpr/logo4w.png', function() {console.log('share ok')}, function(errormsg){alert(errormsg)})">msg via Instagram</button>
 ```
@@ -226,19 +250,27 @@ iOS Quirks:
 <button onclick="window.plugins.socialsharing.shareViaWhatsApp('Message via WhatsApp', null /* img */, null /* url */, function() {console.log('share ok')}, function(errormsg){alert(errormsg)})">msg via WhatsApp (with errcallback)</button>
 ```
 
-##### Experimental feature: sharing directly to someone
-Available in 5.0.8 and up - please let me know if this works for your device! Open an issue if not..
+##### Sharing directly to someone
+Note that on Android you can only send a 'text' and 'url' directly to someone, so files are ignored.
+
+###### By phone number (since 5.3.0)
 
 ```html
-<button onclick="window.plugins.socialsharing.shareViaWhatsAppToReceiver(receiver, 'Message via WhatsApp', null /* img */, null /* url */, function() {console.log('share ok')})">msg via WhatsApp for Addressbook ID 101</button>
+<button onclick="window.plugins.socialsharing.shareViaWhatsAppToPhone('+31611111111', 'Message via WhatsApp', null /* img */, null /* url */, function() {console.log('share ok')})">msg via WhatsApp to phone number +31611111111</button>
 ```
-For `receiver` on iOS pass in the Addressbook ID (or 'abid'). You can find those abid's by using the [Cordova Contacts Plugin](https://github.com/apache/cordova-plugin-contacts).
+
+###### By abid (iOS) or phone number (Android)
+
+```html
+<button onclick="window.plugins.socialsharing.shareViaWhatsAppToReceiver('101', 'Message via WhatsApp', null /* img */, null /* url */, function() {console.log('share ok')})">msg via WhatsApp for Addressbook ID 101</button>
+```
+The first argument on iOS needs to be the Addressbook ID (or 'abid'). You can find those abid's by using the [Cordova Contacts Plugin](https://github.com/apache/cordova-plugin-contacts).
 The result in the success callback of the `find` function is a JSON array of contact objects, use the 'id' you find in those objects.
 Don't pass in an image on iOS because that can't be sent to someone directly unfortunately. Message and URL are fine though.
 
-On Android pass in the phone number of the person you want to send a message to (untested at the moment).
+On Android pass in the phone number of the person you want to send a message to.
 
-####SMS
+#### SMS
 Note that on Android, SMS via Hangouts may not behave correctly
 ```html
 <!-- Want to share a prefilled SMS text? -->
@@ -249,7 +281,7 @@ Note that on Android, SMS via Hangouts may not behave correctly
 <button onclick="window.plugins.socialsharing.shareViaSMS({'message':'My cool message', 'subject':'The subject', 'image':'https://www.google.nl/images/srpr/logo4w.png'}, '0612345678,0687654321', function(msg) {console.log('ok: ' + msg)}, function(msg) {alert('error: ' + msg)})">share via SMS</button>
 ```
 
-####Email
+#### Email
 Code inspired by the [EmailComposer plugin](https://github.com/katzer/cordova-plugin-email-composer), note that this is not supported on the iOS 8 simulator (an alert will be shown if your try to).
 ```js
 window.plugins.socialsharing.shareViaEmail(
@@ -259,7 +291,7 @@ window.plugins.socialsharing.shareViaEmail(
   ['cc@person1.com'], // CC: must be null or an array
   null, // BCC: must be null or an array
   ['https://www.google.nl/images/srpr/logo4w.png','www/localimage.png'], // FILES: can be null, a string, or an array
-  onSuccess, // called when sharing worked, but also when the user cancelled sharing via email (I've found no way to detect the difference)
+  onSuccess, // called when sharing worked, but also when the user cancelled sharing via email. On iOS, the callbacks' boolean result parameter is true when sharing worked, false if cancelled. On Android, this parameter is always true so it can't be used). See section "Notes about the successCallback" below.
   onError // called when sh*t hits the fan
 );
 ```
@@ -391,8 +423,25 @@ Here's the list of available activities you can disable :
  - com.apple.UIKit.activity.AddToReadingList
  - com.apple.UIKit.activity.AirDrop
 
+## 5. Web Share API
 
-## 4b. Usage on Windows Phone
+Chrome introduced the [Web Share API](https://github.com/WICG/web-share) to share data:
+
+```js
+navigator.share({
+  'title': 'Optional title',
+  'text': 'Optional message',
+  'url': 'http://www.myurl.com'
+}).then(function() {
+  console.log('Successful share');
+}).catch(function(error) {
+  console.log('Error sharing:', error)
+});
+```
+
+It doesn't provide all the options that the other share methods do but it is spec compliant.
+
+## 6. Usage on Windows Phone
 The available methods on WP8 are: `available`, `canShareViaEmail`, `share`, `shareViaEmail` and `shareViaSMS`.
 Currently the first two always return true, but this may change in the future in case I can find a way to truly detect the availability.
 
@@ -415,7 +464,7 @@ Sharing an image (only images from the internet are supported). If you pass more
 <button onclick="window.plugins.socialsharing.share('Optional message', 'Optional title', 'https://www.google.nl/images/srpr/logo4w.png', null)">image only</button>
 ```
 
-## 4c. Share-popover on iPad
+## 7. Share-popover on iPad
 Carlos Sola-Llonch, a user of this plugin, pointed me at an [iOS document](https://developer.apple.com/library/ios/documentation/uikit/reference/UIActivityViewController_Class/Reference/Reference.html)
 stating "On iPad, you must present the view controller in a popover. On iPhone and iPod touch, you must present it modally."
 
@@ -453,31 +502,45 @@ window.plugins.socialsharing.setIPadPopupCoordinates(targetBounds);
 window.plugins.socialsharing.share('Hello from iOS :)')
 ```
 
-## 5. Credits ##
+## 8. Whitelisting on iOS 9+
 
-This plugin was enhanced for Plugman / PhoneGap Build by [Eddy Verbruggen](http://www.x-services.nl).
-The Android and Windows Phone code was entirely created by the author.
-The first iteration of the iOS code was inspired by [Cameron Lerch](https://github.com/bfcam/phonegap-ios-social-plugin).
+On iOS 9 and newer you have to make sure to whitelist the applications you want to use for sharing. Without whitelisting "query schemes", you may get the error callback invoked when calling the `canShareVia` function (and possibly the `shareVia`). You can verify this is a permissions issue by observing the output in XCode for something like:
 
+> -canOpenURL: failed for URL: "whatsapp://app" - error: "This app is not allowed to query for scheme whatsapp"
 
-## 6. License
+You have a few options to prevent this by whitelisting the application you want to share via:
 
-[The MIT License (MIT)](http://www.opensource.org/licenses/mit-license.html)
+### Directly editing the .plist file
+This is a stright forward approach - you just manually edit the .plist file - either from within XCode or using a text editor. You can see example entries above (e.g. xyz). While this is simple to do, the changes may be lost when rebuilding the project or tweaking the platform (e.g. upgrading) and is less recomended.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+### Use query schema plugin
+There is a plugin designed specifically to address query schema whitelisting. You can find the plugin and how to use it [here](https://www.npmjs.com/package/cordova-plugin-queries-schemes). In general, after installation, you can change plugin.xml file under the plugin subfolder within the plugins directory of your project to add the required schemas. Here again though, you have to edit an additional file and should take care not to overwrite it when making changes to your project.
 
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
+### Use Custom Config plugin
+The Custom Config plugin ([here](https://github.com/dpa99c/cordova-custom-config)) allows you to add configuration to your platforms "native" configuration files (e.g. .plist or AndroidManifest.xml) through the project's main config.xml file.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
+To address query schema issue, after installaing the plugin you can edit the iOS platform section of your config.xml (in the project main folder) to include the required entries:
+
+```xml
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="your.app.id"
+        version="0.9.1"
+        xmlns="http://www.w3.org/ns/widgets"
+        xmlns:cdv="http://cordova.apache.org/ns/1.0">
+
+    <!-- a bunch of elements like name, description etc -->
+
+    <platform name="ios">
+
+        <!-- add this entry -->
+        <config-file platform="ios" target="*-Info.plist" parent="LSApplicationQueriesSchemes">
+            <array>
+                <string>whatsapp</string>
+                <!-- add more query scheme strings -->
+            </array>
+        </config-file>
+    </platform>
+</widget>        
+```
+
+The advantage with this method is that editing is done in the config.xml file which will most often be in your source control anyway and hence, changes to it will be reserved.

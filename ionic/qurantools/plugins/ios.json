@@ -1,222 +1,54 @@
 {
-    "prepare_queue": {
-        "installed": [],
-        "uninstalled": []
+  "prepare_queue": {
+    "installed": [],
+    "uninstalled": []
+  },
+  "config_munge": {
+    "files": {}
+  },
+  "installed_plugins": {
+    "com.filfatstudios.spinnerdialog": {
+      "PACKAGE_NAME": "io.ionic.starter"
     },
-    "config_munge": {
-        "files": {
-            "config.xml": {
-                "parents": {
-                    "/*": [
-                        {
-                            "xml": "<feature name=\"SpinnerDialog\"><param name=\"ios-package\" value=\"CDVSpinnerDialog\" /></feature>",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<feature name=\"Device\"><param name=\"ios-package\" value=\"CDVDevice\" /></feature>",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<feature name=\"NetworkStatus\"><param name=\"ios-package\" value=\"CDVConnection\" /></feature>",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<feature name=\"SplashScreen\"><param name=\"ios-package\" value=\"CDVSplashScreen\" /><param name=\"onload\" value=\"true\" /></feature>",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<feature name=\"SocialSharing\"><param name=\"ios-package\" value=\"SocialSharing\" /><param name=\"onload\" value=\"true\" /></feature>",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<feature name=\"SQLitePlugin\"><param name=\"ios-package\" value=\"SQLitePlugin\" /></feature>",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<feature name=\"Keyboard\"><param name=\"ios-package\" onload=\"true\" value=\"IonicKeyboard\" /></feature>",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<feature name=\"sqlDB\"><param name=\"ios-package\" value=\"sqlDB\" /></feature>",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<feature name=\"Console\"><param name=\"ios-package\" value=\"CDVLogger\" /></feature>",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<feature name=\"InAppBrowser\"><param name=\"ios-package\" value=\"CDVInAppBrowser\" /></feature>",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<feature name=\"StatusBar\"><param name=\"ios-package\" value=\"CDVStatusBar\" /><param name=\"onload\" value=\"true\" /></feature>",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<preference name=\"StatusBarOverlaysWebView\" value=\"true\" />",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<preference name=\"StatusBarStyle\" value=\"lightcontent\" />",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<feature name=\"FacebookConnectPlugin\"><param name=\"ios-package\" value=\"FacebookConnectPlugin\" /><param name=\"onload\" value=\"true\" /></feature>",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<plugin name=\"FacebookConnectPlugin\" value=\"FacebookConnectPlugin\" />",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<access origin=\"https://m.facebook.com\" />",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<access origin=\"https://graph.facebook.com\" />",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<access origin=\"https://api.facebook.com\" />",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<access origin=\"https://*.fbcdn.net\" />",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<access origin=\"https://*.akamaihd.net\" />",
-                            "count": 1
-                        }
-                    ]
-                }
-            },
-            "*-Info.plist": {
-                "parents": {
-                    "CFBundleURLTypes": [
-                        {
-                            "xml": "<array><dict><key>CFBundleURLSchemes</key><array><string>qurantools</string></array></dict></array>",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<array><dict><key>CFBundleURLSchemes</key><array><string>fb295857580594128</string></array></dict></array>",
-                            "count": 1
-                        }
-                    ],
-                    "FacebookAppID": [
-                        {
-                            "xml": "<string>295857580594128</string>",
-                            "count": 1
-                        }
-                    ],
-                    "FacebookDisplayName": [
-                        {
-                            "xml": "<string>Kuran Çalış</string>",
-                            "count": 1
-                        }
-                    ]
-                }
-            },
-            "framework": {
-                "parents": {
-                    "SystemConfiguration.framework": [
-                        {
-                            "xml": true,
-                            "count": 1
-                        }
-                    ],
-                    "CoreTelephony.framework": [
-                        {
-                            "xml": false,
-                            "count": 1
-                        }
-                    ],
-                    "CoreGraphics.framework": [
-                        {
-                            "xml": false,
-                            "count": 2
-                        }
-                    ],
-                    "Social.framework": [
-                        {
-                            "xml": true,
-                            "count": 2
-                        }
-                    ],
-                    "MessageUI.framework": [
-                        {
-                            "xml": true,
-                            "count": 1
-                        }
-                    ],
-                    "libsqlite3.dylib": [
-                        {
-                            "xml": false,
-                            "count": 2
-                        }
-                    ],
-                    "Accounts.framework": [
-                        {
-                            "xml": true,
-                            "count": 1
-                        }
-                    ],
-                    "Security.framework": [
-                        {
-                            "xml": true,
-                            "count": 1
-                        }
-                    ]
-                }
-            }
-        }
+    "cordova-plugin-dbcopy": {
+      "PACKAGE_NAME": "io.ionic.starter"
     },
-    "installed_plugins": {
-        "com.filfatstudios.spinnerdialog": {
-            "PACKAGE_NAME": "org.quran.qurantools"
-        },
-        "cordova-plugin-customurlscheme": {
-            "URL_SCHEME": "qurantools",
-            "PACKAGE_NAME": "org.quran.qurantools"
-        },
-        "cordova-plugin-device": {
-            "PACKAGE_NAME": "org.quran.qurantools"
-        },
-        "cordova-plugin-network-information": {
-            "PACKAGE_NAME": "org.quran.qurantools"
-        },
-        "cordova-plugin-splashscreen": {
-            "PACKAGE_NAME": "org.quran.qurantools"
-        },
-        "cordova-plugin-whitelist": {
-            "PACKAGE_NAME": "org.quran.qurantools"
-        },
-        "cordova-plugin-x-socialsharing": {
-            "PACKAGE_NAME": "org.quran.qurantools"
-        },
-        "cordova-sqlite-storage": {
-            "PACKAGE_NAME": "org.quran.qurantools"
-        },
-        "ionic-plugin-keyboard": {
-            "PACKAGE_NAME": "org.quran.qurantools"
-        },
-        "me.rahul.plugins.sqlDB": {
-            "PACKAGE_NAME": "org.quran.qurantools"
-        },
-        "org.apache.cordova.console": {
-            "PACKAGE_NAME": "org.quran.qurantools"
-        },
-        "org.apache.cordova.inappbrowser": {
-            "PACKAGE_NAME": "org.quran.qurantools"
-        },
-        "org.apache.cordova.statusbar": {
-            "PACKAGE_NAME": "org.quran.qurantools"
-        },
-        "phonegap-facebook-plugin": {
-            "APP_ID": "295857580594128",
-            "APP_NAME": "Kuran Çalış",
-            "PACKAGE_NAME": "org.quran.qurantools"
-        }
+    "cordova-plugin-device": {
+      "PACKAGE_NAME": "io.ionic.starter"
     },
-    "dependent_plugins": {}
+    "cordova-plugin-facebook4": {
+      "APP_ID": "400142910165594",
+      "APP_NAME": "Kuran Calis",
+      "PACKAGE_NAME": "io.ionic.starter"
+    },
+    "cordova-plugin-ionic-keyboard": {
+      "PACKAGE_NAME": "io.ionic.starter"
+    },
+    "cordova-plugin-ionic-webview": {
+      "PACKAGE_NAME": "io.ionic.starter"
+    },
+    "cordova-plugin-network-information": {
+      "PACKAGE_NAME": "io.ionic.starter"
+    },
+    "cordova-plugin-splashscreen": {
+      "PACKAGE_NAME": "io.ionic.starter"
+    },
+    "cordova-plugin-whitelist": {
+      "PACKAGE_NAME": "io.ionic.starter"
+    },
+    "cordova-plugin-x-socialsharing": {
+      "PACKAGE_NAME": "io.ionic.starter"
+    },
+    "cordova-sqlite-storage": {
+      "PACKAGE_NAME": "io.ionic.starter"
+    },
+    "ionic-plugin-keyboard": {
+      "PACKAGE_NAME": "io.ionic.starter"
+    }
+  },
+  "dependent_plugins": {
+    "es6-promise-plugin": {
+      "PACKAGE_NAME": "io.ionic.starter"
+    }
+  }
 }

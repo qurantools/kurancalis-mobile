@@ -1,5 +1,5 @@
 #!/bin/bash
 
-ionic prepare android
-ionic build android
-ionic run android
+ionic cordova prepare android
+ionic cordova build android
+ionic cordova run android

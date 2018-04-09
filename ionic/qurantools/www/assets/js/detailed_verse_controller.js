@@ -1,5 +1,5 @@
-angular.module('ionicApp')
-    .controller('DetailedVerseCtrl', function ($scope, $timeout, Restangular, $location, authorization, $ionicModal, $ionicActionSheet, dataProvider, $ionicScrollDelegate, $ionicPopup, localStorageService, navigationManager) {
+mymodal = angular.module('ionicApp')
+    .controller('DetailedVerseCtrl', function ($scope, $compile, $timeout, $routeParams, Restangular, $location, authorization, $ionicModal, $ionicActionSheet, dataProvider, $ionicScrollDelegate, $ionicPopup, localStorageService, navigationManager, $translate) {
 
         $scope.detailedChapters = [];
         $scope.detailedVerseCircles = [];
@@ -34,14 +34,22 @@ angular.module('ionicApp')
         $scope.taggedVerseCirclesForMobileSearch = [];
         $scope.taggedVerseUsersForMobileSearch = [];
 
-        $scope.footerMenuButtons = [];
-        var buttonSelectTranslation = {  text: 'Çeviri Seç'  };
-        var buttonAddToList = {text: 'Listeye Ekle' };
-        var buttonGotoVerseInternal = {text: 'Ayete Git' };
-        var buttonGotoVerse = {text: 'Sure İçerisinde Gör' };
-        var buttonBookmark = {text: 'Burada Kaldım' };
-        var buttonVerseHistory = {text: 'Ayet Geçmişi' };
+        //show modal title or not
+        $scope.isVerseDetail = true;
+        $scope.idAttr;
+        $scope.shareUrl = "";
+        $scope.shareTitle = "Ayet Paylaşma";
 
+        // verse words
+        $scope.wordsOfVerse = [];
+
+        $scope.footerMenuButtons = [];
+        var buttonSelectTranslation = {  text: $translate.instant('Çeviri Seç')  };
+        var buttonAddToList = {text: $translate.instant('Listeye Ekle') };
+        var buttonGotoVerseInternal = {text: $translate.instant('Ayete Git') };
+        var buttonGotoVerse = {text: $translate.instant('Sure İçerisinde Gör') };
+        var buttonBookmark = {text: $translate.instant('Burada Kaldım') };
+        var buttonVerseHistory = {text: $translate.instant('Ayet Geçmişi') };
 
         $scope.localStorageManager = new LocalStorageManager("detailed_verse",localStorageService,
             [
@@ -57,6 +65,24 @@ angular.module('ionicApp')
             ]
         );
 
+        $scope.popoveropen=function(){
+            $compile($('.popover.in').contents())($scope);
+            $('body').on('click', $scope.popoverclose);
+        };
+
+        $scope.popoverclose= function(e){
+            //clicking on popover toggle button is processed itself. Any other place hides the popover
+            if ($(e.target).data('toggle') !== 'popover'
+            ){
+                $('[data-toggle="popover"]').popover('hide');
+                $('body').unbind('click',$scope.popoverclose);
+            }
+        };
+
+        $scope.setShareUrl = function () {
+            $scope.shareUrl =  config_data.webAddress + "/__/verse/display/" + $scope.verseId + "?author=" + $scope.detailed_query_author_mask;
+            $scope.scopeApply();
+        };
 
 
         $scope.goToVerseDetail = function(){
@@ -66,6 +92,9 @@ angular.module('ionicApp')
             $scope.getVerseTranslations();
             $scope.get_inferences();
             $scope.addVerseToHistory($scope.verseId);
+            $scope.getWordsOfVerse();
+
+            $scope.setShareUrl();
         };
 
         $scope.verseNumberValidation = function () {
@@ -74,7 +103,7 @@ angular.module('ionicApp')
             var verse_number = parseInt($scope.goToVerseParameters.verse);
 
             //search array with id
-            var validationErrorMessage = "Geçerli ayet ve sure numarası giriniz";
+            var validationErrorMessage = $translate.instant("Geçerli ayet ve sure numarası giriniz");
             var index = chapters.map(function (el) {
                 return el.id;
             }).indexOf(chapter_id);
@@ -165,7 +194,7 @@ angular.module('ionicApp')
                 delete detailedAnnotator;
             }
 
-            detailedAnnotator = new Annotator($('#detailed_translations'));
+            detailedAnnotator = new Annotator($('#' + $scope.idAttr));
             detailedAnnotator.setTranslationDivMap($scope.translationDivMap);
             detailedAnnotator.setAccessToken($scope.access_token);
 
@@ -222,10 +251,10 @@ angular.module('ionicApp')
             //console.log("$scope.filteredAnnotations: "+JSON.stringify($scope.filteredAnnotations));
             if (config_data.isMobile) {
                 var confirmPopup = $ionicPopup.confirm({
-                    title: 'Ayet Notu Sil',
-                    template: 'Ayet notu silinecektir, onaylıyor musunuz?',
-                    cancelText: 'VAZGEC',
-                    okText: 'TAMAM',
+                    title: $translate.instant('Ayet Notu Sil'),
+                    template: $translate.instant('Ayet notu silinecektir, onaylıyor musunuz?'),
+                    cancelText: $translate.instant('VAZGEC'),
+                    okText: $translate.instant('TAMAM'),
                     okType: 'button-assertive'
                 });
                 confirmPopup.then(function(res) {
@@ -302,6 +331,8 @@ angular.module('ionicApp')
                 $scope.localStorageManager.storeVariables($scope);
                 $scope.getVerseTranslations();
             }
+
+            $scope.setShareUrl();
         };
 
         $scope.setDetailedSearchAuthorSelection = function (authorMask) {
@@ -439,7 +470,7 @@ angular.module('ionicApp')
             for (var i = 0; tagList && i < tagList.length; i++) {
                 tagParameter[i] = tagList[i].name;
             }
-            return tagParameter.join(',');
+            return tagParameter.join(', ');
         };
 
         $scope.openFooterMenu = function (){
@@ -456,7 +487,7 @@ angular.module('ionicApp')
                 buttons: $scope.footerMenuButtons,
                 destructiveText: '',
                 titleText: '',
-                cancelText: 'Kapat',
+                cancelText: $translate.instant('Kapat'),
                 cancel: function () {
                 },
                 buttonClicked: function (index) {
@@ -493,6 +524,20 @@ angular.module('ionicApp')
         };
 
         $scope.initializeDetailedVerseController = function () {
+            if ( $location.path().indexOf("/verse/display/") > -1) {
+                if ($routeParams.hasOwnProperty("verseId")) {
+                    $scope.idAttr = "verse_display";
+                    $scope.isVerseDetail = false;
+                } else {
+                    console.log("VerseId is missing...")
+                }
+
+                if ($routeParams.hasOwnProperty("author")) {
+                    $scope.detailed_query_author_mask = $routeParams.author;
+                    $scope.setDetailedSearchAuthorSelection($scope.detailed_query_author_mask);
+                }
+            }
+
             if (config_data.isMobile) {
                 $ionicModal.fromTemplateUrl('components/partials/tagged_verse_modal.html', {
                     scope: $scope,
@@ -553,6 +598,26 @@ angular.module('ionicApp')
             };
 
             $scope.$on('open_verse_detail', function(event, args) {
+
+                //Get all words of verse
+                $scope.getWordsOfVerse = function () {
+                    Restangular.all('words').customGET("", {verse_id: $scope.verseId}, {}).then(function(data){
+                        //console.log("wordsOfVerse::",data);
+                        $scope.wordsOfVerse = data;
+                    });
+                };
+
+                $scope.openWordModal = function (type, word) {
+                    var selectedItem = { type:type, word: word};
+
+                    $scope.showWordDetail(selectedItem);
+                };
+
+                if ( $location.path().indexOf("/verse/display/") == -1) {
+                     $scope.idAttr =  "detailed_translations";
+                    $scope.isVerseDetail = true;
+                }
+
                 $scope.verseId = parseInt(args.chapterVerse);
                 $scope.detailedVerseCircles = args.circles;
                 $scope.detailedVerseUsers = args.users;

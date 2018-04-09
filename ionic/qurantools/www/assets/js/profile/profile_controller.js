@@ -1,5 +1,5 @@
-angular.module('ionicApp')
-    .controller('ProfileController', function ($scope, $routeParams, Restangular, $location, $ionicPopup, $ionicModal, $window, navigationManager ) {
+var mymodal = angular.module('ionicApp')
+    .controller('ProfileController', function ($scope, $routeParams, Restangular, $timeout, $location, $ionicPopup, $ionicModal, $window, navigationManager, $translate) {
 
         $scope.friendName = "";
         $scope.circleId = -1;
@@ -12,6 +12,8 @@ angular.module('ionicApp')
         $scope.selectedCircles = [];
         $scope.selectedUsers = [];
         $scope.recommendations = [];
+        $scope.selectedUser;
+         var csec;
 
         $scope.fetchFriendFeeds = function(friendName, start){
             if ($scope.isLoading)
@@ -78,9 +80,11 @@ angular.module('ionicApp')
         };
 
         $scope.fetchUserRecommendations = function(){
+            var limit =  config_data.isMobile ? 3 : 6;
+
             var userRestangular = Restangular.one("users/recommendations");
             $scope.recommendations = [];
-            userRestangular.customGET("", {}, {'access_token': $scope.access_token}).then(function (data) {
+            userRestangular.customGET("", {limit: limit}, {'access_token': $scope.access_token}).then(function (data) {
                 $scope.recommendations = data;
             }, function (err){
 
@@ -159,10 +163,10 @@ angular.module('ionicApp')
         $scope.deleteAnnotation = function (annotation) {
             if (config_data.isMobile) {
                 var confirmPopup = $ionicPopup.confirm({
-                    title: 'Ayet Notu Sil',
-                    template: 'Ayet notu silinecektir, onaylıyor musunuz?',
-                    cancelText: 'VAZGEC',
-                    okText: 'TAMAM',
+                    title: $translate.instant('Ayet Notu Sil'),
+                    template: $translate.instant('Ayet notu silinecektir, onaylıyor musunuz?'),
+                    cancelText: $translate.instant('VAZGEC'),
+                    okText: $translate.instant('TAMAM'),
                     okType: 'button-assertive'
                 });
                 confirmPopup.then(function(res) {
@@ -213,14 +217,40 @@ angular.module('ionicApp')
         };
 
         $scope.loadMoreCirclesFeeds = function(){
-            if ($scope.circleId == -1)
-                return;
             var lastItemDate = 0;
             if ($scope.feeds.length > 0){
                 lastItemDate = $scope.feeds[$scope.feeds.length -1].updated / 1000;
             }
             $scope.fetchCircleFeeds($scope.circleId, lastItemDate);
         };
+
+        $scope.othercircle = false;
+        $scope.othercirclemodal = function (user_id) {
+             $scope.othercircle = !$scope.othercircle
+             $scope.selectedUser = user_id;
+        };
+
+        $scope.cevreadd = function (csecim) {
+             csec = csecim;
+        };
+
+          $scope.kisiekcevre = function () {
+
+               var headers = {
+                   'Content-Type': 'application/x-www-form-urlencoded',
+                   'access_token': $scope.access_token
+               };
+               var jsonData = $scope.selectedUser;
+               var postData = [];
+               postData.push(encodeURIComponent("user_id") + "=" + encodeURIComponent(jsonData));
+               var data = postData.join("&");
+               var kisiekleRestangular = Restangular.one("circles", csec).all("users");
+
+               kisiekleRestangular.customPOST(data, '', '', headers).then(function (eklekisi) {
+                    $scope.fetchUserRecommendations();
+               });
+
+           };
 
         $scope.showCircleSelectionModal = function(){
             if (config_data.isMobile){
@@ -302,6 +332,14 @@ angular.module('ionicApp')
         };
 
         $scope.initializeProfileController = function () {
+            //View circles
+            var view_circleRestangular = Restangular.all("circles");
+             view_circleRestangular.customGET("", {}, {'access_token': $scope.access_token}).then(function (circles) {
+                 $scope.circle_name = circles;
+                 $scope.cevreadlar = circles;
+                 $scope.csecim = "";
+            });
+
             if (config_data.isMobile){
                 $ionicModal.fromTemplateUrl('components/partials/add_friend_to_search.html', {
                     scope: $scope,
@@ -351,3 +389,35 @@ angular.module('ionicApp')
             $scope.initializeProfileController();
         }
     });
+
+mymodal.directive('othercirclemodal', function () {
+    return {
+        templateUrl: 'app/components/partials/circle_digercevre.htm',
+        restrict: 'E',
+        transclude: true,
+        replace: true,
+        scope: true,
+        link: function postLink(scope, element, attrs) {
+            scope.title = attrs.title;
+
+            scope.$watch(attrs.visible, function (value) {
+                if (value == true)
+                    $(element).modal('show');
+                else
+                    $(element).modal('hide');
+            });
+
+            $(element).on('shown.bs.modal', function () {
+                scope.$apply(function () {
+                    scope.$parent[attrs.visible] = true;
+                });
+            });
+
+            $(element).on('hidden.bs.modal', function () {
+                scope.$apply(function () {
+                    scope.$parent[attrs.visible] = false;
+                });
+            });
+        }
+    };
+});

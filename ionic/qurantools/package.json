@@ -1,57 +1,50 @@
 {
   "name": "qurantools",
-  "version": "1.1.0",
-  "description": "qurantools: An Ionic project",
-  "dependencies": {
-    "gulp": "^3.5.6",
-    "gulp-sass": "^1.3.3",
-    "gulp-concat": "^2.2.0",
-    "gulp-minify-css": "^0.3.0",
-    "gulp-rename": "^1.2.0"
-  },
+  "version": "2.5.0",
+  "description": "An Ionic project",
   "devDependencies": {
-    "bower": "^1.3.3",
-    "gulp-util": "^2.2.14",
-    "shelljs": "^0.3.0"
+    "gulp": "^3.5.6",
+    "gulp-clean-css": "^3.7.0",
+    "gulp-rename": "^1.2.0",
+    "gulp-sass": "^3.1.0"
   },
-  "cordovaPlugins": [
-    "cordova-plugin-console",
-    "cordova-plugin-whitelist",
-    "cordova-plugin-splashscreen",
-    "org.apache.cordova.inappbrowser",
-    "org.apache.cordova.statusbar",
-    "org.apache.cordova.console",
-    "ionic-plugin-keyboard",
-    {
-      "locator": "https://github.com/filfat-Studios-AB/cordova-plugin-spinnerdialog",
-      "id": "com.filfatstudios.spinnerdialog"
-    },
-    {
-      "variables": {
-        "APP_ID": "295857580594128",
-        "APP_NAME": "Kuran Calis"
+  "cordova": {
+    "plugins": {
+      "cordova-plugin-whitelist": {},
+      "cordova-plugin-device": {},
+      "cordova-plugin-splashscreen": {},
+      "cordova-plugin-ionic-webview": {},
+      "cordova-plugin-ionic-keyboard": {},
+      "cordova-plugin-console": {},
+      "cordova-sqlite-storage": {
+        "locator": "https://github.com/brodysoft/Cordova-SQLitePlugin.git",
+        "id": "cordova-sqlite-storage"
       },
-      "locator": "https://github.com/Wizcorp/phonegap-facebook-plugin.git",
-      "id": "phonegap-facebook-plugin"
+      "cordova-plugin-dbcopy": {},
+      "com.filfatstudios.spinnerdialog": {},
+      "cordova-plugin-x-socialsharing": {},
+      "cordova-plugin-facebook4": {
+        "APP_ID": "400142910165594",
+        "APP_NAME": "Kuran Calis"
+      }
     },
-    {
-      "locator": "https://github.com/an-rahulpandey/cordova-plugin-dbcopy.git",
-      "id": "me.rahul.plugins.sqlDB"
-    },
-    {
-      "locator": "https://github.com/brodysoft/Cordova-SQLitePlugin.git",
-      "id": "cordova-sqlite-storage"
-    },
-    {
-      "locator": "https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin.git",
-      "id": "cordova-plugin-x-socialsharing"
-    },
-    "cordova-plugin-network-information",
-    "cordova-plugin-customurlscheme",
-    "cordova-plugin-device"
-  ],
-  "cordovaPlatforms": [
-    "android",
-    "ios"
-  ]
+    "platforms": [
+      "android",
+      "ios"
+    ]
+  },
+  "dependencies": {
+    "cordova-android": "~7.0.0",
+    "cordova-ios": "~4.5.4",
+    "cordova-plugin-dbcopy": "git+https://github.com/an-rahulpandey/cordova-plugin-dbcopy.git",
+    "cordova-plugin-device": "^2.0.1",
+    "cordova-plugin-facebook4": "git+https://github.com/jeduan/cordova-plugin-facebook4.git",
+    "cordova-plugin-ionic-keyboard": "^2.0.5",
+    "cordova-plugin-ionic-webview": "^1.1.19",
+    "cordova-plugin-progress-indicator": "git+https://github.com/filfat-Studios-AB/cordova-plugin-spinnerdialog.git",
+    "cordova-plugin-splashscreen": "^5.0.2",
+    "cordova-plugin-whitelist": "^1.3.3",
+    "cordova-plugin-x-socialsharing": "git+https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin.git",
+    "com.filfatstudios.spinnerdialog": "https://github.com/filfat-Studios-AB/cordova-plugin-spinnerdialog"
+  }
 }

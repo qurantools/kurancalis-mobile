@@ -1,12 +1,16 @@
 <div class="modal modal-fullscreen">
     <ion-content overflow-scroll="false">
+
         <div ng-include src="menuList[selectedMenu].submenu[selectedIndex].source[0].src" ng-if="menuList[selectedMenu].submenu[selectedIndex].source[0].type.toLowerCase().indexOf('video') != 0"></div>
-        <div class="videogular-container" style="height:100%;padding:0;margin:0;" ng-if="menuList[selectedMenu].submenu[selectedIndex].source[0].type.toLowerCase().indexOf('video') == 0">
+        <div class="videogular-container" style="height:100%;padding:0;margin:0;" ng-if="menuList[selectedMenu].submenu[selectedIndex].source[0].type.toLowerCase().indexOf('video') == 0 && !playOnYoutube">
             <div style="height: 20px"></div>
-            <videogular vg-theme="config.theme"  vg-plays-inline="true" vg-auto-play="false" vg-player-ready="onPlayerReady($API)" vg-change-source="vgChangeSource($source)" class="ng-isolate-scope" >
-                <vg-media   vg-src="menuList[selectedMenu].submenu[selectedIndex].source" vg-type="video" class="ng-isolate-scope" style="background-color: grey;" vg-loop="true">
+            <videogular vg-theme="config.theme"  vg-plays-inline="false" vg-auto-play="false" vg-player-ready="onPlayerReady($API)" vg-change-source="vgChangeSource($source)" class="ng-isolate-scope" >
+                <vg-media   vg-src="menuList[selectedMenu].submenu[selectedIndex].source" vg-type="video" class="ng-isolate-scope" style="background-color: grey;" vg-loop="false">
                 </vg-media>
             </videogular>
+        </div>
+        <div ng-if="playOnYoutube" class="video-container" style="height: 600px">
+            <iframe height="100%" width="100%"  src="{{menuList[selectedMenu].submenu[selectedIndex].source[0].youtube}}" frameborder="0"></iframe>
         </div>
     </ion-content>
 
@@ -14,17 +18,17 @@
 
         <div class="button-bar">
         <button class="footer-bar-item item-left button button-positive" ng-click="prevTutorial()" ng-if = "selectedIndex!=0" style="font-size: 20px !important;">
-            <i class="fa fa-chevron-left"></i> Geri
+            <i class="fa fa-chevron-left"></i> {{'Geri' | translate}}
         </button>
         <button class="footer-bar-item item-left button button-positive" ng-click="closeModal()" ng-if = "selectedIndex==0" style="font-size: 20px !important;">
-            <i class="fa fa-chevron-left"></i> Kapat
+            <i class="fa fa-chevron-left"></i> {{'Kapat' | translate}}
         </button>
 
         <button class="footer-bar-item item-right button button-positive" ng-click="nextTutorial()" ng-if = "selectedIndex!=(menuList[selectedMenu].submenu.length-1)" style="font-size: 20px; !important;">
-            İleri <i class="fa fa-chevron-right"></i>
+            {{'İleri' | translate}} <i class="fa fa-chevron-right"></i>
         </button>
         <button class="footer-bar-item item-right button button-positive" ng-click="closeModal()" ng-show="selectedIndex!=0" ng-if = "selectedIndex==(menuList[selectedMenu].submenu.length-1)" style="font-size: 20px; !important;">
-            Kapat <i class="fa fa-chevron-right"></i>
+            {{'Kapat' | translate}} <i class="fa fa-chevron-right"></i>
         </button>
         </div>
 

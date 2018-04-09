@@ -21,6 +21,7 @@ cp -r ${SOURCE_DIR}/app ${SOURCE_DIR}/assets ${SOURCE_DIR}/index.js ${SOURCE_DIR
 rm -rf ${TARGET_DIR}/assets/img/tutorial
 
 #do some fix
+
 files=`find $TARGET_DIR/../plugins/phonegap-facebook-plugin/ -name AndroidManifest.xml`
 for file in $files; do 
         sed -i -e 's/android:minSdkVersion=\".*\"/android:minSdkVersion="14"/' $file
@@ -67,8 +68,8 @@ else
 fi
 
 cd ${TARGET_DIR}/..
-ionic prepare ios
-ionic prepare android
+ionic cordova prepare ios
+ionic cordova prepare android
 #sed -i ".bak" 's/android:label=\".*\"/android:label="Kuran ÃalÄ±Å"/' platforms/android/AndroidManifest.xml
 #sed -i ".bak" 's/<activity/<activity android:name="org.quran.qurantools.MainActivity"/' platforms/android/AndroidManifest.xml
 if [ $1 == "production" ] ; then

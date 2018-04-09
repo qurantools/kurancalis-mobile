@@ -1,6 +1,6 @@
 angular.module('ionicApp')
 
-    .controller('InferenceListController', function ($scope, $routeParams, Facebook, Restangular, $location, authorization, localStorageService, $ionicModal, $timeout, $ionicScrollDelegate, navigationManager) {
+    .controller('InferenceListController', function ($scope, $routeParams, Facebook, Restangular, $location, authorization, localStorageService, $ionicModal, $timeout, $ionicScrollDelegate, navigationManager, $translate) {
         console.log("Inference List Controller");
         /* facebook login */
         $scope.fbLoginStatus = 'disconnected';
@@ -317,8 +317,8 @@ angular.module('ionicApp')
             var circles = []; //id array
             circles.push(
                 {
-                    id: -2,
-                    name: "Tüm Çevrelerim"
+                    id: -1,
+                    name: $translate.instant("Herkes")
                 }
                 );
             var users = []; //id array

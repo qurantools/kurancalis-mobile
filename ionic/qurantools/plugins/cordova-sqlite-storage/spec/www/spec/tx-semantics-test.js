@@ -30,11 +30,13 @@ function start(n) {
   if (wait == 0) test_it_done();
 }
 
-var isAndroid = /Android/.test(navigator.userAgent);
+var isWindows = /Windows /.test(navigator.userAgent); // Windows 8.1/Windows Phone 8.1/Windows 10
+var isAndroid = !isWindows && /Android/.test(navigator.userAgent);
 
-// NOTE: In the core-master branch there is no difference between the default
-// implementation and implementation #2. But the test will also apply
-// the androidLockWorkaround: 1 option in the case of implementation #2.
+// NOTE: While in certain version branches there is no difference between
+// the default Android implementation and implementation #2,
+// this test script will also apply the androidLockWorkaround: 1 option
+// in case of implementation #2.
 var scenarioList = [
   isAndroid ? 'Plugin-implementation-default' : 'Plugin',
   'HTML5',
@@ -51,24 +53,122 @@ var mytests = function() {
       var scenarioName = scenarioList[i];
       var suiteName = scenarioName + ': ';
       var isWebSql = (i === 1);
-      var isOldImpl = (i === 2);
+      var isImpl2 = (i === 2);
 
       // NOTE: MUST be defined in function scope, NOT outer scope:
       var openDatabase = function(name, ignored1, ignored2, ignored3) {
-        if (isOldImpl) {
+        if (isImpl2) {
           return window.sqlitePlugin.openDatabase({
             // prevent reuse of database from default db implementation:
             name: 'i2-'+name,
+            // explicit database location:
+            location: 'default',
             androidDatabaseImplementation: 2,
             androidLockWorkaround: 1
           });
         }
         if (isWebSql) {
-          return window.openDatabase(name, "1.0", "Demo", DEFAULT_SIZE);
+          return window.openDatabase(name, '1.0', 'Test', DEFAULT_SIZE);
         } else {
-          return window.sqlitePlugin.openDatabase(name, "1.0", "Demo", DEFAULT_SIZE);
+          // explicit database location:
+          return window.sqlitePlugin.openDatabase({name: name, location: 'default'});
         }
       }
+
+        it(suiteName + 'Simple tx sql order test', function(done) {
+          // This test shows that executeSql statements run in intermediate callback
+          // are executed AFTER executeSql statements that were queued before
+
+          var db = openDatabase('Simple-tx-order-test.db', '1.0', 'Test', DEFAULT_SIZE);
+
+          expect(db).toBeDefined();
+
+          db.transaction(function(tx) {
+            expect(tx).toBeDefined();
+
+            tx.executeSql('DROP TABLE IF EXISTS tt');
+            tx.executeSql('CREATE TABLE tt (data)');
+
+            tx.executeSql('INSERT INTO tt VALUES (?)', ['first'], function(tx, res) {
+              expect(res).toBeDefined();
+              expect(res.insertId).toBeDefined();
+              expect(res.rowsAffected).toBe(1);
+
+              tx.executeSql('INSERT INTO tt VALUES (?)', ['middle']);
+            });
+
+            tx.executeSql("INSERT INTO tt VALUES ('last')");
+
+          }, null, function() {
+            db.transaction(function(tx) {
+              tx.executeSql('SELECT * FROM tt', [], function(tx, res) {
+                expect(res).toBeDefined();
+                expect(res.rows).toBeDefined();
+                expect(res.rows.length).toBe(3);
+                expect(res.rows.item(0).data).toBe('first');
+                expect(res.rows.item(1).data).toBe('last');
+                expect(res.rows.item(2).data).toBe('middle');
+                done();
+              });
+            });
+          });
+        }, MYTIMEOUT);
+
+        it(suiteName + 'Simple tx sql order test with error recovery', function(done) {
+          // This test shows that executeSql statements run in intermediate error handling callback
+          // are executed _after_ executeSql statements that were queued before
+
+          var db = openDatabase('tx-order-with-error-test.db', '1.0', 'Test', DEFAULT_SIZE);
+
+          expect(db).toBeDefined();
+
+          db.transaction(function(tx) {
+            expect(tx).toBeDefined();
+
+            tx.executeSql('DROP TABLE IF EXISTS tt');
+            tx.executeSql('CREATE TABLE tt (data)');
+
+            tx.executeSql('INSERT INTO tt VALUES (?)', [1], function(tx, res) {
+              expect(res).toBeDefined();
+              expect(res.insertId).toBeDefined();
+              expect(res.rowsAffected).toBe(1);
+
+              tx.executeSql('INSERT INTO tt VALUES (?)', [2]);
+
+              //done();
+            });
+
+            // syntax error:
+            tx.executeSql('INSRT INTO tt VALUES (?)', ['bogus'], null, function(err) {
+              expect(err).toBeDefined();
+              // TBD check err
+
+              tx.executeSql('INSERT INTO tt VALUES (?)', [3]);
+
+              return false;
+            });
+
+            tx.executeSql('INSERT INTO tt VALUES (?)', [4]);
+
+          }, function(err) {
+            // not expected:
+            expect(false).toBe(true);
+            done();
+          }, function() {
+            db.transaction(function(tx) {
+              tx.executeSql('SELECT * FROM tt', [], function(tx, res) {
+                expect(res).toBeDefined();
+                expect(res.rows).toBeDefined();
+                expect(res.rows.length).toBe(4);
+                expect(res.rows.item(0).data).toBe(1);
+                expect(res.rows.item(1).data).toBe(4);
+                expect(res.rows.item(2).data).toBe(2);
+                expect(res.rows.item(3).data).toBe(3);
+                done();
+              });
+            });
+          });
+        }, MYTIMEOUT);
 
         test_it(suiteName + 'transaction test: check rowsAffected [intermediate]', function () {
           var db = openDatabase("RowsAffected", "1.0", "Demo", DEFAULT_SIZE);
@@ -279,30 +379,76 @@ var mytests = function() {
           });
         });
 
-        test_it(suiteName + "exception from transaction handler causes failure", function() {
-          stop();
+        it(suiteName + 'exception from transaction handler causes failure', function(done) {
           var db = openDatabase("exception-causes-failure.db", "1.0", "Demo", DEFAULT_SIZE);
 
           try {
             db.transaction(function(tx) {
               throw new Error("boom");
-            }, function(err) {
-              expect(err).toBeDefined();
-              expect(err.hasOwnProperty('message')).toBe(true);
+            }, function(error) {
+              expect(error).toBeDefined();
+              expect(error.code).toBeDefined();
+              expect(error.message).toBeDefined();
 
-              if (!isWebSql) expect(err.message).toEqual('boom');
+              // error.hasOwnProperty('message') apparently NOT WORKING on
+              // WebKit Web SQL on Android 5.x/... or iOS 10.x/...:
+              if (!isWebSql || isWindows || (isAndroid && (/Android [1-4]/.test(navigator.userAgent))))
+                expect(error.hasOwnProperty('message')).toBe(true);
 
-              start();
+              expect(error.code).toBe(0);
+
+              if (isWebSql)
+                expect(error.message).toMatch(/the SQLTransactionCallback was null or threw an exception/);
+              else
+                expect(error.message).toBe('boom');
+
+              done();
             }, function() {
               // transaction success callback not expected
               expect(false).toBe(true);
-              start();
+              done();
             });
             ok(true, "db.transaction() did not throw an error");
-          } catch(err) {
+          } catch(ex) {
             // exception not expected here
             expect(false).toBe(true);
-            start();
+            done();
+          }
+        });
+
+        it(suiteName + 'exception with code from transaction handler', function(done) {
+          var db = openDatabase("exception-with-code.db", "1.0", "Demo", DEFAULT_SIZE);
+
+          try {
+            db.transaction(function(tx) {
+              var e = new Error("boom");
+              e.code = 3;
+              throw e;
+            }, function(error) {
+              expect(error).toBeDefined();
+              expect(error.code).toBeDefined();
+              expect(error.message).toBeDefined();
+
+              if (isWebSql)
+                expect(error.code).toBe(0);
+              else
+                expect(error.code).toBe(3);
+
+              if (isWebSql)
+                expect(error.message).toMatch(/the SQLTransactionCallback was null or threw an exception/);
+              else
+                expect(error.message).toBe('boom');
+
+              done();
+            }, function() {
+              // transaction success callback not expected
+              expect(false).toBe(true);
+              done();
+            });
+          } catch(ex) {
+            // exception not expected here
+            expect(false).toBe(true);
+            done();
           }
         });
 
@@ -381,8 +527,7 @@ var mytests = function() {
             db.transaction(function(tx) {
               tx.executeSql("insert into test_table (data, data_num) VALUES (?,?)", ['test', null], function(tx, res) {
                 expect(res).toBeDefined();
-                //if (!isWindows) // XXX TODO
-                  expect(res.rowsAffected).toEqual(1);
+                expect(res.rowsAffected).toEqual(1);
                 tx.executeSql("select * from bogustable", [], function(tx, res) {
                   ok(false, "select statement not supposed to succeed");
                 });
@@ -403,11 +548,11 @@ var mytests = function() {
             });
           });
         });
-        
+
         test_it(suiteName + "executeSql fails outside transaction", function() {
           withTestTable(function(db) {
             expect(4);
-            ok(!!db, "db ok");            
+            ok(!!db, "db ok");
             var txg;
             stop(2);
             db.transaction(function(tx) {
@@ -415,8 +560,7 @@ var mytests = function() {
               txg = tx;
               tx.executeSql("insert into test_table (data, data_num) VALUES (?,?)", ['test', null], function(tx, res) {
                 expect(res).toBeDefined();
-                //if (!isWindows) // XXX TODO
-                  expect(res.rowsAffected).toEqual(1);
+                expect(res.rowsAffected).toEqual(1);
               });
               start(1);
             }, function(err) {
@@ -432,57 +576,82 @@ var mytests = function() {
                 ok(!!err.message, "error had valid message");
               }
               start(1);
-            });            
+            });
           });
         });
 
       });
 
-        test_it(suiteName + "readTransaction should throw on modification", function() {
-          stop();
-          var db = openDatabase("Database-readonly", "1.0", "Demo", DEFAULT_SIZE);
+        it(suiteName + "readTransaction should fail & report error on modification", function(done) {
+          var db = openDatabase("tx-readonly-test.db", "1.0", "Demo", DEFAULT_SIZE);
+
           db.transaction(function(tx) {
             tx.executeSql('DROP TABLE IF EXISTS test_table');
-            tx.executeSql('CREATE TABLE IF NOT EXISTS test_table (foo text)');
-            tx.executeSql('INSERT INTO test_table VALUES ("bar")');
+            tx.executeSql('DROP TABLE IF EXISTS ExtraTestTable1');
+            tx.executeSql('DROP TABLE IF EXISTS ExtraTestTable2');
+            tx.executeSql('DROP TABLE IF EXISTS ExtraTestTable3');
+            tx.executeSql('DROP TABLE IF EXISTS ExtraTestTable4');
+            tx.executeSql('DROP TABLE IF EXISTS ExtraTestTable5');
+            tx.executeSql('DROP TABLE IF EXISTS ExtraTestTable6');
+            tx.executeSql('DROP TABLE IF EXISTS AlterTestTable');
+
+            tx.executeSql('CREATE TABLE test_table (data)');
+            tx.executeSql('INSERT INTO test_table VALUES (?)', ['first']);
+
+            tx.executeSql('CREATE TABLE AlterTestTable (FirstColumn)');
           }, function () {}, function () {
             db.readTransaction(function (tx) {
               tx.executeSql('SELECT * from test_table', [], function (tx, res) {
                 equal(res.rows.length, 1);
-                equal(res.rows.item(0).foo, 'bar');
+                equal(res.rows.item(0).data, 'first');
               });
             }, function () {}, function () {
-              var tasks;
               var numDone = 0;
               var failed = false;
+              var tasks;
+
               function checkDone() {
                 if (++numDone === tasks.length) {
-                  start();
+                  done();
                 }
               }
               function fail() {
                 if (!failed) {
+                  expect(false).toBe(true);
+                  expect('readTransaction was supposed to fail').toBe('--');
                   failed = true;
-                  ok(false, 'readTransaction was supposed to fail');
 
-                  start();
+                  done();
                 }
               }
-              // all of these should throw an error
+
               tasks = [
+                // these transactions should be OK:
+                function () {
+                  db.readTransaction(function (tx) {
+                    tx.executeSql(' SELECT 1;');
+                  }, fail, checkDone);
+                },
+                function () {
+                  db.readTransaction(function (tx) {
+                    tx.executeSql('; SELECT 1;');
+                  }, fail, checkDone);
+                },
+
+                // all of these transactions should report an error
+                function () {
+                  db.readTransaction(function (tx) {
+                    tx.executeSql('UPDATE test_table SET foo = "another"');
+                  }, checkDone, fail);
+                },
+                function () {
+                  db.readTransaction(function (tx) {
+                    tx.executeSql('INSERT INTO test_table VALUES ("another")');
+                  }, checkDone, fail);
+                },
                 function () {
                   db.readTransaction(function (tx) {
                     tx.executeSql('DELETE from test_table');
-                  }, checkDone, fail);
-                },
-                function () {
-                  db.readTransaction(function (tx) {
-                    tx.executeSql('UPDATE test_table SET foo = "baz"');
-                  }, checkDone, fail);
-                },
-                function () {
-                  db.readTransaction(function (tx) {
-                    tx.executeSql('INSERT INTO test_table VALUES ("baz")');
                   }, checkDone, fail);
                 },
                 function () {
@@ -492,9 +661,61 @@ var mytests = function() {
                 },
                 function () {
                   db.readTransaction(function (tx) {
-                    tx.executeSql('CREATE TABLE test_table2');
+                    // extra space before sql (OK)
+                    tx.executeSql(' CREATE TABLE test_table2 (data)');
                   }, checkDone, fail);
-                }
+                },
+                function () {
+                  db.readTransaction(function (tx) {
+                    // two extra spaces before sql (OK)
+                    tx.executeSql('  CREATE TABLE test_table3 (data)');
+                  }, checkDone, fail);
+                },
+                function () {
+                  db.readTransaction(function (tx) {
+                    tx.executeSql(';  CREATE TABLE ExtraTestTable1 (data)');
+                  }, checkDone, fail);
+                },
+                function () {
+                  db.readTransaction(function (tx) {
+                    tx.executeSql(' ;  CREATE TABLE ExtraTestTable2 (data)');
+                  }, checkDone, fail);
+                },
+                function () {
+                  db.readTransaction(function (tx) {
+                    tx.executeSql(';CREATE TABLE ExtraTestTable3 (data)');
+                  }, checkDone, fail);
+                },
+                function () {
+                  db.readTransaction(function (tx) {
+                    tx.executeSql(';; CREATE TABLE ExtraTestTable4 (data)');
+                  }, checkDone, fail);
+                },
+                function () {
+                  db.readTransaction(function (tx) {
+                    tx.executeSql('; ;CREATE TABLE ExtraTestTable5 (data)');
+                  }, checkDone, fail);
+                },
+                function () {
+                  db.readTransaction(function (tx) {
+                    tx.executeSql('; ; CREATE TABLE ExtraTestTable6 (data)');
+                  }, checkDone, fail);
+                },
+                function () {
+                  db.readTransaction(function (tx) {
+                    tx.executeSql('ALTER TABLE AlterTestTable ADD COLUMN NewColumn');
+                  }, checkDone, fail);
+                },
+                function () {
+                  db.readTransaction(function (tx) {
+                    tx.executeSql('REINDEX');
+                  }, checkDone, fail);
+                },
+                function () {
+                  db.readTransaction(function (tx) {
+                    tx.executeSql('REPLACE INTO test_table VALUES ("another")');
+                  }, checkDone, fail);
+                },
               ];
               for (var i = 0; i < tasks.length; i++) {
                 tasks[i]();

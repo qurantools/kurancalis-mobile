@@ -4,27 +4,41 @@
             <div class="row" style="padding-left: 15px;">
                 <div style="float: left;">
                     <button onclick="toggleLeftPanel()" class="btn btn-primary"><i
-                            class="fa fa-bars"></i> MENÜ
+                            class="fa fa-bars"></i> {{'MENÜ' | translate}}
                     </button>
                 </div>
                 <div style="float: left; padding-left: 20px;">
                     <select ng-model="circleListForTimeline"
-                            ng-options="circle.id as circle.name for circle in extendedCirclesForSearch"
+                            ng-options="circle.id as circle.name | translate for circle in extendedCirclesForSearch"
                             ng-change="profileCircleChanged(circleListForTimeline)"
                             class="form-control">
-                        <option style="display:none" value="">Çevre Seçiniz</option>
+                        <option style="display:none" value="" translate>Çevre Seçiniz</option>
                     </select>
                 </div>
-                <div ng-show="facebookIsReady" class="facebook_area">
+                <div class="facebook_area">
                     <div ng-if="user==null">
-                        <button type="button" id="login" ng-click="login()" class="btn btn-primary">
-                            <b>Birlikte</b> dosdoğru yolu bulmak için > <img src="assets/img/fb.png" width="25" height="25"> Giriş
-                        </button>
+                        <button type="button" id="login" data-target='#loginModal' data-toggle='modal' class="btn btn-primary" translate>Giriş</button>
                     </div>
                     <div ng-if="user!=null">
-                        <a class="btn btn-primary" href="#/people/find_people/">
-                            <i class="fa fa-user-plus"></i> Kullanıcı Bul</a>
-                        <a href="#/profile/user/{{user.id}}"><img ng-src="{{user.photo}}" height="40"/></a>
+                        <a class="btn btn-primary" href="#!/people/find_people/">
+                            <i class="fa fa-user-plus"></i> {{'Kullanıcı Bul' | translate}}</a>
+                        <!-- <a href="#/profile/user/{{user.id}}"><img ng-src="{{user.photo}}" height="40"/></a> -->
+                        <div id="loginMenu" class="dropdown" style="display: inline-block">
+                            <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
+                                <img ng-src="{{user.photo}}" height="34px" alt="dropdown">
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li class="btn-default"><a href="#!/profile/user/{{user.id}}" translate>Profilim</a></li>
+                                <li class="btn-default"><a href="#!/user/account/settings" translate>Hesabım</a></li>
+                            </ul>
+                        </div>
+                        <select name="language-selection"
+                                ng-model="selectedLanguage"
+                                ng-options="language.name as language.label for language in languages"
+                                ng-selected="selectedLanguage==language.name"
+                                ng-change="changeLanguage(selectedLanguage)">
+                        </select>
                     </div>
                 </div>
             </div>

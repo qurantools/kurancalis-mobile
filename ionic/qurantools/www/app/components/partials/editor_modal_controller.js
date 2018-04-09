@@ -1,5 +1,5 @@
 angular.module('ionicApp')
-    .controller('annotationEditorController', function ($scope, $q, $routeParams, $location, $timeout, Restangular, $ionicModal) {
+    .controller('annotationEditorController', function ($scope, $q, $routeParams, $location, $timeout, Restangular, $ionicModal, $translate) {
 
         $scope.callback = function (){};
         $scope.cancel = function(){};
@@ -16,7 +16,7 @@ angular.module('ionicApp')
             } else {
                 if ($scope.ViewCircles.length == 0 && $scope.ViewUsers.length == 0 && $scope.yrmcevres.length == 0 && $scope.yrmkisis.length == 0) {
                     //all empty //share to everyone by default
-                    $scope.ViewCircles.push({'id': '-1', 'name': 'Herkes'});
+                    $scope.ViewCircles.push({'id': '-1', 'name': $translate.instant('Herkes')});
                 }
                 //do some special for mobile widget
                 $scope.setMobileAnnotationEditorCircleListForSelection($scope.ViewCircles);

@@ -1,124 +1,128 @@
 {
-    "org.apache.cordova.inappbrowser": {
-        "source": {
-            "type": "registry",
-            "id": "org.apache.cordova.inappbrowser"
-        },
-        "is_top_level": true,
-        "variables": {}
+  "cordova-plugin-whitelist": {
+    "source": {
+      "type": "registry",
+      "id": "cordova-plugin-whitelist@^1.3.3"
     },
-    "org.apache.cordova.statusbar": {
-        "source": {
-            "type": "registry",
-            "id": "org.apache.cordova.statusbar"
-        },
-        "is_top_level": true,
-        "variables": {}
+    "is_top_level": true,
+    "variables": {}
+  },
+  "cordova-plugin-device": {
+    "source": {
+      "type": "registry",
+      "id": "cordova-plugin-device@^2.0.1"
     },
-    "org.apache.cordova.console": {
-        "source": {
-            "type": "registry",
-            "id": "org.apache.cordova.console"
-        },
-        "is_top_level": true,
-        "variables": {}
+    "is_top_level": true,
+    "variables": {}
+  },
+  "cordova-plugin-splashscreen": {
+    "source": {
+      "type": "registry",
+      "id": "cordova-plugin-splashscreen@^5.0.2"
     },
-    "cordova-plugin-whitelist": {
-        "source": {
-            "type": "registry",
-            "id": "cordova-plugin-whitelist"
-        },
-        "is_top_level": true,
-        "variables": {}
+    "is_top_level": true,
+    "variables": {}
+  },
+  "cordova-plugin-ionic-webview": {
+    "source": {
+      "type": "registry",
+      "id": "cordova-plugin-ionic-webview@^1.1.16"
     },
-    "ionic-plugin-keyboard": {
-        "source": {
-            "type": "registry",
-            "id": "ionic-plugin-keyboard"
-        },
-        "is_top_level": true,
-        "variables": {}
+    "is_top_level": true,
+    "variables": {}
+  },
+  "cordova-plugin-ionic-keyboard": {
+    "source": {
+      "type": "registry",
+      "id": "cordova-plugin-ionic-keyboard@^2.0.5"
     },
-    "com.filfatstudios.spinnerdialog": {
-        "source": {
-            "type": "git",
-            "url": "https://github.com/filfat-Studios-AB/cordova-plugin-spinnerdialog",
-            "subdir": "."
-        },
-        "is_top_level": true,
-        "variables": {}
+    "is_top_level": true,
+    "variables": {}
+  },
+  "cordova-plugin-console": {
+    "source": {
+      "type": "registry",
+      "id": "cordova-plugin-console"
     },
-    "me.rahul.plugins.sqlDB": {
-        "source": {
-            "type": "git",
-            "url": "https://github.com/an-rahulpandey/cordova-plugin-dbcopy.git",
-            "subdir": "."
-        },
-        "is_top_level": true,
-        "variables": {}
+    "is_top_level": true,
+    "variables": {}
+  },
+  "ionic-plugin-keyboard": {
+    "source": {
+      "type": "registry",
+      "id": "ionic-plugin-keyboard"
     },
-    "cordova-sqlite-storage": {
-        "source": {
-            "type": "git",
-            "url": "https://github.com/brodysoft/Cordova-SQLitePlugin.git",
-            "subdir": "."
-        },
-        "is_top_level": true,
-        "variables": {}
+    "is_top_level": true,
+    "variables": {}
+  },
+  "cordova-sqlite-storage": {
+    "source": {
+      "type": "registry",
+      "id": "cordova-sqlite-storage"
     },
-    "cordova-plugin-x-socialsharing": {
-        "source": {
-            "type": "git",
-            "url": "https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin.git",
-            "subdir": "."
-        },
-        "is_top_level": true,
-        "variables": {}
-    },
-    "cordova-plugin-network-information": {
-        "source": {
-            "type": "registry",
-            "id": "cordova-plugin-network-information"
-        },
-        "is_top_level": true,
-        "variables": {}
-    },
-    "cordova-plugin-customurlscheme": {
-        "source": {
-            "type": "registry",
-            "id": "cordova-plugin-customurlscheme"
-        },
-        "is_top_level": true,
-        "variables": {
-            "URL_SCHEME": "qurantools"
-        }
-    },
-    "cordova-plugin-device": {
-        "source": {
-            "type": "registry",
-            "id": "cordova-plugin-device"
-        },
-        "is_top_level": true,
-        "variables": {}
-    },
-    "cordova-plugin-splashscreen": {
-        "source": {
-            "type": "registry",
-            "id": "cordova-plugin-splashscreen"
-        },
-        "is_top_level": true,
-        "variables": {}
-    },
-    "phonegap-facebook-plugin": {
-        "source": {
-            "type": "git",
-            "url": "https://github.com/Wizcorp/phonegap-facebook-plugin",
-            "subdir": "."
-        },
-        "is_top_level": true,
-        "variables": {
-            "APP_ID": "295857580594128",
-            "APP_NAME": "Kuran Çalış"
-        }
+    "is_top_level": true,
+    "variables": {
+      "locator": "https://github.com/brodysoft/Cordova-SQLitePlugin.git",
+      "id": "cordova-sqlite-storage"
     }
+  },
+  "cordova-plugin-x-socialsharing": {
+    "source": {
+      "type": "registry",
+      "id": "https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin.git"
+    },
+    "is_top_level": true,
+    "variables": {}
+  },
+  "es6-promise-plugin": {
+    "source": {
+      "type": "registry",
+      "id": "es6-promise-plugin@^4.1.0"
+    },
+    "is_top_level": false,
+    "variables": {}
+  },
+  "cordova-plugin-network-information": {
+    "source": {
+      "type": "registry",
+      "id": "cordova-plugin-network-information"
+    },
+    "is_top_level": true,
+    "variables": {}
+  },
+  "cordova-plugin-customurlscheme": {
+    "source": {
+      "type": "registry",
+      "id": "cordova-plugin-customurlscheme"
+    },
+    "is_top_level": true,
+    "variables": {}
+  },
+  "cordova-plugin-dbcopy": {
+    "source": {
+      "type": "registry",
+      "id": "https://github.com/an-rahulpandey/cordova-plugin-dbcopy.git"
+    },
+    "is_top_level": true,
+    "variables": {}
+  },
+  "com.filfatstudios.spinnerdialog": {
+    "source": {
+      "type": "registry",
+      "id": "https://github.com/filfat-Studios-AB/cordova-plugin-spinnerdialog"
+    },
+    "is_top_level": true,
+    "variables": {}
+  },
+  "cordova-plugin-facebook4": {
+    "source": {
+      "type": "registry",
+      "id": "git+https://github.com/jeduan/cordova-plugin-facebook4.git"
+    },
+    "is_top_level": true,
+    "variables": {
+      "APP_ID": "400142910165594",
+      "APP_NAME": "Kuran Calis"
+    }
+  }
 }

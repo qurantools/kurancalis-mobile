@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+    <meta name="fragment" content="!">
     <meta property="al:ios:url" content="qurantools://http://kurancalis.com">
     <meta property="al:ios:app_store_id" content="1032659897">
     <meta property="al:ios:app_name" content="Kuran Çalış">
@@ -38,10 +39,23 @@
 
     <link rel="stylesheet" href="../../assets/css/style.css">
 
+    <!-- angular-ui-notification -->
+    <link rel="stylesheet" href="../../assets/css/angular-ui-notification.min.css">
+
     <script src="../../assets/js/angular.min.js"></script>
     <script src="../../assets/js/angular-ui-router.min.js"></script>
     <script src="../../assets/js/angular-sanitize.min.js"></script>
     <script src="../../assets/js/angular-animate.min.js"></script>
+
+    <!-- angular cookies -->
+    <script src="../../assets/js/angular-cookies.min.js"></script>
+
+    <!-- Angular translate -->
+    <script src="../../assets/js/angular-translate.min.js"></script>
+    <script src="../../assets/js/angular-translate-handler-log.min.js"></script>
+    <script src="../../assets/js/angular-translate-loader-static-files.min.js"></script>
+    <script src="../../assets/js/angular-translate-storage-cookie.min.js"></script>
+    <script src="../../assets/js/angular-translate-storage-local.min.js"></script>
 
     <!-- ionic -->
     <link href="../../assets/libs/ionic/css/ionic.css" rel="stylesheet">
@@ -87,6 +101,10 @@
 
     <script src="../../assets/js/angular-scroll.min.js"></script>
     <script src="../../assets/js/angular-socialshare.min.js"></script>
+
+    <!-- Angular file upload -->
+    <script src="../../assets/js/ng-file-upload-shim.min.js"></script> <!-- for no html5 browsers support -->
+    <script src="../../assets/js/ng-file-upload.min.js"></script>
 
     <!-- IF using Sass (run gulp sass first), then uncomment below and remove the CSS includes above
     <link href="css/ionic.app.css" rel="stylesheet">
@@ -140,6 +158,7 @@
     <script src="../../app/components/partials/mobile_add_tag_controller.js"></script>
 
     <script src="../../app/components/help/help_controller.js"></script>
+    <script src="../../app/components/user/user_account_controller.js"></script>
 
     <script src="../../assets/js/SQLitePlugin.js"></script>
     <script src="../../assets/js/ng-infinite-scroll.min.js"></script>
@@ -161,6 +180,9 @@
     <script src="../../assets/js/versehistory/verse_history_controller.js"></script>
     <script src="../../assets/js/annotations/annotation_display_controller.js"></script>
     <script src="../../assets/js/vote/vote_controller.js"></script>
+
+    <!-- angular-ui-notification -->
+    <script src="../../assets/js/angular-ui-notification.min.js"></script>
 </head>
 
 <body>
@@ -186,7 +208,7 @@
         daysReminder: 90,
         appStoreLanguage: 'tr',
         title: 'Kuran Çalış',
-        author: 'Birlikte Dosdoğru Yolu<br>Bulmak İçin...',
+        author: $translate.instant('Birlikte Dosdoğru Yolu<br>Bulmak İçin...'),
         button: 'Aç',
         store: {
             ios: 'On the App Store',

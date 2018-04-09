@@ -1,19 +1,19 @@
 var config_module = angular.module('myConfig', []);
 
-//var domain = "http://kurancalis.com";
-//var domain = "http://kurancalis.com";
-var domain = "http://kurancalis.com";
-//var domain = "http://kurancalis.com";
+//var domain = "http://test.kurancalis.com";
+//var domain = "http://test.kurancalis.com";
+var domain = "http://test.kurancalis.com";
+//var domain = "http://test.kurancalis.com";
 
 var config_data = {
-    'webServiceUrl': 'https://securewebserver.net/jetty/qt/rest',
-    //'webServiceUrl': 'https://securewebserver.net/jetty/qt/rest',
+    //'webServiceUrl': 'https://securewebserver.net/jetty/qttest/rest',
+    'webServiceUrl': 'https://securewebserver.net/jetty/qttest/rest',
     'webAddress': domain,
     'mobileAddress': domain+'/m/www',
     'mobileLoginCallbackAddress': domain +'/m/www/components/mobile_auth/login_callback.html',
-    'FBAppID': '295857580594128',
+    'FBAppID': '400142910165594',
     //'FBAppID': '506964319483452',
-    'clientSecret':'8387ff88dfd5c632d6c64059ab3fcebb',
+    'clientSecret':'e1c0f664bd3e803fce38a8d6399dba2d',
     'version':"2.0",
     'isMobile':isMobile(),
     'isNative':isNative(),

@@ -1,186 +1,54 @@
 {
-    "prepare_queue": {
-        "installed": [],
-        "uninstalled": []
+  "prepare_queue": {
+    "installed": [],
+    "uninstalled": []
+  },
+  "config_munge": {
+    "files": {}
+  },
+  "installed_plugins": {
+    "com.filfatstudios.spinnerdialog": {
+      "PACKAGE_NAME": "io.ionic.starter"
     },
-    "config_munge": {
-        "files": {
-            "res/xml/config.xml": {
-                "parents": {
-                    "/*": [
-                        {
-                            "xml": "<feature name=\"SpinnerDialog\"><param name=\"android-package\" value=\"com.filfatstudios.spinnerdialog.SpinnerDialog\" /></feature>",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<feature name=\"LaunchMyApp\"><param name=\"android-package\" value=\"nl.xservices.plugins.LaunchMyApp\" /></feature>",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<feature name=\"Device\"><param name=\"android-package\" value=\"org.apache.cordova.device.Device\" /></feature>",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<feature name=\"NetworkStatus\"><param name=\"android-package\" value=\"org.apache.cordova.networkinformation.NetworkManager\" /></feature>",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<feature name=\"SplashScreen\"><param name=\"android-package\" value=\"org.apache.cordova.splashscreen.SplashScreen\" /><param name=\"onload\" value=\"true\" /></feature>",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<feature name=\"Whitelist\"><param name=\"android-package\" value=\"org.apache.cordova.whitelist.WhitelistPlugin\" /><param name=\"onload\" value=\"true\" /></feature>",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<feature name=\"SocialSharing\"><param name=\"android-package\" value=\"nl.xservices.plugins.SocialSharing\" /></feature>",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<feature name=\"SQLitePlugin\"><param name=\"android-package\" value=\"io.sqlc.SQLitePlugin\" /></feature>",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<feature name=\"Keyboard\"><param name=\"android-package\" value=\"io.ionic.keyboard.IonicKeyboard\" /><param name=\"onload\" value=\"true\" /></feature>",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<feature name=\"sqlDB\"><param name=\"android-package\" value=\"me.rahul.plugins.sqlDB.sqlDB\" /></feature>",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<feature name=\"InAppBrowser\"><param name=\"android-package\" value=\"org.apache.cordova.inappbrowser.InAppBrowser\" /></feature>",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<feature name=\"StatusBar\"><param name=\"android-package\" value=\"org.apache.cordova.statusbar.StatusBar\" /><param name=\"onload\" value=\"true\" /></feature>",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<feature name=\"FacebookConnectPlugin\"><param name=\"android-package\" value=\"org.apache.cordova.facebook.ConnectPlugin\" /></feature>",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<access origin=\"https://m.facebook.com\" />",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<access origin=\"https://graph.facebook.com\" />",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<access origin=\"https://api.facebook.com\" />",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<access origin=\"https://*.fbcdn.net\" />",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<access origin=\"https://*.akamaihd.net\" />",
-                            "count": 1
-                        }
-                    ]
-                }
-            },
-            "AndroidManifest.xml": {
-                "parents": {
-                    "/manifest/application/activity": [
-                        {
-                            "xml": "<intent-filter><data android:scheme=\"qurantools\" /><action android:name=\"android.intent.action.VIEW\" /><category android:name=\"android.intent.category.DEFAULT\" /><category android:name=\"android.intent.category.BROWSABLE\" /></intent-filter>",
-                            "count": 1
-                        }
-                    ],
-                    "/*": [
-                        {
-                            "xml": "<uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\" />",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<uses-permission android:name=\"android.permission.WRITE_EXTERNAL_STORAGE\" />",
-                            "count": 1
-                        }
-                    ],
-                    "/manifest": [
-                        {
-                            "xml": "<uses-permission android:name=\"android.permission.WRITE_EXTERNAL_STORAGE\" />",
-                            "count": 1
-                        }
-                    ],
-                    "application": [
-                        {
-                            "xml": "<meta-data android:name=\"com.facebook.sdk.ApplicationId\" android:value=\"@string/fb_app_id\" />",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<activity android:label=\"@string/fb_app_name\" android:name=\"com.facebook.LoginActivity\" android:theme=\"@android:style/Theme.Translucent.NoTitleBar\" />",
-                            "count": 1
-                        }
-                    ]
-                }
-            },
-            "res/values/facebookconnect.xml": {
-                "parents": {
-                    "/*": [
-                        {
-                            "xml": "<string name=\"fb_app_id\">295857580594128</string>",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<string name=\"fb_app_name\">Kuran</string>",
-                            "count": 1
-                        }
-                    ]
-                }
-            }
-        }
+    "cordova-plugin-console": {
+      "PACKAGE_NAME": "io.ionic.starter"
     },
-    "installed_plugins": {
-        "com.filfatstudios.spinnerdialog": {
-            "PACKAGE_NAME": "org.quran.qurantools"
-        },
-        "cordova-plugin-customurlscheme": {
-            "URL_SCHEME": "qurantools",
-            "PACKAGE_NAME": "org.quran.qurantools"
-        },
-        "cordova-plugin-device": {
-            "PACKAGE_NAME": "org.quran.qurantools"
-        },
-        "cordova-plugin-network-information": {
-            "PACKAGE_NAME": "org.quran.qurantools"
-        },
-        "cordova-plugin-splashscreen": {
-            "PACKAGE_NAME": "org.quran.qurantools"
-        },
-        "cordova-plugin-whitelist": {
-            "PACKAGE_NAME": "org.quran.qurantools"
-        },
-        "cordova-plugin-x-socialsharing": {
-            "PACKAGE_NAME": "org.quran.qurantools"
-        },
-        "cordova-sqlite-storage": {
-            "PACKAGE_NAME": "org.quran.qurantools"
-        },
-        "ionic-plugin-keyboard": {
-            "PACKAGE_NAME": "org.quran.qurantools"
-        },
-        "me.rahul.plugins.sqlDB": {
-            "PACKAGE_NAME": "org.quran.qurantools"
-        },
-        "org.apache.cordova.console": {
-            "PACKAGE_NAME": "org.quran.qurantools"
-        },
-        "org.apache.cordova.inappbrowser": {
-            "PACKAGE_NAME": "org.quran.qurantools"
-        },
-        "org.apache.cordova.statusbar": {
-            "PACKAGE_NAME": "org.quran.qurantools"
-        },
-        "phonegap-facebook-plugin": {
-            "APP_ID": "295857580594128",
-            "APP_NAME": "Kuran Çalış",
-            "PACKAGE_NAME": "org.quran.qurantools"
-        }
+    "cordova-plugin-dbcopy": {
+      "PACKAGE_NAME": "io.ionic.starter"
     },
-    "dependent_plugins": {}
+    "cordova-plugin-device": {
+      "PACKAGE_NAME": "io.ionic.starter"
+    },
+    "cordova-plugin-facebook4": {
+      "APP_ID": "400142910165594",
+      "APP_NAME": "Kuran Calis",
+      "PACKAGE_NAME": "io.ionic.starter"
+    },
+    "cordova-plugin-ionic-keyboard": {
+      "PACKAGE_NAME": "io.ionic.starter"
+    },
+    "cordova-plugin-ionic-webview": {
+      "PACKAGE_NAME": "io.ionic.starter"
+    },
+    "cordova-plugin-network-information": {
+      "PACKAGE_NAME": "io.ionic.starter"
+    },
+    "cordova-plugin-splashscreen": {
+      "PACKAGE_NAME": "io.ionic.starter"
+    },
+    "cordova-plugin-whitelist": {
+      "PACKAGE_NAME": "io.ionic.starter"
+    },
+    "cordova-plugin-x-socialsharing": {
+      "PACKAGE_NAME": "io.ionic.starter"
+    },
+    "cordova-sqlite-storage": {
+      "PACKAGE_NAME": "io.ionic.starter"
+    }
+  },
+  "dependent_plugins": {
+    "es6-promise-plugin": {
+      "PACKAGE_NAME": "io.ionic.starter"
+    }
+  }
 }
